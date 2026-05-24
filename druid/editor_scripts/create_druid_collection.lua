@@ -22,7 +22,7 @@ function M.create_druid_collection(selection)
 	local template = [[name: "%s"
 scale_along_z: 0
 embedded_instances {
-  id: "go"
+  id: "root"
   data: "components {\n"
   "  id: \"%s\"\n"
   "  component: \"%s\"\n"

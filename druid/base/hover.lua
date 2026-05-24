@@ -20,6 +20,7 @@ local component = require("druid.component")
 ---@field private _is_mobile boolean True if the platform is mobile
 local M = component.create("hover")
 
+local IS_MOBILE = helper.is_mobile()
 
 ---The constructor for the hover component
 ---@param node node Gui node
@@ -31,7 +32,6 @@ function M:init(node, on_hover_callback, on_mouse_hover)
 	self._is_hovered = false
 	self._is_mouse_hovered = false
 	self._is_enabled = true
-	self._is_mobile = helper.is_mobile()
 
 	self.on_hover = event.create(on_hover_callback)
 	self.on_mouse_hover = event.create(on_mouse_hover)
@@ -68,7 +68,7 @@ function M:on_input(action_id, action)
 	end
 
 	-- Disable nil (it's mouse) hover or mobile platforms
-	if self._is_mobile and not action_id then
+	if IS_MOBILE and not action_id then
 		return false
 	end
 
