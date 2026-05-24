@@ -151,14 +151,17 @@ function M:on_input(action_id, action)
 			local is_modificator_ok = true
 			local is_consume = not not (hotkey.key)
 
-			-- Check only required modificators pressed
-			if hotkey.key and #hotkey.modificators > 0 then
+			if hotkey.key then
 				for i = 1, #self.style.MODIFICATORS do
 					local mod = self.style.MODIFICATORS[i]
-					if helper.contains(hotkey.modificators, mod) and self._modificators[mod] == false then
-						is_modificator_ok = false
-					end
-					if not helper.contains(hotkey.modificators, mod) and self._modificators[mod] == true then
+					if #hotkey.modificators > 0 then
+						if helper.contains(hotkey.modificators, mod) and self._modificators[mod] == false then
+							is_modificator_ok = false
+						end
+						if not helper.contains(hotkey.modificators, mod) and self._modificators[mod] == true then
+							is_modificator_ok = false
+						end
+					elseif self._modificators[mod] == true then
 						is_modificator_ok = false
 					end
 				end

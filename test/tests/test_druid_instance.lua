@@ -285,6 +285,29 @@ return function()
 			druid_instance:remove(hotkey)
 		end)
 
+		it("Should not trigger hotkey without modificators when modificator is pressed", function()
+			local on_hotkey_calls = 0
+			local function on_hotkey()
+				on_hotkey_calls = on_hotkey_calls + 1
+			end
+
+			local hotkey = druid_instance:new_hotkey("key_q", on_hotkey)
+
+			druid_instance:on_input(mock_input.key_pressed("key_lshift"))
+			druid_instance:on_input(mock_input.key_pressed("key_q"))
+			druid_instance:on_input(mock_input.key_released("key_q"))
+			druid_instance:on_input(mock_input.key_released("key_lshift"))
+
+			assert(on_hotkey_calls == 0)
+
+			druid_instance:on_input(mock_input.key_pressed("key_q"))
+			druid_instance:on_input(mock_input.key_released("key_q"))
+
+			assert(on_hotkey_calls == 1)
+
+			druid_instance:remove(hotkey)
+		end)
+
 		it("Should create container component", function()
 			local parent_node = gui.new_box_node(vmath.vector3(150, 100, 0), vmath.vector3(300, 200, 0))
 

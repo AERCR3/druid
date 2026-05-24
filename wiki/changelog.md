@@ -822,3 +822,7 @@ Please support me if you like this project! It will help me keep engaged to upda
 - [Data List] Fix for visible bounds calculation in matrix grid mode
 - [Scroll] Fix for `scroll_to_make_node_visible` for some cases
 - [Layout] Refresh layout component when window layout is changed
+
+### Druid 1.2.3
+- [Hotkey] Should not trigger hotkey without modificators when modificator is pressed
+- [Editor Scripts] Rename go -> root to druid game collection from editor scripts
