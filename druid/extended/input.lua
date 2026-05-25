@@ -14,19 +14,29 @@ local utf8 = utf8 or utf8_lua
 ---@field on_unselect fun(self: druid.input, button_node: node) 取消选择输入字段时的回调
 ---@field on_input_wrong fun(self: druid.input, button_node: node) 用户输入错误时的回调
 
----基本的Druid文本输入组件。通过带有按钮和文本的组件处理用户文本输入。
+---基本的Druid文本输入组件
+---输入组件提供了完整的文本输入功能，支持密码掩码、字符验证、光标控制等高级特性
+---通过点击按钮来激活/取消激活输入状态，配合GUI系统处理键盘输入
 ---
----### 设置
----使用druid创建输入组件: `input = druid:new_input(button_node_name, text_node_name, keyboard_type)`
+---### 设置方法
+---使用druid创建输入组件：`input = druid:new_input(button_node_name, text_node_name, keyboard_type)`
+--- button_node_name是用于激活输入的按钮节点名称
+--- text_node_name是显示用户输入的文本节点名称
+--- keyboard_type是可选的键盘类型设置
 ---
----### 注意事项
----- 输入组件处理用户文本输入。输入包含按钮和文本组件
----- 按钮用于选择/取消选择输入字段
----- 点击按钮外部以取消选择输入字段
----- 失去焦点（游戏最小化）时输入字段将被取消选择
----- 您可以设置文本的最大长度
----- 您可以设置允许的字符。添加不允许的字符时将调用`on_input_wrong`
----输入组件提供了完整的文本输入功能，包括密码掩码和字符验证
+---### 主要特性
+---- 输入组件结合了按钮交互和文本显示功能
+---- 通过点击按钮选择/取消选择输入字段
+---- 支持点击外部区域取消输入选择
+---- 自动处理应用失去焦点时的输入状态清理
+---- 可设置最大文本长度和允许的字符类型
+---- 当用户输入不允许的字符时会触发错误回调
+---
+---### 应用场景
+---- 密码输入框（支持字符掩码）
+---- 普通文本输入（用户名、搜索框等）
+---- 数字输入（限制字符类型）
+---- 邮箱验证输入（特定格式验证）
 ---@class druid.input: druid.component
 ---@field on_input_select event fun(self: druid.input, input: druid.input) 选择输入字段时触发的事件
 ---@field on_input_unselect event fun(self: druid.input, text: string, input: druid.input) 取消选择输入字段时触发的事件
@@ -48,18 +58,26 @@ M.ALLOWED_ACTIONS = {
 	[const.ACTION_ESC] = true,
 }
 
----通过用掩码字符替换每个字符来掩码文本
----此函数用于实现密码输入的星号掩码功能
----@param text string 要掩码的文本
----@param mask string 掩码字符
+---文本掩码函数
+---通过用指定的掩码字符替换每个字符来隐藏原始文本内容
+---此函数主要用于密码输入框，显示为星号或其他掩码字符
+---@param text string 要掩码的原始文本
+---@param mask string|nil 掩码字符，默认为星号"*"
+--- 可以使用任意字符作为掩码，如"*"、"●"、"#"等
 ---@return string 掩码后的文本
+--- 所有字符都被替换为掩码字符的文本
 local function mask_text(text, mask)
+	--- 设置默认掩码字符为星号
 	mask = mask or "*"
 	local masked_text = ""
+	--- 使用UTF8遍历文本的每个字符
+	--- 这确保正确处理中文等多字节字符
 	for uchar in utf8.gmatch(text, ".") do
+		--- 将每个字符替换为掩码字符
 		masked_text = masked_text .. mask
 	end
 
+	--- 返回完全掩码的文本
 	return masked_text
 end
 
@@ -73,31 +91,42 @@ local function clear_and_select(self)
 end
 
 
----输入组件构造函数
----初始化输入组件，设置点击节点、文本节点和键盘类型
----@param click_node node 启用输入组件的节点
----@param text_node node|druid.text 用户输入时将更改的文本节点。您可以传递文本组件而不是文本节点名称
+---输入组件的构造函数
+---初始化输入组件实例，设置点击节点、文本节点和键盘配置
+---这是使用输入组件时调用的第一个方法，完成基础配置
+---@param click_node node 激活输入组件的按钮节点
+--- 用户点击此节点将选择/取消选择输入字段
+---@param text_node node|druid.text 显示用户输入的文本节点
+--- 可以是节点名称字符串，也可以是已存在的druid.text组件实例
+--- 如果传递文本组件，则可以直接复用现有文本组件的功能
 ---@param keyboard_type constant|nil 输入字段的GUI键盘类型
+--- 指定显示给用户的键盘类型（如TEXT_INPUT_TYPE_DEFAULT、TEXT_INPUT_TYPE_EMAIL等）
 function M:init(click_node, text_node, keyboard_type)
+	--- 获取Druid实例，用于创建和管理内部组件
 	self.druid = self:get_druid()
 
+	--- 初始化文本组件，可以是现有组件或新建组件
 	if type(text_node) == "table" then
+		--- 如果传入的是文本组件实例，直接使用
 		self.text = text_node
 	else
+		--- 如果传入的是节点名称，创建新的文本组件
 		self.text = self.druid:new_text(text_node)
 	end
 
-	self.is_selected = false
-	self.value = self.text.last_value
-	self.previous_value = self.text.last_value
-	self.current_value = self.text.last_value
-	self.marked_value = ""
-	self.is_empty = true
+	--- 初始化输入组件的状态变量
+	self.is_selected = false                  -- 当前输入字段是否被选中
+	self.value = self.text.last_value         -- 当前输入的文本值
+	self.previous_value = self.text.last_value -- 上一次的文本值
+	self.current_value = self.text.last_value -- 当前正在处理的文本值
+	self.marked_value = ""                    -- 标记文本（用于拼音输入等复杂输入法）
+	self.is_empty = true                      -- 当前输入是否为空
 
-	self.text_width = 0
-	self.market_text_width = 0
-	self.total_width = 0
-	self.cursor_index = utf8.len(self.value)
+	--- 初始化文本尺寸相关变量，用于文本布局和显示
+	self.text_width = 0                     -- 实际文本宽度
+	self.market_text_width = 0              -- 标记文本宽度
+	self.total_width = 0                    -- 总宽度
+	self.cursor_index = utf8.len(self.value) -- 光标位置（字符索引）
 	self.start_index = self.cursor_index
 	self.end_index = self.cursor_index
 

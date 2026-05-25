@@ -13,25 +13,31 @@ local utf8 = utf8 or utf8_lua --[[@as utf8]]
 
 ---@alias druid.text.adjust_type "downscale"|"trim"|"no_adjust"|"downscale_limited"|"scroll"|"scale_then_scroll"|"trim_left"|"scale_then_trim"|"scale_then_trim_left"
 
----基本的Druid文本组件。文本组件默认具有文本大小调整功能。
+---基本的Druid文本组件
+---文本组件提供了丰富的文本显示和自动调整功能，支持多种文本适应策略
+---此组件是UI开发中最常用的基础组件之一，为用户界面提供灵活的文本处理能力
 ---
----### 设置
----使用druid创建文本节点: `text = druid:new_text(node_name, [initial_value], [text_adjust_type])`
+---### 设置方法
+---使用druid创建文本节点：`text = druid:new_text(node_name, [initial_value], [text_adjust_type])`
+--- node_name是GUI场景中的文本节点名称
+--- initial_value是可选的初始文本内容
+--- text_adjust_type是文本调整类型（可选）
 ---
----### 注意事项
----- 文本组件默认具有自动调整文本大小功能。文本永远不会大于您在GUI场景中设置的文本节点大小。
----- 文本枢轴点可以用`text:set_pivot`更改，文本将在其文本大小框内保持其位置
----- 有几种文本调整类型:
-----   - **"downscale"** - 更改文本的缩放以适应文本节点大小（默认）
-----   - **"trim"** - 用后缀（默认 - "..."）修剪文本以适应文本节点大小
-----   - **"no_adjust"** - 不做任何调整，像默认Defold文本节点一样
-----   - **"downscale_limited"** - 更改文本的缩放像缩小一样，但对文本缩放有限制
-----   - **"scroll"** - 更改文本的枢轴点以模拟文本框中的滚动。与遮罩节点一起使用效果更好。
-----   - **"scale_then_scroll"** - 结合两种模式：首先有限缩小，然后滚动
-----   - **"trim_left"** - 用后缀（默认 - "..."）修剪文本以适应文本节点大小
-----   - **"scale_then_trim"** - 结合两种模式：首先有限缩小，然后修剪
-----   - **"scale_then_trim_left"** - 结合两种模式：首先有限缩小，然后从左边修剪
----文本组件是UI中最常用的组件之一，提供了丰富的文本显示和调整功能
+---### 主要特性
+---- 文本组件默认具有自动调整文本大小功能，确保文本不会超出节点边界
+---- 文本枢轴点可以通过`text:set_pivot`动态更改，文本会在其尺寸框内保持位置
+---- 支持多种文本调整策略，适应不同的UI需求
+---
+---### 文本调整类型详解
+----   - **"downscale"** - 缩放文本以适应文本节点大小（默认策略）
+----   - **"trim"** - 用后缀（默认为"..."）修剪文本以适配节点宽度
+----   - **"no_adjust"** - 不进行任何调整，保持Defold默认文本行为
+----   - **"downscale_limited"** - 缩放文本但有缩放限制，防止文本过小
+----   - **"scroll"** - 通过更改文本枢轴点来模拟文本滚动效果，配合遮罩使用更佳
+----   - **"scale_then_scroll"** - 组合模式：先有限缩放，再滚动
+----   - **"trim_left"** - 从左边开始修剪文本，保持右边内容完整
+----   - **"scale_then_trim"** - 组合模式：先有限缩放，再修剪
+----   - **"scale_then_trim_left"** - 组合模式：先有限缩放，再从左边修剪
 ---@class druid.text: druid.component
 ---@field node node 文本节点
 ---@field on_set_text event fun(self: druid.text, text: string) 设置文本时触发的事件
@@ -44,74 +50,114 @@ local utf8 = utf8 or utf8_lua --[[@as utf8]]
 local M = component.create("text")
 
 
----文本构造函数
----初始化文本组件，设置节点、初始文本值和调整类型
----@param node string|node 节点名称或GUI文本节点本身
----@param value string|nil 初始文本。默认值是从GUI场景获取的节点文本。默认值: nil
----@param adjust_type druid.text.adjust_type|nil 文本的调整类型。默认是"downscale"。选项: "downscale", "trim", "no_adjust", "downscale_limited", "scroll", "scale_then_scroll", "trim_left", "scale_then_trim", "scale_then_trim_left"
+---文本组件的构造函数
+---初始化文本实例，设置节点、初始文本值、调整类型和相关事件
+---这是使用文本组件时调用的第一个方法，完成基础配置
+---@param node string|node GUI场景中的文本节点名称或节点对象
+--- 用于指定文本组件要操作的GUI文本节点
+---@param value string|nil 初始文本内容
+--- 如果提供，将使用此值作为文本内容
+--- 如果为nil，则从GUI场景中获取节点的默认文本
+---@param adjust_type druid.text.adjust_type|nil 文本的调整类型
+--- 指定文本如何适应其容器的大小
+--- 可选值："downscale", "trim", "no_adjust", "downscale_limited", "scroll", "scale_then_scroll", "trim_left", "scale_then_trim", "scale_then_trim_left"
 function M:init(node, value, adjust_type)
+	--- 获取文本节点及其基本信息
 	self.node = self:get_node(node)
 	self.pos = gui.get_position(self.node)
 	self.node_id = gui.get_id(self.node)
 
+	--- 保存文本节点的初始状态，用于后续调整和恢复
 	self.start_pivot = gui.get_pivot(self.node)
 	self.start_scale = gui.get_scale(self.node)
 	self.scale = gui.get_scale(self.node)
 
+	--- 获取文本的尺寸信息，用于文本调整计算
 	self.start_size = gui.get_size(self.node)
 	self.text_area = gui.get_size(self.node)
+	--- 考虑缩放因素的文本区域大小
 	self.text_area.x = self.text_area.x * self.start_scale.x
 	self.text_area.y = self.text_area.y * self.start_scale.y
 
-	self.adjust_type = adjust_type or self.style.DEFAULT_ADJUST
+	--- 设置文本调整类型，如果未提供则使用默认的"downscale"策略
+	self.adjust_text_type = adjust_type or self.style.DEFAULT_ADJUST
+	--- 保存文本的当前颜色状态
 	self.color = gui.get_color(self.node)
 
-	self.on_set_text = event.create()
-	self.on_set_pivot = event.create()
-	self.on_update_text_scale = event.create()
+	--- 创建文本相关的事件，用于监听文本变化和调整事件
+	self.on_set_text = event.create()         -- 文本设置时触发
+	self.on_set_pivot = event.create()        -- 枢轴点设置时触发
+	self.on_update_text_scale = event.create() -- 文本缩放更新时触发
 
+	--- 设置初始文本内容，如果value为nil则从GUI场景获取
 	self:set_text(value or gui.get_text(self.node))
 end
 
----内部方法：处理样式变化
----当文本组件样式发生变化时调用此私有方法
+---私有方法：处理文本样式变化
+---当文本组件的样式配置发生改变时调用此方法，更新样式参数
 ---@private
----@param style druid.text.style 样式配置
+---@param style druid.text.style 新的样式配置表
+--- 包含文本调整的各种参数设置
 function M:on_style_change(style)
+	--- 合并用户自定义样式与默认样式
 	self.style = {
+		--- 修剪文本时使用的后缀字符串，默认为"..."
 		TRIM_POSTFIX = style.TRIM_POSTFIX or "...",
+		--- 文本组件的默认调整类型，默认为"downscale"（缩放适配）
 		DEFAULT_ADJUST = style.DEFAULT_ADJUST or "downscale",
+		--- 按高度调整文本时的迭代次数，用于逐步逼近合适的缩放比例
 		ADJUST_STEPS = style.ADJUST_STEPS or 20,
+		--- 每个高度调整步骤的缩放步长，控制调整的精度
 		ADJUST_SCALE_DELTA = style.ADJUST_SCALE_DELTA or 0.02
 	}
 end
 
+---私有方法：处理布局变化
+---当GUI布局发生变化时调用此方法，重新应用文本调整
+---这确保了文本在布局变化后仍然能正确适配新的容器尺寸
 ---@private
 function M:on_layout_change()
+	--- 使用最后保存的文本值重新设置文本
+	--- 这会触发文本调整逻辑，确保文本在新布局中仍然适配
 	self:set_text(self.last_value)
 end
 
----根据字体计算文本宽度，考虑尾随空格
----此函数用于精确测量文本的渲染尺寸，对布局计算很重要
----@param text string|nil 要计算大小的文本，如果为nil - 使用当前文本
----@return number width 文本宽度
----@return number height 文本高度
+---计算文本的精确尺寸
+---根据当前字体设置和节点配置计算文本的宽度和高度
+---此函数考虑了文本缩放、换行设置等因素，提供准确的文本尺寸测量
+---@param text string|nil 要计算大小的文本
+--- 如果为nil，则使用当前文本组件的文本内容
+---@return number width 文本宽度（考虑缩放因子后的实际像素宽度）
+---@return number height 文本高度（考虑缩放因子后的实际像素高度）
 function M:get_text_size(text)
+	--- 确定要计算的文本内容
 	text = text or self.last_value
+	--- 获取文本节点使用的字体名称
 	local font_name = gui.get_font(self.node)
+	--- 获取字体资源对象，用于文本尺寸计算
 	local font = gui.get_font_resource(font_name)
+	--- 获取文本的缩放比例，如果没有记录则从节点获取
 	local scale = self.last_scale or gui.get_scale(self.node)
+	--- 获取文本的换行设置，影响多行文本的布局
 	local linebreak = gui.get_line_break(self.node)
+
+	--- 计算字符"."的宽度，用于后续的宽度调整
+	--- 使用点字符是因为它的宽度通常代表一个字符的平均宽度
 	local dot_width = resource.get_text_metrics(font, ".").width
 
+	--- 获取文本的渲染指标，包括宽度、高度等
+	--- 在文本末尾添加一个点字符，便于计算准确宽度
 	local metrics = resource.get_text_metrics(font, text .. ".", {
-		line_break = linebreak,
-		leading = 1,
-		tracking = 0,
-		width = self.start_size.x
+		line_break = linebreak, -- 使用节点的换行设置
+		leading = 1,            -- 行间距倍数
+		tracking = 0,           -- 字符间距
+		width = self.start_size.x -- 最大宽度限制
 	})
 
+	--- 从总宽度中减去点字符的宽度，得到实际文本宽度
+	--- 这是修正测量误差的方法
 	local width = metrics.width - dot_width
+	--- 返回考虑缩放因子的实际尺寸
 	return width * scale.x, metrics.height * scale.y
 end
 

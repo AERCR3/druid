@@ -1,31 +1,79 @@
---- Attach this script to your GUI file instead custom *.gui_script file
---- This allows to grab a widget from the GO scripts by gui_url
---- To do this you need to call `druid.get_widget` in the GO script
---- The new widget will be created and returned to GO script
---- And now all top level functions from the widget will be available in the GO script
---- Use with caution, this is a new feature, but allow utilize flexability of `event` module
+--- Druid Widget GUI脚本
+--- 此脚本应该附加到GUI文件中，替代自定义的*.gui_script文件
+--- 允许从游戏对象（GO）脚本中通过gui_url获取widget组件
+--- 这提供了在游戏对象脚本中直接使用Druid组件的灵活性
+---
+---### 使用方法
+---- 1. 将此脚本附加到GUI文件中
+---- 2. 在游戏对象脚本中调用 `druid.get_widget` 来获取widget
+---- 3. 新建的widget会被创建并返回到游戏对象脚本中
+---- 4. widget的所有顶层函数将在游戏对象脚本中可用
+---
+---### 注意事项
+---- 这是一个新功能，请谨慎使用
+---- 借助`event`模块的灵活性，可以实现复杂的组件间通信
+---- 使用前请确保理解Druid的事件系统和组件生命周期
 
+--- 导入Druid UI框架模块
+--- 这是使用所有Druid功能的基础模块
 local druid = require("druid.druid")
 
+--- GUI脚本初始化函数
+--- 在GUI组件创建时调用，设置Druid实例并注册为widget
+---@param self table GUI脚本的self上下文
 function init(self)
+	-- 创建新的Druid实例，传入GUI脚本的self上下文
+	-- 这个实例将管理所有Druid组件的生命周期
 	self.druid = druid.new(self)
+	-- 将Druid实例注册为widget，允许从其他脚本中获取
 	druid.register_druid_as_widget(self.druid)
 end
 
+--- GUI脚本销毁函数
+--- 在GUI组件销毁时调用，清理widget注册并销毁Druid实例
+---@param self table GUI脚本的self上下文
 function final(self)
+	-- 取消注册Druid widget，释放相关资源
 	druid.unregister_druid_as_widget()
+	-- 调用Druid实例的销毁方法，清理所有组件和事件监听器
 	self.druid:final()
 end
 
+--- 每帧更新函数
+--- 每帧调用，更新所有Druid组件的状态和动画
+---@param self table GUI脚本的self上下文
+---@param dt number 帧间隔时间（秒），用于时间相关的逻辑计算
 function update(self, dt)
+	-- 调用Druid实例的更新方法，处理组件的更新逻辑
+	-- 例如：动画更新、定时器更新、状态同步等
 	self.druid:update(dt)
 end
 
+--- 消息处理函数
+--- 处理来自其他系统或组件的消息事件
+---@param self table GUI脚本的self上下文
+---@param message_id hash 消息的唯一标识符（哈希值）
+---@param message table 消息内容，包含传递的数据
+---@param sender url 消息发送者的URL地址
 function on_message(self, message_id, message, sender)
+	-- 检查Druid实例是否存在，避免空指针异常
 	if not self.druid then return end
+	-- 将消息转发给Druid实例进行处理
+	-- Druid会根据消息类型执行相应的操作，如状态更新、事件通知等
 	self.druid:on_message(message_id, message, sender)
 end
 
+--- 输入处理函数
+--- 处理来自用户的各种输入事件（鼠标、键盘、触摸、手柄等）
+---@param self table GUI脚本的self上下文
+---@param action_id hash 输入动作的唯一标识符（哈希值）
+---@param action table 输入动作的数据，包含输入的状态和位置信息
+---@return boolean 是否消耗了输入事件
+---   - true: 输入已被处理，不会传递给其他监听器
+---   - false: 输入未被处理，可能会传递给其他监听器
 function on_input(self, action_id, action)
+	-- 将输入事件转发给Druid实例进行处理
+	-- Druid会根据输入类型和组件状态处理各种交互
+	-- 返回值表示输入是否被处理
 	return self.druid:on_input(action_id, action)
 end

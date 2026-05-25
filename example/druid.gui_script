@@ -38,66 +38,90 @@ local druid_examples = require("example.examples.druid_examples")
 ---@field previous_example druid.hotkey
 
 
+--- 初始化保存器，配置语言状态持久化
 ---@param self druid.example
 local function setup_saver(self)
+	--- 初始化保存系统，用于保存和加载应用状态
 	saver.init()
+	--- 将语言状态绑定到保存系统，确保语言选择能够持久化
 	saver.bind_save_state("lang", lang.state)
 end
 
 
 --- 应用级的一次性通用初始化
+--- 配置多语言支持、文本翻译、音效播放和窗口回调
 ---@param self druid.example
 local function setup_druid(self)
+	--- 初始化多语言系统，支持10种语言，默认使用英语
+	--- 每个语言都有对应的JSON配置文件，用于本地化文本
 	lang.init({
-		{ id = "en", path = "/example/locales/en.json" },
-		{ id = "ru", path = "/example/locales/ru.json" },
-		{ id = "es", path = "/example/locales/es.json" },
-		{ id = "de", path = "/example/locales/de.json" },
-		{ id = "fr", path = "/example/locales/fr.json" },
-		{ id = "ja", path = "/example/locales/ja.json" },
-		{ id = "pt", path = "/example/locales/pt.json" },
-		{ id = "it", path = "/example/locales/it.json" },
-		{ id = "kr", path = "/example/locales/kr.json" },
-		{ id = "zh", path = "/example/locales/zh.json" },
+		{ id = "en", path = "/example/locales/en.json" }, -- 英语
+		{ id = "ru", path = "/example/locales/ru.json" }, -- 俄语
+		{ id = "es", path = "/example/locales/es.json" }, -- 西班牙语
+		{ id = "de", path = "/example/locales/de.json" }, -- 德语
+		{ id = "fr", path = "/example/locales/fr.json" }, -- 法语
+		{ id = "ja", path = "/example/locales/ja.json" }, -- 日语
+		{ id = "pt", path = "/example/locales/pt.json" }, -- 葡萄牙语
+		{ id = "it", path = "/example/locales/it.json" }, -- 意大利语
+		{ id = "kr", path = "/example/locales/kr.json" }, -- 韩语
+		{ id = "zh", path = "/example/locales/zh.json" }, -- 中文
 	}, "en")
+	--- 设置Druid的文本翻译函数，使用多语言系统的翻译功能
 	druid.set_text_function(lang.txp)
+	--- 设置音效播放函数，通过sound_id在sounds目录中播放对应的音效
 	druid.set_sound_function(function(sound_id)
 		sound.play("/sound#" .. sound_id)
 	end)
 
+	--- 设置窗口事件监听器，当窗口事件发生时通知Druid系统
+	--- 例如窗口大小改变、焦点变化等事件都会被处理
 	window.set_listener(function(_, event)
 		druid.on_window_callback(event)
 	end)
 end
 
 
---- Container 用于描述 GUI 场景的布局；逻辑组件会挂载到这些容器中
---- 这样可以在 GUI 场景里更方便地移动组件，并独立调整每个区域的尺寸
+--- 设置GUI场景的布局容器系统
+--- 创建层次化的容器结构，将界面划分为不同的功能区域
 ---@param self druid.example
 local function setup_layout(self)
+	--- 创建根容器，作为整个GUI场景的基础容器
 	self.container_root = self.druid:new_container("root") --[[@as druid.container]]
+	--- 在左侧创建Y轴拉伸的容器，用于放置左侧功能区域
 	self.container_left = self.container_root:add_container("container_left", "stretch_y")
+	--- 左上角的Logo展示区域容器
 	self.container_logo = self.container_left:add_container("container_logo")
+	--- 左侧的示例列表容器，用于显示所有可用的示例
 	self.container_examples = self.container_left:add_container("container_examples")
 
+	--- 在右侧创建Y轴拉伸的容器，用于放置右侧功能区域
 	self.container_right = self.container_root:add_container("container_right", "stretch_y")
+	--- 右侧的信息展示容器，用于显示当前示例的详细信息
 	self.container_info = self.container_right:add_container("container_info")
 
+	--- 右侧的设置和输出组合容器
 	self.container_group_settings_output = self.container_right:add_container("container_group_settings_output")
+	--- 设置面板容器，包含属性和配置控制
 	self.container_settings = self.container_group_settings_output:add_container("container_settings")
+	--- 输出面板容器，用于显示日志和调试信息
 	self.container_output = self.container_group_settings_output:add_container("container_output")
 
+	--- 中间的主内容区域容器，用于显示示例的实际运行界面
 	self.container_center = self.container_root:add_container("container_center")
+	--- 底部状态栏容器，显示性能监控和其他状态信息，X轴拉伸
 	self.container_status = self.container_root:add_container("container_status", "stretch_x")
 end
 
 
+--- 处理切换到下一个示例的函数
+--- 通过键盘快捷键触发，用于在示例列表中循环切换到下一个
 ---@param self druid.example
 local function on_next_example(self)
 	local current_index = 1
 	local examples = self.examples_list_view.examples
 
-	-- 找到当前示例的索引
+	--- 遍历示例列表，找到当前选中示例的索引位置
+	--- 从1开始计数，因为i ipairs从1开始
 	for i, example in ipairs(examples) do
 		if example.data.name_id == self.examples_list_view.selected_example.data.name_id then
 			current_index = i
@@ -105,23 +129,27 @@ local function on_next_example(self)
 		end
 	end
 
-	-- 获取下一个示例索引（到末尾则回到第一个）
+	--- 计算下一个示例的索引，实现循环切换效果
+	--- 如果当前是最后一个示例，则切换到第一个示例
 	local next_index = current_index + 1
 	if next_index > #examples then
 		next_index = 1
 	end
 
-	-- 选择下一个示例
+	--- 调用列表视图的选中方法，切换到指定的下一个示例
 	self.examples_list_view:select_example_by_name_id(examples[next_index].data.name_id)
 end
 
 
+--- 处理切换到上一个示例的函数
+--- 通过键盘快捷键触发，用于在示例列表中循环切换到上一个
 ---@param self druid.example
 local function on_previous_example(self)
 	local current_index = 1
 	local examples = self.examples_list_view.examples
 
-	-- 找到当前示例的索引
+	--- 遍历示例列表，找到当前选中示例的索引位置
+	--- 从1开始计数，因为i ipairs从1开始
 	for i, example in ipairs(examples) do
 		if example.data.name_id == self.examples_list_view.selected_example.data.name_id then
 			current_index = i
@@ -129,56 +157,73 @@ local function on_previous_example(self)
 		end
 	end
 
-	-- 获取上一个示例索引（在开头则回到最后一个）
+	--- 计算上一个示例的索引，实现循环切换效果
+	--- 如果当前是第一个示例，则切换到最后一个示例
 	local prev_index = current_index - 1
 	if prev_index < 1 then
 		prev_index = #examples
 	end
 
-	-- 选择上一个示例
+	--- 调用列表视图的选中方法，切换到指定的上一个示例
 	self.examples_list_view:select_example_by_name_id(examples[prev_index].data.name_id)
 end
 
 
+--- 初始化和配置所有UI组件
+--- 创建各个功能面板并将其挂载到对应的布局容器中
 ---@param self druid.example
 local function setup_components(self)
+	--- 创建Druid Logo组件，显示项目标识，挂载到Logo容器中
 	self.druid_logo = self.druid:new(druid_logo, "druid_logo") --[[@as examples.druid_logo]]
 	self.container_logo:add_container(self.druid_logo.root)
 
+	--- 创建信息面板组件，显示示例的详细信息，挂载到信息容器中
 	self.panel_information = self.druid:new(panel_information, "panel_information") --[[@as panel_information]]
 	self.container_info:add_container(self.panel_information.root)
 
+	--- 创建示例场景组件，显示每个示例的实际运行界面，挂载到中心容器中
 	self.example_scene = self.druid:new(example_scene, "example_scene") --[[@as examples.example_scene]]
 	self.container_center:add_container(self.example_scene.root)
 
+	--- 创建Druid性能分析器组件，显示性能监控信息，挂载到状态栏容器中
 	self.panel_druid_profiler = self.druid:new(panel_druid_profiler, "panel_druid_profiler") --[[@as panel_druid_profiler]]
 	self.container_status:add_container(self.panel_druid_profiler.root)
 
+	--- 创建示例列表视图组件，显示所有可用示例，挂载到左侧示例容器中
 	self.examples_list_view = self.druid:new(examples_list_view, "examples_list_view") --[[@as examples_list_view]]
 	self.container_examples:add_container(self.examples_list_view.root)
 
+	--- 创建属性面板组件，显示和编辑示例属性，挂载到设置容器中
 	self.properties_panel = self.druid:new(properties_panel, "example_properties_panel") --[[@as properties_panel]]
 	self.container_settings:add_container(self.properties_panel.root)
 
+	--- 创建输出列表组件，显示日志和调试输出，挂载到输出容器中
 	self.output_list = self.druid:new(output_list, "output_list") --[[@as output_list]]
 	self.container_output:add_container(self.output_list.root)
 
+	--- 创建键盘快捷键组件，用于在示例间快速切换
+	--- 下方向键和S键切换到下一个示例，上方向键和W键切换到上一个示例
 	self.next_example = self.druid:new_hotkey("key_down", on_next_example, self)
-		:add_hotkey("key_s")
+			:add_hotkey("key_s")
 	self.previous_example = self.druid:new_hotkey("key_up", on_previous_example, self)
-		:add_hotkey("key_w")
+			:add_hotkey("key_w")
 
-	do -- 组件间事件绑定
+	do -- 组件间事件绑定，建立各组件间的通信关系
+		--- 当选择新示例时，将调试信息发送到示例场景
 		self.examples_list_view.on_debug_info:subscribe(function(info)
 			self.example_scene:set_debug_info(info)
 		end)
+		--- 当需要添加日志文本时，将日志发送到输出列表
 		self.examples_list_view.add_log_text:subscribe(function(log)
 			self.output_list:add_log_text(log)
 		end)
+		--- 当需要设置示例信息文本时，更新信息面板的显示内容
 		self.examples_list_view.on_set_information:subscribe(function(text_id)
 			self.panel_information:set_text(text_id)
 		end)
 
+		--- 当点击"查看代码"按钮时，在浏览器中打开对应的GitHub代码页面
+		--- 如果示例有代码URL，则在新标签页中打开，否则忽略点击事件
 		self.panel_information.button_view_code.on_click:subscribe(function()
 			local selected_example = self.examples_list_view.selected_example
 			if not selected_example then
@@ -190,6 +235,7 @@ local function setup_components(self)
 				return
 			end
 
+			--- 构造完整的GitHub URL并打开
 			local url_prefix = "https://github.com/Insality/druid/blob/master/"
 			sys.open_url(url_prefix .. code_url, { target = "_blank" })
 		end)
@@ -197,120 +243,184 @@ local function setup_components(self)
 end
 
 
+--- 选择要显示的起始示例
+--- 支持从URL参数指定示例、从缓存恢复上次选择的示例、默认示例三种方式
 ---@param self druid.example
 local function select_start_example(self)
+	--- 检查是否在HTML5环境中，支持URL参数传递
 	if html5 then
-		-- 尝试从 URL 参数中读取要打开的示例
+		--- 尝试从URL查询参数中读取指定的示例名称
+		--- 格式: ?example=example_name，用于直接打开特定示例
 		local example_name = html5.run("new URLSearchParams(window.location.search).get('example')")
+		--- 如果成功获取到示例名称，则尝试选中该示例
 		if example_name then
 			local is_selected = self.examples_list_view:select_example_by_name_id(example_name)
+			--- 如果示例存在且成功选中，则不再进行后续选择
 			if is_selected then
 				return
 			end
 		end
 	end
 
-	-- 如果缓存里有上次选择的示例，则恢复；否则选默认示例
+	--- 检查是否有缓存的上次选择的示例名称
+	--- 使用storage系统持久化保存用户的选择偏好
 	local last_selected_example_name = storage.get_string("last_selected_example", "")
+	--- 如果有缓存记录，则恢复用户上次选择的示例
 	if last_selected_example_name ~= "" then
 		self.examples_list_view:select_example_by_name_id(last_selected_example_name)
 	else
+		--- 如果没有缓存记录，则使用默认示例（通常是介绍界面）
 		self.examples_list_view:select_example_by_name_id("ui_example_intro")
 	end
 end
 
 
+--- 加载和配置所有示例项目
+--- 从druid_examples模块获取示例列表，并添加到界面中
 ---@param self druid.example
 local function setup_examples(self)
+	--- 从示例模块中获取所有可用的示例数据
 	local examples = druid_examples.get_examples()
 
-	do -- 默认先禁用所有示例节点（由列表选择后再启用）
+	do --- 默认先禁用所有示例的GUI节点
+		--- 这种设计可以避免资源浪费，只有被选中的示例才会启用和显示
 		for index = 1, #examples do
 			local example = examples[index]
 			local examples_list = example.examples_list
+			--- 遍历每个示例包含的所有GUI节点
 			for example_index = 1, #examples_list do
+				--- 将所有示例节点设置为禁用状态
 				gui.set_enabled(gui.get_node(examples_list[example_index].root), false)
 			end
 		end
 	end
 
+	--- 将所有示例添加到列表视图中，准备在界面中显示
+	--- 每个示例都会注册到examples_list_view组件中
 	for index = 1, #examples do
 		local example = examples[index]
 		self.examples_list_view:add_example(example, self)
 	end
 
+	--- 选择要显示的起始示例，优先级：URL参数 > 缓存记录 > 默认示例
 	select_start_example(self)
 
+	--- 在控制台输出加载的示例总数，用于调试和信息显示
 	print("Loaded examples: " .. #self.examples_list_view.examples)
 end
 
 
+--- 设置窗口操作系统（defos）功能
+--- 在桌面调试环境中保存和恢复窗口状态，提升开发体验
 ---@param self druid.example
 local function setup_defos(self)
+	--- 检查是否在桌面平台运行（支持窗口大小调整）
 	local is_desktop = helper.is_desktop()
+	--- 检查是否在调试模式下运行（生产环境不保存窗口状态）
 	local is_debug = sys.get_engine_info().is_debug
 
+	--- 仅在桌面调试环境中执行窗口状态管理
 	if is_desktop and is_debug then
+		--- 延迟1秒开始执行，确保窗口完全初始化完成
+		--- 使用定时器每1秒执行一次，用于持续保存窗口状态
 		timer.delay(1, true, function()
+			--- 获取当前窗口的位置和尺寸信息
+			--- 返回：x坐标, y坐标, 宽度, 高度
 			local x, y, w, h = defos.get_window_size()
+			--- 保存当前窗口状态到保存系统
+			--- 使用"window.last_state"作为键值，便于后续恢复
 			saver.set_value("window.last_state", { x, y, w, h })
 			saver.save_game_state()
 		end)
 
-		-- 恢复窗口大小与位置
+		--- 恢复上一次的窗口大小和位置
+		--- 每次启动应用时尝试恢复用户上次使用的窗口设置
 		local prev_settings = saver.get_value("window.last_state")
 		if prev_settings then
 			---@cast prev_settings number[]
+			--- 解包保存的窗口状态数组
+			--- prev_settings格式: [x, y, width, height]
 			local x, y, w, h = unpack(prev_settings)
-			-- 最小尺寸限制为 300x200（避免窗口过小导致 UI 不可用）
+			--- 限制窗口位置和尺寸范围，确保界面可用性
+			--- X坐标限制在0-4000范围内，Y坐标限制在0-4000范围内
 			x = vmath.clamp(x, 0, 4000)
 			y = vmath.clamp(y, 0, 4000)
+			--- 宽度限制在300-4000范围内，高度限制在200-4000范围内
+			--- 最小尺寸避免窗口过小导致UI元素无法正常显示
 			w = vmath.clamp(w, 300, 4000)
 			h = vmath.clamp(h, 200, 4000)
+			--- 设置窗口尺寸和位置，恢复用户上次的工作环境
 			defos.set_window_size(x, y, w, h)
 		end
 	end
 end
 
 
+--- GUI脚本的初始化函数
+--- 这是应用启动时执行的主要初始化流程，按依赖顺序执行各项初始化
 ---@param self druid.example
 function init(self)
+	--- 第一阶段：基础系统初始化
+	--- 初始化保存系统，为后续状态保存做准备
 	setup_saver(self)
+	--- 初始化窗口操作系统，在桌面调试环境中保存窗口状态
 	setup_defos(self)
+	--- 初始化Druid核心系统，配置多语言、音效和窗口回调
 	setup_druid(self)
 
+	--- 第二阶段：创建Druid实例和布局
+	--- 创建Druid主实例，管理所有组件和交互
 	self.druid = druid.new(self)
+	--- 设置GUI布局容器，建立界面层次结构
 	setup_layout(self)
+
+	--- 第三阶段：创建和配置UI组件
+	--- 初始化所有功能组件并挂载到对应的容器中
 	setup_components(self)
+
+	--- 第四阶段：加载和显示示例内容
+	--- 加载所有示例项目并选择起始示例
 	setup_examples(self)
 end
 
-
+--- GUI脚本的销毁函数
+--- 在应用关闭时执行清理工作，释放资源
 ---@param self druid.example
 function final(self)
+	--- 调用Druid实例的销毁方法，清理所有组件和事件监听器
 	self.druid:final()
 end
 
-
+--- 每帧更新函数
+--- 处理需要定期执行的游戏逻辑和UI更新
 ---@param self druid.example
----@param dt number
+---@param dt number 帧间隔时间（秒），用于计算时间相关的逻辑
 function update(self, dt)
+	--- 调用Druid实例的更新方法，处理组件的更新逻辑
+	--- 例如：动画更新、定时器更新、状态同步等
 	self.druid:update(dt)
 end
 
-
+--- 消息处理函数
+--- 处理来自其他系统或组件的消息事件
 ---@param self druid.example
----@param message_id hash
----@param message table
----@param sender url
+---@param message_id hash 消息的唯一标识符（哈希值）
+---@param message table 消息内容，包含传递的数据
+---@param sender url 消息发送者的URL地址
 function on_message(self, message_id, message, sender)
+	--- 将消息转发给Druid实例进行处理
+	--- Druid会根据消息类型执行相应的操作，如状态更新、事件通知等
 	self.druid:on_message(message_id, message, sender)
 end
 
-
+--- 输入处理函数
+--- 处理来自用户的各种输入事件（鼠标、键盘、触摸、手柄等）
 ---@param self druid.example
----@param action_id hash
----@param action action
+---@param action_id hash 输入动作的唯一标识符（哈希值）
+---@param action action 输入动作的数据，包含输入的状态和位置信息
 function on_input(self, action_id, action)
+	--- 将输入事件转发给Druid实例进行处理
+	--- Druid会根据输入类型和组件状态处理各种交互
+	--- 返回true表示输入已被处理，false表示输入未被处理
 	return self.druid:on_input(action_id, action)
 end

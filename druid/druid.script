@@ -1,44 +1,81 @@
--- Place this script nearby with the gui component to able make requests
--- To the go namespace from GUI with events systems (cross context)
--- This one is a required to make a unified "Shaders" pipeline in the GUI scripts
--- This required to grab a texture data with `go.get` function
+--- Druid脚本 - 跨上下文通信桥接器
+--- 将此脚本放置在GUI组件附近，以便能够从GUI脚本向游戏对象（GO）命名空间发起请求
+--- 通过事件系统实现跨上下文的通信（GUI上下文与GO上下文之间）
+--- 这对于在GUI脚本中实现统一的"着色器"管道是必需的
+--- 主要用于通过`go.get`函数获取纹理数据等资源信息
 
+--- 导入事件队列模块
+--- 用于处理跨上下文的异步消息传递和回调机制
 local queues = require("event.queues")
 
----Usage: queues.push("druid.get_atlas_path", {
----	texture_name = gui.get_texture(self.node),
----	sender = msg.url(),
----}, callback, [context])
----Pass texture name to get atlas info and sender url to check if the request is valid
+--- 获取图集路径的消息标识符
+--- 用于从GUI脚本请求获取指定纹理的图集路径信息
+---
+---### 使用示例
+---- ```lua
+--- queues.push("druid.get_atlas_path", {
+---     texture_name = gui.get_texture(self.node),  -- 要查询的纹理名称
+---     sender = msg.url(),                          -- 发送者URL，用于验证请求来源
+--- }, callback, [context])                         -- 回调函数和可选上下文
+--- ```
+---
+---### 参数说明
+---- texture_name: 要查询的纹理名称（hash类型）
+---- sender: 发送请求的URL地址，用于安全验证
+---- callback: 接收结果的回调函数
+---- context: 可选的上下文数据
 local MESSAGE_GET_ATLAS_PATH = "druid.get_atlas_path"
 
+--- 获取图集路径请求的数据结构
+--- 包含请求所需的所有信息
 ---@class druid.get_atlas_path_request
----@field texture_name hash
----@field sender hash
+---@field texture_name hash 要查询的纹理名称（哈希值）
+---@field sender hash 发送请求的URL地址（哈希值），用于验证请求来源
 
----@param request druid.get_atlas_path_request
----@return string?
+--- 获取纹理的图集路径
+--- 此函数处理来自GUI脚本的请求，返回指定纹理的图集路径
+--- 包含安全检查，确保只有合法的请求才能获取数据
+---@param self table 脚本的self上下文
+---@param request druid.get_atlas_path_request 请求数据结构，包含纹理名称和发送者URL
+---@return string? 如果请求有效则返回图集路径字符串，否则返回nil
 local function get_atlas_path(self, request)
+	-- 获取当前脚本的URL地址（不包含fragment部分）
 	local my_url = msg.url()
 	my_url.fragment = nil
 
+	-- 获取请求发送者的URL地址（同样不包含fragment部分）
 	local copy_url = msg.url(request.sender)
 	copy_url.fragment = nil
 
-	-- This check should works well
+	-- 安全检查：验证请求是否来自同一个游戏对象
+	-- 这防止了跨对象的非法访问，确保数据安全
 	if my_url ~= copy_url then
-		return nil
+		return nil -- 如果URL不匹配，拒绝请求
 	end
 
+	-- 通过go.get函数获取指定纹理的图集路径
+	-- 参数说明：
+	--   request.sender: 目标游戏对象的URL
+	--   "textures": 要查询的属性名称
+	--   { key = request.texture_name }: 查询特定纹理的键值
 	return go.get(request.sender, "textures", { key = request.texture_name }) --[[@as string]]
 end
 
 
+--- 脚本初始化函数
+--- 在游戏对象创建时调用，注册消息监听器以处理图集路径请求
+---@param self table 脚本的self上下文
 function init(self)
+	-- 订阅"druid.get_atlas_path"消息，当收到此类消息时调用get_atlas_path函数
+	-- 这样GUI脚本就可以通过这个机制获取纹理的图集路径信息
 	queues.subscribe(MESSAGE_GET_ATLAS_PATH, get_atlas_path, self)
 end
 
-
+--- 脚本销毁函数
+--- 在游戏对象销毁时调用，取消消息订阅以释放资源
+---@param self table 脚本的self上下文
 function final(self)
+	-- 取消订阅"druid.get_atlas_path"消息，清理监听器
+	-- 防止内存泄漏和无效的消息处理
 	queues.unsubscribe(MESSAGE_GET_ATLAS_PATH, get_atlas_path, self)
 end

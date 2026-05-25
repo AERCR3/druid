@@ -15,33 +15,42 @@ local M = {}
 
 
 ---创建一个新的Druid实例用于创建GUI组件。
----此函数是使用Druid UI系统的主要入口点
+---这是使用Druid UI系统的最主要入口函数，所有基于Druid的UI界面都需要从此开始创建
 ---@param context table Druid上下文。通常这是gui_script的self。它会被传递到所有Druid回调中。
 ---@param style table|nil Druid样式表，用于覆盖此Druid实例的样式参数。
 ---@return druid.instance druid_instance 新的Druid实例
 function M.new(context, style)
+	--- 如果还没有设置默认样式，则设置默认样式
+	--- 确保所有Druid实例都有基础的样式配置
 	if settings.default_style == nil then
 		M.set_default_style(default_style)
 	end
 
+	--- 调用底层实例创建函数，返回可用的Druid实例
+	--- 这个实例将作为创建所有组件的容器和管理器
 	return druid_instance.create_druid_instance(context, style)
 end
 
----Register a new external Druid component.
----Register component just makes the druid:new_{name} function.
----For example, if you register a component called "my_component", you can create it using druid:new_my_component(...).
----This can be useful if you have your own "basic" components that you don't want to require in every file.
----The default way to create component is `druid_instance:new(component_class, ...)`.
----@param name string Module name
----@param module table Lua table with component
+---注册新的外部Druid组件，简化组件创建流程
+---此函数为组件创建便捷方法，可以通过druid:new_{name}的方式快速创建自定义组件
+---这种方式避免了在每个文件中都需要require组件模块，提高了代码复用性
+---例如：注册一个名为"my_button"的组件后，就可以使用druid:new_my_button()来创建
+---@param name string 组件名称，将作为druid:new_{name}函数的前缀
+---@param module table 包含组件逻辑的Lua表
 function M.register(name, module)
+	--- 检查模块是否为自定义组件（有元表）
+	--- 自定义组件继承自druid.component基类
 	local is_custom_component = getmetatable(module) ~= nil
 	if is_custom_component then
+		--- 对于自定义组件，创建标准的创建函数
+		--- 这种方式支持链式调用和标准的组件接口
 		druid_instance["new_" .. name] = function(self, ...)
 			return druid_instance.new(self, module, ...)
 		end
 	else
-		-- Just for some compatability. But better to use direct druid_instance:new_widget(module, ...) function
+		--- 对于普通模块，创建widget创建函数
+		--- 这种方式主要用于GUI模板和节点的组合
+		--- 注意：建议直接使用druid_instance:new_widget(module, ...)函数
 		druid_instance["new_" .. name] = function(self, template, nodes, ...)
 			return druid_instance.new_widget(self, module, template, nodes, ...)
 		end
@@ -55,73 +64,95 @@ function M.set_default_style(style)
 	settings.default_style = style or {}
 end
 
----为LangText组件设置文本函数。
----此函数用于国际化和本地化支持，根据文本ID返回对应的语言文本
----@param callback fun(text_id: string): string 获取本地化文本的函数
+---为多语言文本组件设置文本获取函数
+---此函数实现了Druid的国际化支持，允许UI根据当前语言显示对应的文本内容
+---LangText组件会调用此函数来获取本地化后的文本显示
+---@param callback fun(text_id: string): string 文本获取函数
+--- 接收text_id参数，返回对应的语言文本
+--- 如果text_id不存在，应该返回默认文本或text_id本身
 function M.set_text_function(callback)
+	--- 设置全局文本获取函数，如果没有提供则使用空函数
 	settings.get_text = callback or function() end
+	--- 触发语言变更事件，通知所有LangText组件更新文本
+	--- 这确保了语言切换时所有相关UI都能同步更新
 	M.on_language_change()
 end
 
----设置声音函数，使组件能够播放声音。
----此函数提供了一个统一的声音播放接口，便于管理UI音效
----@param callback fun(sound_id: string) 声音播放回调
+---设置声音播放函数，为组件提供统一的音效播放接口
+---Druid系统中的各种组件（如Button、Input等）都会调用此函数来播放音效
+---这种方式集中管理UI音效，便于实现音效系统的高级功能（如音量控制、音效切换等）
+---@param callback fun(sound_id: string) 声音播放回调函数
+--- 接收sound_id参数，根据ID播放对应的音效文件
+--- 音效文件应该在sounds目录下，格式为/sound#{sound_id}
 function M.set_sound_function(callback)
+	--- 设置全局声音播放函数，如果没有提供则使用空函数
+	--- 这确保即使没有音效回调也不会导致错误
 	settings.play_sound = callback or function() end
 end
 
----将Druid订阅到窗口监听器。这将覆盖之前的
----窗口监听器，因此如果已有监听器，请手动调用M.on_window_callback。
----此功能用于处理应用级别的事件，如失去焦点或返回前台
+---初始化窗口事件监听器，启用窗口事件处理功能
+---此函数会设置全局的窗口监听器，用于处理应用程序级别的窗口事件
+---注意：此调用会覆盖之前的窗口监听器，如果已有其他监听器，请手动调用M.on_window_callback
+---典型应用场景：处理窗口大小变化、焦点变化、暂停/恢复等事件
 function M.init_window_listener()
+	--- 设置窗口监听器，当窗口事件发生时触发对应的事件
+	--- window_event参数包含事件类型和相关数据
 	window.set_listener(function(_, window_event)
+		--- 将窗口事件转发给Druid事件系统
+		--- 其他组件可以订阅"druid.window_event"来响应这些事件
 		events.trigger("druid.window_event", window_event)
 	end)
 end
 
----设置窗口回调以启用Druid窗口事件。
----此函数允许手动触发窗口事件，当有其他窗口监听器时特别有用
----@param window_event constant 来自窗口监听器的事件参数
-function M.on_window_callback(window_event)
-	events.trigger("druid.window_event", window_event)
-end
+--
 
----当游戏语言更改时调用此函数。
----它将通知所有Druid实例更新lang text组件。
----此函数对于实现动态语言切换功能非常重要
+---触发语言变更事件，通知所有组件更新多语言内容
+---当应用语言设置改变时调用此函数，会触发全局的语言变更事件
+---所有包含LangText组件的Druid实例都会收到此事件，并更新显示文本
+---这是实现动态语言切换的关键函数
 function M.on_language_change()
+	--- 触发语言变更全局事件
+	--- 所有LangText组件都会监听此事件并重新获取对应语言的文本
 	events.trigger("druid.language_change")
 end
 
 ---@type table<userdata, {path: string, fragment: string, new_widget: event}[]>
 local REGISTERED_GUI_WIDGETS = {}
 
----设置一个widget到当前游戏对象。游戏对象可以通过调用`bindings.get_widget`获取widget
----它仅将顶层函数包装为跨上下文事件，因此无法访问嵌套widget函数
----此函数实现了GUI脚本与游戏对象之间的安全通信机制
----@param widget druid.widget
----@return druid.widget
+---包装widget组件，使其能够从游戏对象调用
+---此函数创建widget的安全副本，将所有方法包装为跨上下文事件
+---实现了GUI脚本与游戏对象之间的安全通信机制
+---仅顶层函数会被包装，嵌套函数无法从游戏对象访问
+---@param widget druid.widget 原始widget组件
+---@return druid.widget 包装后的widget组件
 local function wrap_widget(widget)
-	-- 创建widget的副本，其中所有函数都被包装在事件中
-	-- 这使得可以从游戏对象调用GUI函数
+	--- 创建widget的副本，使用新的metatable
+	--- __index设置为原始widget，保持接口一致性
 	local wrapped_widget = setmetatable({}, { __index = widget })
+	--- 获取原始widget的方法表
 	local parent_table = getmetatable(widget).__index
 
-	-- 遍历所有函数并将它们包装在事件中
+	--- 遍历原始widget的所有函数方法
+	--- 将每个函数包装为事件，使其能够跨上下文调用
 	for key, value in pairs(parent_table) do
 		if type(value) == "function" then
+			--- 创建事件包装器，调用时会传入原始widget作为第一个参数
 			wrapped_widget[key] = event.create(function(_, ...)
 				return value(widget, ...)
 			end)
 		end
 	end
 
+	--- 保留widget中已有的event对象
+	--- 这些事件对象已经可以在跨上下文中使用
 	for key, value in pairs(widget) do
 		if event.is_event(value) then
 			wrapped_widget[key] = value
 		end
 	end
 
+	--- 返回包装后的widget
+	--- 这个widget可以安全地从游戏对象中调用其方法
 	return wrapped_widget
 end
 

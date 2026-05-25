@@ -68,8 +68,8 @@ local M = component.create("scroll")
 
 ---滚动组件的构造函数
 ---初始化滚动组件，设置视图节点和内容节点
----@param view_node string|node GUI视图滚动节点 - 捕获用户输入的静态部分
----@param content_node string|node GUI内容滚动节点 - 改变位置的动态部分
+---@param view_node string|node GUI视图滚动节点 - 捕获用户输入的静态部分，用于监听触摸和鼠标输入
+---@param content_node string|node GUI内容滚动节点 - 改变位置的动态部分，包含可滚动的内容
 function M:init(view_node, content_node)
 	self.druid = self:get_druid()
 
@@ -108,9 +108,9 @@ function M:init(view_node, content_node)
 end
 
 ---内部方法：处理样式变化
----当滚动组件样式发生变化时调用此私有方法
+---当滚动组件样式发生变化时调用此私有方法，更新滚动参数和惯性设置
 ---@private
----@param style druid.scroll.style 样式配置
+---@param style druid.scroll.style 样式配置 - 包含滚动行为参数的样式表
 function M:on_style_change(style)
 	self.style = {}
 	self.style.EXTRA_STRETCH_SIZE = style.EXTRA_STRETCH_SIZE or 0
@@ -133,6 +133,8 @@ function M:on_style_change(style)
 		self.style.INERT_SPEED == 0)
 end
 
+---组件初始化完成后的回调函数
+---用于设置点击区域，自动寻找最近的遮罩节点
 ---@private
 function M:on_late_init()
 	if not self.click_zone then
@@ -143,11 +145,16 @@ function M:on_late_init()
 	end
 end
 
+---布局变化时的回调函数
+---当布局发生变化时，更新内容节点的位置
 ---@private
 function M:on_layout_change()
 	gui.set_position(self.content_node, self.position)
 end
 
+---组件更新函数
+---每帧调用，处理滚动动画和惯性运动
+---@param dt number 增量时间（秒）
 ---@private
 function M:update(dt)
 	if self.is_animate then
@@ -163,19 +170,27 @@ function M:update(dt)
 	end
 end
 
+---输入事件处理函数
+---处理鼠标滚轮输入，返回是否消耗该输入事件
+---@param action_id string 输入动作ID
+---@param action table 输入动作信息
+---@return boolean 是否消耗输入事件
 ---@private
 function M:on_input(action_id, action)
 	return self:_process_scroll_wheel(action_id, action)
 end
 
+---组件移除时的清理函数
+---解绑网格组件，清理相关的事件订阅
 ---@private
 function M:on_remove()
 	self:bind_grid(nil)
 end
 
----开始滚动到目标点。
----@param point vector3 Target point
----@param is_instant boolean|nil Instant scroll flag
+---开始滚动到目标点
+---将滚动内容平滑移动到指定位置
+---@param point vector3 目标点（屏幕坐标）
+---@param is_instant boolean|nil 是否立即滚动（false时使用动画）
 function M:scroll_to(point, is_instant)
 	local b = self.available_pos
 	local target = vmath.vector3(
@@ -203,9 +218,10 @@ function M:scroll_to(point, is_instant)
 	self.on_scroll_to:trigger(self:get_context(), target, is_instant)
 end
 
----滚动到节点，如果节点在滚动视图中不可见
----@param node node The node to make visible
----@param is_instant boolean|nil Instant scroll flag
+---滚动到指定节点，使其在滚动视图中可见
+---自动计算节点位置并滚动到合适的显示位置
+---@param node node 要显示的GUI节点
+---@param is_instant boolean|nil 是否立即滚动（false时使用动画）
 function M:scroll_to_make_node_visible(node, is_instant)
 	-- Can be any node not only directly at scroll content
 	local screen_position = gui.get_screen_position(node)
@@ -258,9 +274,10 @@ function M:scroll_to_make_node_visible(node, is_instant)
 	end
 end
 
----通过点索引滚动到滚动项目。
----@param index number Point index
----@param skip_cb boolean|nil If true, skip the point callback
+---通过点索引滚动到指定的滚动项目
+---支持兴趣点滚动，会触发相应的回调事件
+---@param index number 目标点索引
+---@param skip_cb boolean|nil 是否跳过点滚动回调
 function M:scroll_to_index(index, skip_cb)
 	if not self.points then
 		return
@@ -279,9 +296,10 @@ function M:scroll_to_index(index, skip_cb)
 	self:scroll_to(self.points[index])
 end
 
----开始滚动到目标滚动百分比
----@param percent vector3 target percent
----@param is_instant boolean|nil instant scroll flag
+---开始滚动到指定的百分比位置
+---根据滚动进度百分比计算目标位置
+---@param percent vector3 目标百分比（0-1）
+---@param is_instant boolean|nil 是否立即滚动
 function M:scroll_to_percent(percent, is_instant)
 	local border = self.available_pos
 
@@ -301,9 +319,10 @@ function M:scroll_to_percent(percent, is_instant)
 	self:scroll_to(pos, is_instant)
 end
 
----返回当前滚动进度状态。
--- 值将在[0..1]区间内
----@return vector3 New vector with scroll progress values
+---返回当前滚动进度状态
+---返回当前滚动位置在可用范围内的百分比
+---返回值范围[0..1]，其中1表示完全滚动到底部/右侧
+---@return vector3 包含x和y滚动进度值的向量
 function M:get_percent()
 	local x_perc = 1 - self:_inverse_lerp(self.available_pos.x, self.available_pos.z, self.position.x)
 	local y_perc = self:_inverse_lerp(self.available_pos.w, self.available_pos.y, self.position.y)
@@ -311,11 +330,11 @@ function M:get_percent()
 	return vmath.vector3(x_perc, y_perc, 0)
 end
 
----设置滚动内容大小。
--- 这将更改内容GUI节点大小
----@param size vector3 The new size for content node
----@param offset vector3|nil Offset value to set, where content is starts
----@return druid.scroll self Current scroll instance
+---设置滚动内容大小
+---更新内容节点的尺寸并重新计算滚动范围
+---@param size vector3 新的内容节点尺寸
+---@param offset vector3|nil 内容起始偏移量（可选）
+---@return druid.scroll 当前滚动组件实例
 function M:set_size(size, offset)
 	if offset then
 		self._offset = offset
@@ -326,9 +345,10 @@ function M:set_size(size, offset)
 	return self
 end
 
----在节点大小更改时设置新的滚动视图大小。
----@param size vector3 The new size for view node
----@return druid.scroll self Current scroll instance
+---设置滚动视图大小
+---当视图节点大小改变时调用此方法更新滚动范围
+---@param size vector3 新的视图节点尺寸
+---@return druid.scroll 当前滚动组件实例
 function M:set_view_size(size)
 	gui.set_size(self.view_node, size)
 	self.view_size = size
@@ -338,8 +358,9 @@ function M:set_view_size(size)
 	return self
 end
 
----刷新滚动视图大小，用于视图节点大小改变时
----@return druid.scroll self Current scroll instance
+---刷新滚动视图大小
+---手动刷新视图大小，当视图节点尺寸动态变化时使用
+---@return druid.scroll 当前滚动组件实例
 function M:update_view_size()
 	self.view_size = helper.get_scaled_size(self.view_node)
 	self.view_border = helper.get_border(self.view_node)
@@ -349,26 +370,25 @@ function M:update_view_size()
 end
 
 ---启用或禁用滚动惯性
--- 如果禁用，通过点滚动（如果存在）
--- 如果没有点，只是简单的无惯性拖动
----@param state boolean Inert scroll state
----@return druid.scroll self Current scroll instance
+---启用惯性后，快速滑动会产生持续滚动效果
+---@param state boolean 是否启用惯性滚动
+---@return druid.scroll 当前滚动组件实例
 function M:set_inert(state)
 	self._is_inert = state
 
 	return self
 end
 
----返回滚动是否有惯性
----@return boolean is_inert If scroll have inertion
+---检查滚动是否启用了惯性
+---@return boolean 是否启用了惯性滚动
 function M:is_inert()
 	return self._is_inert
 end
 
 ---设置滚动拉伸的额外大小
--- 设置0以禁用拉伸效果
----@param stretch_size number|nil Size in pixels of additional scroll area
----@return druid.scroll self Current scroll instance
+---允许在滚动边界外进行弹性拉伸，0表示禁用
+---@param stretch_size number|nil 额外的像素大小
+---@return druid.scroll 当前滚动组件实例
 function M:set_extra_stretch_size(stretch_size)
 	self.style.EXTRA_STRETCH_SIZE = stretch_size or 0
 	self:_update_size()
@@ -376,16 +396,17 @@ function M:set_extra_stretch_size(stretch_size)
 	return self
 end
 
----返回包含宽度和高度的滚动大小向量。
----@return vector3 Available scroll size
+---返回可用的滚动区域大小
+---返回内容可以在其内滚动的区域尺寸
+---@return vector3 包含宽度和高度的可用滚动大小
 function M:get_scroll_size()
 	return self.available_size
 end
 
----设置兴趣点。
--- 滚动将始终集中在最近的点上
----@param points table Array of vector3 points
----@return druid.scroll self Current scroll instance
+---设置滚动兴趣点
+---设置一组目标位置，滚动时会自动对齐到最近的兴趣点
+---@param points table vector3数组，包含目标位置点
+---@return druid.scroll 当前滚动组件实例
 function M:set_points(points)
 	self.points = points
 
@@ -398,28 +419,30 @@ function M:set_points(points)
 	return self
 end
 
----锁定或解锁水平滚动
----@param state boolean True, if horizontal scroll is enabled
----@return druid.scroll self Current scroll instance
+---设置水平滚动状态
+---启用或禁用水平方向的滚动功能
+---@param state boolean 是否启用水平滚动
+---@return druid.scroll 当前滚动组件实例
 function M:set_horizontal_scroll(state)
 	self._is_horizontal_scroll = state
 	self.drag.can_x = self.available_size.x > 0 and state or false
 	return self
 end
 
----锁定或解锁垂直滚动
----@param state boolean True, if vertical scroll is enabled
----@return druid.scroll self Current scroll instance
+---设置垂直滚动状态
+---启用或禁用垂直方向的滚动功能
+---@param state boolean 是否启用垂直滚动
+---@return druid.scroll 当前滚动组件实例
 function M:set_vertical_scroll(state)
 	self._is_vertical_scroll = state
 	self.drag.can_y = self.available_size.y > 0 and state or false
 	return self
 end
 
----检查节点在滚动中是否可见。
--- 不影响额外边界。对于额外滚动区域中的元素返回true
----@param node node The node to check
----@return boolean True if node in visible scroll area
+---检查节点在滚动区域中是否可见
+---检查指定节点是否在当前的滚动视图范围内可见
+---@param node node 要检查的GUI节点
+---@return boolean 如果节点在可见区域内返回true
 function M:is_node_in_view(node)
 	local node_offset_for_view = gui.get_position(node)
 	local parent = gui.get_parent(node)
@@ -455,10 +478,10 @@ function M:is_node_in_view(node)
 	return true
 end
 
----绑定网格组件（静态或动态）以重新计算
--- 网格更改时的滚动大小
----@param grid druid.grid|nil Druid grid component
----@return druid.scroll self Current scroll instance
+---绑定网格组件以同步滚动大小
+---当网格布局发生变化时自动更新滚动内容大小
+---@param grid druid.grid|nil Druid网格组件（传nil解绑）
+---@return druid.scroll 当前滚动组件实例
 function M:bind_grid(grid)
 	if self._grid_on_change then
 		self._grid_on_change:unsubscribe(self._grid_on_change_callback)
@@ -483,10 +506,10 @@ function M:bind_grid(grid)
 	return self
 end
 
----绑定布局组件以重新计算
--- 布局更改时的滚动大小
----@param layout druid.layout|nil Druid layout component
----@return druid.scroll self Current scroll instance
+---绑定布局组件以同步滚动大小
+---当布局组件大小变化时自动更新滚动内容大小
+---@param layout druid.layout|nil Druid布局组件（传nil解绑）
+---@return druid.scroll 当前滚动组件实例
 function M:bind_layout(layout)
 	if self._layout_on_change then
 		self._layout_on_change:unsubscribe(self._layout_on_change_callback)
@@ -509,17 +532,21 @@ function M:bind_layout(layout)
 	return self
 end
 
----严格的拖动滚动区域。适用于
--- 限制遮罩节点外的事件
----@param node node|string Gui node
+---设置严格的滚动拖动区域
+---限制只能在指定区域内进行滚动操作，超出区域的事件将被忽略
+---@param node node|string GUI节点，定义滚动拖动的有效区域
 function M:set_click_zone(node)
 	self.drag:set_click_zone(node)
 end
 
+---处理拖动滚动的回调函数
+---当用户拖动时根据拖动距离更新滚动位置，包含边界限制
+---@param dx number X轴拖动距离
+---@param dy number Y轴拖动距离
 function M:_on_scroll_drag(dx, dy)
-	local t = self.target_position
-	local b = self.available_pos
-	local eb = self.available_pos_extra
+	local t = self.target_position     -- 目标滚动位置
+	local b = self.available_pos       -- 可用位置边界
+	local eb = self.available_pos_extra -- 扩展的可用位置边界
 
 	-- 处理软区域
 	-- 百分比 - delta的乘数。如果在滚动区域外则更小
@@ -556,6 +583,8 @@ function M:_on_scroll_drag(dx, dy)
 	t.y = t.y + dy * y_perc
 end
 
+---检查并处理软区域回弹
+---当滚动超出边界时，计算回弹力度将内容拉回合法区域
 function M:_check_soft_zone()
 	local target = self.target_position
 	local border = self.available_pos
@@ -590,7 +619,8 @@ function M:_check_soft_zone()
 	return is_changed
 end
 
--- Cancel animation on other animation or input touch
+---取消正在进行的滚动动画
+---当开始新的动画或用户触摸时取消当前的动画状态
 function M:_cancel_animate()
 	self.inertion.x = 0
 	self.inertion.y = 0
@@ -604,6 +634,10 @@ function M:_cancel_animate()
 	end
 end
 
+---设置滚动位置
+---更新内容节点的位置并触发滚动回调，包含边界限制
+---@param position_x number 目标X坐标
+---@param position_y number 目标Y坐标
 function M:_set_scroll_position(position_x, position_y)
 	local available_extra = self.available_pos_extra
 	position_x = helper.clamp(position_x, available_extra.x, available_extra.z)
@@ -618,9 +652,8 @@ function M:_set_scroll_position(position_x, position_y)
 	end
 end
 
----Find closer point of interest
--- if no inert, scroll to next point by scroll direction
--- if inert, find next point by scroll director
+---检查并滚动到最近的兴趣点
+---根据惯性状态和滚动方向智能选择目标兴趣点
 ---@private
 function M:_check_points()
 	if not self.points then
@@ -677,6 +710,8 @@ function M:_check_points()
 	end
 end
 
+---检查惯性阈值并处理停止逻辑
+---当滚动速度低于阈值时停止惯性，并检查兴趣点对齐
 function M:_check_threshold()
 	local is_stopped = false
 
@@ -694,6 +729,9 @@ function M:_check_threshold()
 	end
 end
 
+---更新自由滚动状态
+---处理惯性运动、摩擦力和边界回弹
+---@param dt number 增量时间（秒）
 function M:_update_free_scroll(dt)
 	if self.is_animate then
 		return
@@ -722,6 +760,9 @@ function M:_update_free_scroll(dt)
 	end
 end
 
+---更新手动滚动状态
+---处理用户拖动时的惯性计算和位置更新
+---@param dt number 增量时间（秒）
 function M:_update_hand_scroll(dt)
 	if self.is_animate then
 		self:_cancel_animate()
@@ -736,6 +777,8 @@ function M:_update_hand_scroll(dt)
 	self:_set_scroll_position(self.target_position.x, self.target_position.y)
 end
 
+---触摸开始时的回调
+---重置惯性状态，准备开始新的拖动
 function M:_on_touch_start()
 	self.inertion.x = 0
 	self.inertion.y = 0
@@ -743,10 +786,14 @@ function M:_on_touch_start()
 	self.target_position.y = self.position.y
 end
 
+---触摸结束时的回调
+---检查是否应该切换到兴趣点滚动
 function M:_on_touch_end()
 	self:_check_threshold()
 end
 
+---更新滚动区域计算
+---重新计算可用滚动范围、边界和尺寸，处理拉伸效果
 function M:_update_size()
 	local content_border = helper.get_border(self.content_node)
 	local content_size = helper.get_scaled_size(self.content_node)
@@ -786,6 +833,11 @@ function M:_update_size()
 	self.drag:set_drag_cursors(self.drag.can_x or self.drag.can_y)
 end
 
+---处理鼠标滚轮输入
+---根据设置处理滚轮滚动，支持惯性模式和直接滚动模式
+---@param action_id string 输入动作ID
+---@param action table 输入动作信息
+---@return boolean 是否处理了滚轮输入
 function M:_process_scroll_wheel(action_id, action)
 	if not self._is_mouse_hover or self.style.WHEEL_SCROLL_SPEED == 0 then
 		return false
@@ -822,20 +874,28 @@ function M:_process_scroll_wheel(action_id, action)
 	return true
 end
 
+---鼠标悬停回调
+---记录鼠标是否悬停在滚动区域内，用于控制滚轮功能
+---@param state boolean 鼠标是否悬停
 function M:_on_mouse_hover(state)
 	self._is_mouse_hover = state
 end
 
+---计算反向线性插值
+---将当前值在min和max范围内的位置映射到0-1范围
+---@param min number 范围最小值
+---@param max number 范围最大值
+---@param current number 当前值
+---@return number 0-1范围内的插值结果
 function M:_inverse_lerp(min, max, current)
 	return helper.clamp((current - min) / (max - min), 0, 1)
 end
 
----Update vector with next conditions:
----Field x have to <= field z
----Field y have to <= field w
----@param vector vector4
----@param offset vector3
----@return vector4
+---更新边界向量
+---确保向量的x<=z且y<=w，并应用偏移量
+---@param vector vector4 原始边界向量
+---@param offset vector3 应用偏移量
+---@return vector4 更新后的边界向量
 function M:_get_border_vector(vector, offset)
 	if vector.x > vector.z then
 		vector.x, vector.z = vector.z, vector.x
@@ -850,9 +910,10 @@ function M:_get_border_vector(vector, offset)
 	return vector
 end
 
----Return size from scroll border vector4
----@param vector vector4
----@return vector3
+---从边界向量计算尺寸
+---将vector4格式(x1,y1,x2,y2)的边界转换为vector3格式(宽度,高度,0)
+---@param vector vector4 边界向量
+---@return vector3 尺寸向量
 function M:_get_size_vector(vector)
 	return vmath.vector3(vector.z - vector.x, vector.w - vector.y, 0)
 end
