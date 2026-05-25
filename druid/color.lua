@@ -30,7 +30,7 @@ function M.get_color(color_id)
 		return PALETTE_DATA[color_id]
 	end
 
-	-- Check is it hex: starts with "#" or contains only 3 or 6 hex symbols
+	-- 检查是否为十六进制格式：以"#"开头或仅包含3或6个十六进制符号
 	if type(color_id) == "string" then
 		if string.sub(color_id, 1, 1) == "#" or string.match(color_id, "^[0-9a-fA-F]+$") then
 			return M.hex2vector4(color_id)

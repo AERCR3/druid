@@ -147,9 +147,9 @@ function M:on_style_change(style)
 end
 
 ---@private
----@param action_id hash|nil The action id
----@param action action The action
----@return boolean is_consume True if the action is consumed
+---@param action_id hash|nil 动作ID
+---@param action action 动作表
+---@return boolean is_consume 如果动作被消耗则返回true
 function M:on_input(action_id, action)
 	if action_id and not M.ALLOWED_ACTIONS[action_id] then
 		-- We want to block all key actions (key_w, key_s) etc while input is selected
@@ -262,9 +262,9 @@ function M:get_text_selected()
 	return utf8.sub(self.value, self.start_index + 1, self.end_index)
 end
 
----Replace selected text with new text
----@param text string The text to replace selected text
----@return string new_text New input text
+---用新文本替换选中的文本
+---@param text string 用于替换选中文本的文本
+---@return string new_text 新的输入文本
 function M:get_text_selected_replaced(text)
 	local left_part = utf8.sub(self.value, 1, self.start_index)
 	local right_part = utf8.sub(self.value, self.end_index + 1, utf8.len(self.value))
@@ -278,8 +278,8 @@ function M:get_text_selected_replaced(text)
 	return result
 end
 
----Set text for input field
----@param input_text string? The string to apply for input field, if nil - will be set to empty string
+---设置输入字段文本
+---@param input_text string? 要应用于输入字段的字符串，如果为nil - 将设置为空字符串
 function M:set_text(input_text)
 	input_text = tostring(input_text or "")
 
@@ -325,7 +325,7 @@ function M:set_text(input_text)
 	end
 end
 
----Select input field. It will show the keyboard and trigger on_select events
+---选择输入字段。它将显示键盘并触发on_select事件
 function M:select()
 	gui.reset_keyboard()
 	self.marked_value = ""
@@ -349,7 +349,7 @@ function M:select()
 	end
 end
 
----Remove selection from input. It will hide the keyboard and trigger on_unselect events
+---从输入中移除选择。它将隐藏键盘并触发on_unselect事件
 function M:unselect()
 	gui.reset_keyboard()
 	self.marked_value = ""
@@ -367,8 +367,8 @@ function M:unselect()
 	end
 end
 
----Return current input field text
----@return string text The current input field text
+---返回当前输入字段文本
+---@return string text 当前输入字段文本
 function M:get_text()
 	if self.marked_value ~= "" then
 		return self.value .. self.marked_value
@@ -377,40 +377,40 @@ function M:get_text()
 	return self.value
 end
 
----Set maximum length for input field.
----Pass nil to make input field unliminted (by default)
----@param max_length number Maximum length for input text field
----@return druid.input self Current input instance
+---设置输入字段的最大长度。
+---传递nil使输入字段无限制（默认情况下）
+---@param max_length number 输入文本字段的最大长度
+---@return druid.input self 当前输入实例
 function M:set_max_length(max_length)
 	self.max_length = max_length
 	return self
 end
 
----Set allowed charaters for input field.
----See: https://defold.com/ref/stable/string/
----ex: [%a%d] for alpha and numeric
----ex: [abcdef] to allow only these characters
----ex: [^%s] to allow only non-space characters
----@param characters string Regular expression for validate user input
----@return druid.input self Current input instance
+---设置输入字段允许的字符。
+---参考：https://defold.com/ref/stable/string/
+---示例：[%a%d] 用于字母和数字
+---示例：[abcdef] 只允许这些字符
+---示例：[^%s] 只允许非空格字符
+---@param characters string 用于验证用户输入的正则表达式
+---@return druid.input self 当前输入实例
 function M:set_allowed_characters(characters)
 	self.allowed_characters = characters
 	return self
 end
 
----Reset current input selection and return previous value
----@return druid.input self Current input instance
+---重置当前输入选择并返回之前的值
+---@return druid.input self 当前输入实例
 function M:reset_changes()
 	self:set_text(self.previous_value)
 	self:unselect()
 	return self
 end
 
----Set cursor position in input field
----@param cursor_index number|nil Cursor index for cursor position, if nil - will be set to the end of the text
----@param start_index number|nil Start index for cursor position, if nil - will be set to the end of the text
----@param end_index number|nil End index for cursor position, if nil - will be set to the start_index
----@return druid.input self Current input instance
+---设置输入字段中的光标位置
+---@param cursor_index number|nil 光标位置的光标索引，如果为nil - 将设置为文本末尾
+---@param start_index number|nil 光标位置的起始索引，如果为nil - 将设置为文本末尾
+---@param end_index number|nil 光标位置的结束索引，如果为nil - 将设置为start_index
+---@return druid.input self 当前输入实例
 function M:select_cursor(cursor_index, start_index, end_index)
 	local len = utf8.len(self.value)
 
@@ -427,11 +427,11 @@ function M:select_cursor(cursor_index, start_index, end_index)
 	return self
 end
 
----Change cursor position by delta
----@param delta number side for cursor position, -1 for left, 1 for right
----@param is_add_to_selection boolean (Shift key)
----@param is_move_to_end boolean (Ctrl key)
----@return druid.input self Current input instance
+---按增量更改光标位置
+---@param delta number 光标位置的方向，-1表示向左，1表示向右
+---@param is_add_to_selection boolean （Shift键）
+---@param is_move_to_end boolean （Ctrl键）
+---@return druid.input self 当前输入实例
 function M:move_selection(delta, is_add_to_selection, is_move_to_end)
 	local len = utf8.len(self.value)
 	local cursor_index = self.cursor_index

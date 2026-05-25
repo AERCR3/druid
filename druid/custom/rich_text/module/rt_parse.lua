@@ -139,35 +139,35 @@ local function merge_tags(dst, src)
 end
 
 
----Parse the text into individual words
----@param text string The text to parse
----@param default_settings table<string, any> Default settings for each word
----@param style table<string, any> Style settings
----@return table<string, any> List of all words
+---将文本解析为单个单词
+---@param text string 要解析的文本
+---@param default_settings table<string, any> 每个单词的默认设置
+---@param style table<string, any> 样式设置
+---@return table<string, any> 所有单词的列表
 function M.parse(text, default_settings, style)
 	assert(text)
 	assert(default_settings)
 
 	text = text:gsub("&zwsp;", "<zwsp>\226\128\139</zwsp>")
 
-	-- Replace all \n with <br/> to make it easier to split the text
+	-- 将所有\n替换为<br/>以便于分割文本
 	text = text:gsub("\n", "<br/>")
 
 	local all_words = {}
 	local open_tags = {}
 
 	while true do
-		-- merge list of word settings from defaults and all open tags
+		-- 合并默认设置和所有开放标签的单词设置列表
 		local word_settings = { tags = {} }
 		merge_tags(word_settings, default_settings)
 		for _, open_tag in ipairs(open_tags) do
 			merge_tags(word_settings, open_tag)
 		end
 
-		-- find next tag, with the text before and after the tag
+		-- 查找下一个标签，以及标签前后的文本
 		local before_tag, tag, after_tag = text:match("(.-)(</?%S->)(.*)")
 
-		-- no more tags, split and add rest of the text
+		-- 没有更多标签，分割并添加剩余文本
 		if not before_tag or not tag or not after_tag then
 			if text ~= "" then
 				split_text(text, word_settings, all_words)
@@ -175,28 +175,28 @@ function M.parse(text, default_settings, style)
 			break
 		end
 
-		-- split and add text before the encountered tag
+		-- 分割并添加遇到标签之前的文本
 		if before_tag ~= "" then
 			split_text(before_tag, word_settings, all_words)
 		end
 
-		-- parse the tag, split into name and optional parameters
+		-- 解析标签，分割为名称和可选参数
 		local endtag, name, params, empty = tag:match("<(/?)([%w_]+)=?(%S-)(/?)>")
 
 		local is_endtag = endtag == "/"
 		local is_empty = empty == "/"
 		if is_empty then
-			-- empty tag, ie tag without content
-			-- example <br/> and <img=texture:image/>
+			-- 空标签，即没有内容的标签
+			-- 示例 <br/> 和 <img=texture:image/>
 			local empty_tag_settings = parse_tag(name, params, style)
 			merge_tags(empty_tag_settings, word_settings)
 			add_word("", empty_tag_settings, all_words)
 		elseif not is_endtag then
-			-- open tag - parse and add it
+			-- 开放标签 - 解析并添加它
 			local tag_settings = parse_tag(name, params, style)
 			open_tags[#open_tags + 1] = tag_settings
 		else
-			-- end tag - remove it from the list of open tags
+			-- 结束标签 - 从开放标签列表中移除它
 			local found = false
 			for i = #open_tags, 1, -1 do
 				if open_tags[i].tag == name then
@@ -208,16 +208,16 @@ function M.parse(text, default_settings, style)
 			if not found then print(("Found end tag '%s' without matching start tag"):format(name)) end
 		end
 
-		-- parse text after the tag on the next iteration
+		-- 在下一次迭代中解析标签后的文本
 		text = after_tag
 	end
 
 	return all_words
 end
 
----Get the length of a text, excluding any tags (except image and spine tags)
----@param text string The text to get the length of
----@return number The length of the text
+---获取文本长度，排除所有标签（图像和骨骼标签除外）
+---@param text string 要获取长度的文本
+---@return number 文本的长度
 function M.length(text)
 	return utf8.len(text:gsub("<img.-/>", " "):gsub("<.->", ""))
 end

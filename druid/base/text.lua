@@ -115,9 +115,9 @@ function M:get_text_size(text)
 	return width * scale.x, metrics.height * scale.y
 end
 
----Get chars count by width
----@param width number The width to get the chars count of
----@return number index The chars count
+---根据宽度获取字符数量
+---@param width number 要获取字符数的宽度
+---@return number index 字符数量
 function M:get_text_index_by_width(width)
 	local text = self.last_value
 	local font_name = gui.get_font(self.node)
@@ -147,10 +147,10 @@ function M:get_text_index_by_width(width)
 	return text_index
 end
 
----Set text to text field
+---设置文本字段文本
 ---@deprecated
----@param set_to string Text for node
----@return druid.text self Current text instance
+---@param set_to string 节点文本
+---@return druid.text self 当前文本实例
 function M:set_to(set_to)
 	set_to = tostring(set_to or "")
 
@@ -173,9 +173,9 @@ function M:get_text()
 	return self.last_value
 end
 
----Set text area size
----@param size vector3 The new text area size
----@return druid.text self Current text instance
+---设置文本区域大小
+---@param size vector3 新的文本区域大小
+---@return druid.text self 当前文本实例
 function M:set_size(size)
 	self.start_size = size
 	self.text_area = vmath.vector3(size)
@@ -186,9 +186,9 @@ function M:set_size(size)
 	return self
 end
 
----Set color
----@param color vector4 Color for node
----@return druid.text self Current text instance
+---设置颜色
+---@param color vector4 节点颜色
+---@return druid.text self 当前文本实例
 function M:set_color(color)
 	self.color = color
 	gui.set_color(self.node, color)
@@ -196,9 +196,9 @@ function M:set_color(color)
 	return self
 end
 
----Set alpha
----@param alpha number Alpha for node
----@return druid.text self Current text instance
+---设置透明度
+---@param alpha number 节点透明度
+---@return druid.text self 当前文本实例
 function M:set_alpha(alpha)
 	self.color.w = alpha
 	gui.set_color(self.node, self.color)
@@ -206,9 +206,9 @@ function M:set_alpha(alpha)
 	return self
 end
 
----Set scale
----@param scale vector3 Scale for node
----@return druid.text self Current text instance
+---设置缩放
+---@param scale vector3 节点缩放
+---@return druid.text self 当前文本实例
 function M:set_scale(scale)
 	self.last_scale = scale
 	gui.set_scale(self.node, scale)
@@ -216,9 +216,9 @@ function M:set_scale(scale)
 	return self
 end
 
----Set text pivot. Text will re-anchor inside text area
----@param pivot number The gui.PIVOT_* constant
----@return druid.text self Current text instance
+---设置文本枢轴点。文本将在其文本区域内重新锚定
+---@param pivot number gui.PIVOT_*常量
+---@return druid.text self 当前文本实例
 function M:set_pivot(pivot)
 	local prev_pivot = gui.get_pivot(self.node)
 	local prev_offset = const.PIVOTS[prev_pivot]
@@ -240,16 +240,16 @@ function M:set_pivot(pivot)
 	return self
 end
 
----Return true, if text with line break
----@return boolean Is text node with line break
+---如果文本有换行符则返回true
+---@return boolean 文本节点是否有换行符
 function M:is_multiline()
 	return gui.get_line_break(self.node)
 end
 
----Set text adjust, refresh the current text visuals, if needed
----@param adjust_type druid.text.adjust_type|nil The adjust type to set, values: "downscale", "trim", "no_adjust", "downscale_limited", "scroll", "scale_then_scroll", "trim_left", "scale_then_trim", "scale_then_trim_left"
----@param minimal_scale number|nil To remove minimal scale, use `text:set_minimal_scale(nil)`, if pass nil - not change minimal scale
----@return druid.text self Current text instance
+---设置文本调整，如果需要则刷新当前文本视觉效果
+---@param adjust_type druid.text.adjust_type|nil 要设置的调整类型，值："downscale", "trim", "no_adjust", "downscale_limited", "scroll", "scale_then_scroll", "trim_left", "scale_then_trim", "scale_then_trim_left"
+---@param minimal_scale number|nil 要移除最小缩放，使用`text:set_minimal_scale(nil)`，如果传递nil - 不更改最小缩放
+---@return druid.text self 当前文本实例
 function M:set_text_adjust(adjust_type, minimal_scale)
 	self.adjust_type = adjust_type
 	self._minimal_scale = minimal_scale or self._minimal_scale
@@ -258,17 +258,17 @@ function M:set_text_adjust(adjust_type, minimal_scale)
 	return self
 end
 
----Set minimal scale for "downscale_limited" or "scale_then_scroll" adjust types
----@param minimal_scale number If pass nil - not use minimal scale
----@return druid.text self Current text instance
+---为"downscale_limited"或"scale_then_scroll"调整类型设置最小缩放
+---@param minimal_scale number 如果传递nil - 不使用最小缩放
+---@return druid.text self 当前文本实例
 function M:set_minimal_scale(minimal_scale)
 	self._minimal_scale = minimal_scale
 
 	return self
 end
 
----Return current text adjust type
----@return string adjust_type The current text adjust type
+---返回当前文本调整类型
+---@return string adjust_type 当前的文本调整类型
 function M:get_text_adjust()
 	return self.adjust_type
 end
@@ -290,7 +290,7 @@ function M:_update_text_size()
 	gui.set_size(self.node, size)
 end
 
----Reset initial scale for text
+---重置文本的初始缩放
 ---@private
 function M:_reset_default_scale()
 	self.scale.x = self.start_scale.x

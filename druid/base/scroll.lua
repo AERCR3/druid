@@ -173,7 +173,7 @@ function M:on_remove()
 	self:bind_grid(nil)
 end
 
----Start scroll to target point.
+---开始滚动到目标点。
 ---@param point vector3 Target point
 ---@param is_instant boolean|nil Instant scroll flag
 function M:scroll_to(point, is_instant)
@@ -203,7 +203,7 @@ function M:scroll_to(point, is_instant)
 	self.on_scroll_to:trigger(self:get_context(), target, is_instant)
 end
 
----Scroll to the node, if node is not visible in scroll view
+---滚动到节点，如果节点在滚动视图中不可见
 ---@param node node The node to make visible
 ---@param is_instant boolean|nil Instant scroll flag
 function M:scroll_to_make_node_visible(node, is_instant)
@@ -258,7 +258,7 @@ function M:scroll_to_make_node_visible(node, is_instant)
 	end
 end
 
----Scroll to item in scroll by point index.
+---通过点索引滚动到滚动项目。
 ---@param index number Point index
 ---@param skip_cb boolean|nil If true, skip the point callback
 function M:scroll_to_index(index, skip_cb)
@@ -279,7 +279,7 @@ function M:scroll_to_index(index, skip_cb)
 	self:scroll_to(self.points[index])
 end
 
----Start scroll to target scroll percent
+---开始滚动到目标滚动百分比
 ---@param percent vector3 target percent
 ---@param is_instant boolean|nil instant scroll flag
 function M:scroll_to_percent(percent, is_instant)
@@ -301,8 +301,8 @@ function M:scroll_to_percent(percent, is_instant)
 	self:scroll_to(pos, is_instant)
 end
 
----Return current scroll progress status.
--- Values will be in [0..1] interval
+---返回当前滚动进度状态。
+-- 值将在[0..1]区间内
 ---@return vector3 New vector with scroll progress values
 function M:get_percent()
 	local x_perc = 1 - self:_inverse_lerp(self.available_pos.x, self.available_pos.z, self.position.x)
@@ -311,8 +311,8 @@ function M:get_percent()
 	return vmath.vector3(x_perc, y_perc, 0)
 end
 
----Set scroll content size.
--- It will change content gui node size
+---设置滚动内容大小。
+-- 这将更改内容GUI节点大小
 ---@param size vector3 The new size for content node
 ---@param offset vector3|nil Offset value to set, where content is starts
 ---@return druid.scroll self Current scroll instance
@@ -326,7 +326,7 @@ function M:set_size(size, offset)
 	return self
 end
 
----Set new scroll view size in case the node size was changed.
+---在节点大小更改时设置新的滚动视图大小。
 ---@param size vector3 The new size for view node
 ---@return druid.scroll self Current scroll instance
 function M:set_view_size(size)
@@ -338,7 +338,7 @@ function M:set_view_size(size)
 	return self
 end
 
----Refresh scroll view size, used when view node size is changed
+---刷新滚动视图大小，用于视图节点大小改变时
 ---@return druid.scroll self Current scroll instance
 function M:update_view_size()
 	self.view_size = helper.get_scaled_size(self.view_node)
@@ -348,9 +348,9 @@ function M:update_view_size()
 	return self
 end
 
----Enable or disable scroll inert
--- If disabled, scroll through points (if exist)
--- If no points, just simple drag without inertion
+---启用或禁用滚动惯性
+-- 如果禁用，通过点滚动（如果存在）
+-- 如果没有点，只是简单的无惯性拖动
 ---@param state boolean Inert scroll state
 ---@return druid.scroll self Current scroll instance
 function M:set_inert(state)
@@ -359,14 +359,14 @@ function M:set_inert(state)
 	return self
 end
 
----Return if scroll have inertion
+---返回滚动是否有惯性
 ---@return boolean is_inert If scroll have inertion
 function M:is_inert()
 	return self._is_inert
 end
 
----Set extra size for scroll stretching
--- Set 0 to disable stretching effect
+---设置滚动拉伸的额外大小
+-- 设置0以禁用拉伸效果
 ---@param stretch_size number|nil Size in pixels of additional scroll area
 ---@return druid.scroll self Current scroll instance
 function M:set_extra_stretch_size(stretch_size)
@@ -376,14 +376,14 @@ function M:set_extra_stretch_size(stretch_size)
 	return self
 end
 
----Return vector of scroll size with width and height.
+---返回包含宽度和高度的滚动大小向量。
 ---@return vector3 Available scroll size
 function M:get_scroll_size()
 	return self.available_size
 end
 
----Set points of interest.
--- Scroll will always centered on closer points
+---设置兴趣点。
+-- 滚动将始终集中在最近的点上
 ---@param points table Array of vector3 points
 ---@return druid.scroll self Current scroll instance
 function M:set_points(points)
@@ -398,7 +398,7 @@ function M:set_points(points)
 	return self
 end
 
----Lock or unlock horizontal scroll
+---锁定或解锁水平滚动
 ---@param state boolean True, if horizontal scroll is enabled
 ---@return druid.scroll self Current scroll instance
 function M:set_horizontal_scroll(state)
@@ -407,7 +407,7 @@ function M:set_horizontal_scroll(state)
 	return self
 end
 
----Lock or unlock vertical scroll
+---锁定或解锁垂直滚动
 ---@param state boolean True, if vertical scroll is enabled
 ---@return druid.scroll self Current scroll instance
 function M:set_vertical_scroll(state)
@@ -416,8 +416,8 @@ function M:set_vertical_scroll(state)
 	return self
 end
 
----Check node if it visible now on scroll.
--- Extra border is not affected. Return true for elements in extra scroll zone
+---检查节点在滚动中是否可见。
+-- 不影响额外边界。对于额外滚动区域中的元素返回true
 ---@param node node The node to check
 ---@return boolean True if node in visible scroll area
 function M:is_node_in_view(node)
@@ -455,8 +455,8 @@ function M:is_node_in_view(node)
 	return true
 end
 
----Bind the grid component (Static or Dynamic) to recalculate
--- scroll size on grid changes
+---绑定网格组件（静态或动态）以重新计算
+-- 网格更改时的滚动大小
 ---@param grid druid.grid|nil Druid grid component
 ---@return druid.scroll self Current scroll instance
 function M:bind_grid(grid)
@@ -483,8 +483,8 @@ function M:bind_grid(grid)
 	return self
 end
 
----Bind the layout component to recalculate
--- scroll size on layout changes
+---绑定布局组件以重新计算
+-- 布局更改时的滚动大小
 ---@param layout druid.layout|nil Druid layout component
 ---@return druid.scroll self Current scroll instance
 function M:bind_layout(layout)
@@ -509,8 +509,8 @@ function M:bind_layout(layout)
 	return self
 end
 
----Strict drag scroll area. Useful for
--- restrict events outside stencil node
+---严格的拖动滚动区域。适用于
+-- 限制遮罩节点外的事件
 ---@param node node|string Gui node
 function M:set_click_zone(node)
 	self.drag:set_click_zone(node)
@@ -521,8 +521,8 @@ function M:_on_scroll_drag(dx, dy)
 	local b = self.available_pos
 	local eb = self.available_pos_extra
 
-	-- Handle soft zones
-	-- Percent - multiplier for delta. Less if outside of scroll zone
+	-- 处理软区域
+	-- 百分比 - delta的乘数。如果在滚动区域外则更小
 	local x_perc = 1
 	local y_perc = 1
 
@@ -534,20 +534,20 @@ function M:_on_scroll_drag(dx, dy)
 	if t.x > b.z and dx > 0 then
 		x_perc = self:_inverse_lerp(eb.z, b.z, t.x)
 	end
-	-- Disable x scroll
+	-- 禁用x滚动
 	if not self.drag.can_x then
 		x_perc = 0
 	end
 
-	-- Top border (minimum y)
+	-- 顶部边界（最小y）
 	if t.y < b.y and dy < 0 then
 		y_perc = self:_inverse_lerp(eb.y, b.y, t.y)
 	end
-	-- Bot border (maximum y)
+	-- 底部边界（最大y）
 	if t.y > b.w and dy > 0 then
 		y_perc = self:_inverse_lerp(eb.w, b.w, t.y)
 	end
-	-- Disable y scroll
+	-- 禁用y滚动
 	if not self.drag.can_y then
 		y_perc = 0
 	end

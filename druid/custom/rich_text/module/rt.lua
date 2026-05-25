@@ -575,7 +575,8 @@ function M.tagged(words, tag)
 	return tagged
 end
 
----Removes the gui nodes created by rich text
+---移除富文本创建的GUI节点
+---@param words druid.rich_text.word[] 富文本单词数组
 function M.remove(words)
 	assert(words)
 

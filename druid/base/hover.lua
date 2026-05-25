@@ -68,7 +68,7 @@ function M:on_input(action_id, action)
 		return false
 	end
 
-	-- Disable nil (it's mouse) hover or mobile platforms
+	-- 禁用空悬停（鼠标）或移动平台
 	if self._is_mobile and not action_id then
 		return false
 	end
@@ -101,8 +101,8 @@ function M:on_input_interrupt()
 	self:set_hover(false)
 end
 
----Set hover state
----@param state boolean|nil The hover state
+---设置悬停状态
+---@param state boolean|nil 悬停状态
 function M:set_hover(state)
 	if self._is_hovered == state then
 		return
@@ -116,14 +116,14 @@ function M:set_hover(state)
 	end
 end
 
----Return current hover state. True if touch action was on the node at current time
----@return boolean is_hovered The current hovered state
+---返回当前悬停状态。如果触摸动作在当前时间作用于节点则为true
+---@return boolean is_hovered 当前的悬停状态
 function M:is_hovered()
 	return self._is_hovered
 end
 
----Set mouse hover state
----@param state boolean|nil The mouse hover state
+---设置鼠标悬停状态
+---@param state boolean|nil 鼠标悬停状态
 function M:set_mouse_hover(state)
 	if self._is_mouse_hovered == state then
 		return
@@ -137,14 +137,14 @@ function M:set_mouse_hover(state)
 	end
 end
 
----Return current hover state. True if nil action_id (usually desktop mouse) was on the node at current time
----@return boolean The current hovered state
+---返回当前悬停状态。如果nil action_id（通常是桌面鼠标）在当前时间作用于节点则为true
+---@return boolean 当前的悬停状态
 function M:is_mouse_hovered()
 	return self._is_mouse_hovered
 end
 
----Strict hover click area. Useful for no click events outside stencil node
----@param zone node|string|nil Gui node
+---严格的悬停点击区域。用于在遮罩节点外不触发点击事件
+---@param zone node|string|nil GUI节点
 function M:set_click_zone(zone)
 	if not zone then
 		self.click_zone = nil
@@ -154,10 +154,10 @@ function M:set_click_zone(zone)
 	self.click_zone = self:get_node(zone)
 end
 
----Set enable state of hover component.
----If hover is not enabled, it will not generate
----any hover events
----@param state boolean|nil The hover enabled state
+---设置悬停组件的启用状态。
+---如果悬停未启用，它将不会生成
+---任何悬停事件
+---@param state boolean|nil 悬停启用状态
 function M:set_enabled(state)
 	self._is_enabled = state
 
@@ -171,15 +171,18 @@ function M:set_enabled(state)
 	end
 end
 
----Return current hover enabled state
----@return boolean The hover enabled state
+---返回当前悬停启用状态
+---@return boolean 悬停启用状态
 function M:is_enabled()
 	return self._is_enabled
 end
 
--- Internal cursor stack
+---内部光标堆栈
 local cursor_stack = {}
 ---@local
+---设置光标
+---@param number 优先级
+---@param cursor 光标类型
 function M:_set_cursor(priority, cursor)
 	if not defos then
 		return
@@ -189,7 +192,7 @@ function M:_set_cursor(priority, cursor)
 	cursor_stack[uid] = cursor_stack[uid] or {}
 	cursor_stack[uid][priority] = cursor
 
-	-- set cursor with high priority via pairs
+	-- 通过pairs按高优先级设置光标
 	local priority = nil
 	local cursor_to_set = nil
 	for _, stack in pairs(cursor_stack) do

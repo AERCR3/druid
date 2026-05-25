@@ -111,9 +111,9 @@ function M:get_index(pos)
 	return math.ceil(index)
 end
 
----Return grid index by node
----@param node node The gui node in the grid
----@return number|nil index The node index
+---根据节点返回网格索引
+---@param node node 网格中的GUI节点
+---@return number|nil index 节点索引
 function M:get_index_by_node(node)
 	for index, grid_node in pairs(self.nodes) do
 		if node == grid_node then
@@ -129,24 +129,24 @@ function M:on_layout_change()
 	self:_update(true)
 end
 
----Set grid anchor. Default anchor is equal to anchor of grid parent node
----@param anchor vector3 Anchor
+---设置网格锚点。默认锚点等于网格父节点的锚点
+---@param anchor vector3 锚点
 function M:set_anchor(anchor)
 	self.anchor = anchor
 	self:_update()
 end
 
----Instantly update the grid content
----@return druid.grid self Current grid instance
+---立即更新网格内容
+---@return druid.grid self 当前网格实例
 function M:refresh()
 	self:_update(true)
 
 	return self
 end
 
----Set grid pivot
----@param pivot constant The new pivot
----@return druid.grid self Current grid instance
+---设置网格枢轴点
+---@param pivot constant 新的枢轴点
+---@return druid.grid self 当前网格实例
 function M:set_pivot(pivot)
 	local prev_pivot = helper.get_pivot_offset(gui.get_pivot(self.parent))
 	self.pivot = helper.get_pivot_offset(pivot)
@@ -174,12 +174,12 @@ function M:set_pivot(pivot)
 	return self
 end
 
----Add new item to the grid
----@param item node GUI node
----@param index number|nil The item position. By default add as last item
----@param shift_policy number|nil How shift nodes, if required. Default: const.SHIFT.RIGHT
----@param is_instant boolean|nil If true, update node positions instantly
----@return druid.grid self Current grid instance
+---向网格添加新项目
+---@param item node GUI节点
+---@param index number|nil 项目位置。默认添加为最后一个项目
+---@param shift_policy number|nil 如何移动节点（如果需要）。默认：const.SHIFT.RIGHT
+---@param is_instant boolean|nil 如果为true，立即更新节点位置
+---@return druid.grid self 当前网格实例
 function M:add(item, index, shift_policy, is_instant)
 	index = index or ((self.last_index or 0) + 1)
 
@@ -200,10 +200,10 @@ function M:add(item, index, shift_policy, is_instant)
 	return self
 end
 
----Set new items to the grid. All previous items will be removed
----@param nodes node[] The new grid nodes
----@param is_instant boolean|nil If true, update node positions instantly
----@return druid.grid self Current grid instance
+---设置网格的新项目。所有之前的项目将被移除
+---@param nodes node[] 新的网格节点
+---@param is_instant boolean|nil 如果为true，立即更新节点位置
+---@return druid.grid self 当前网格实例
 function M:set_items(nodes, is_instant)
 	self.nodes = nodes
 	for index = 1, #nodes do
@@ -218,11 +218,11 @@ function M:set_items(nodes, is_instant)
 	return self
 end
 
----Remove the item from the grid. Note that gui node will be not deleted
----@param index number The grid node index to remove
----@param shift_policy number|nil How shift nodes, if required. Default: const.SHIFT.RIGHT
----@param is_instant boolean|nil If true, update node positions instantly
----@return node node The deleted gui node from grid
+---从网格中移除项目。请注意GUI节点不会被删除
+---@param index number 要移除的网格节点索引
+---@param shift_policy number|nil 如何移动节点（如果需要）。默认：const.SHIFT.RIGHT
+---@param is_instant boolean|nil 如果为true，立即更新节点位置
+---@return node node 从网格中删除的GUI节点
 function M:remove(index, shift_policy, is_instant)
 	assert(self.nodes[index], "No grid item at given index " .. index)
 
@@ -237,14 +237,14 @@ function M:remove(index, shift_policy, is_instant)
 	return remove_node
 end
 
----Return items count in grid
----@return number count The items count in grid
+---返回网格中的项目数量
+---@return number count 网格中的项目数量
 function M:get_items_count()
 	return #self.nodes
 end
 
----Return grid content size
----@return vector3 size The grid content size
+---返回网格内容大小
+---@return vector3 size 网格内容大小
 function M:get_size()
 	return vmath.vector3(
 		self.border.z - self.border.x,
@@ -252,9 +252,9 @@ function M:get_size()
 		0)
 end
 
----Return grid content size for given count of nodes
----@param count number The count of nodes
----@return vector3 size The grid content size
+---返回指定节点数量的网格内容大小
+---@param count number 节点数量
+---@return vector3 size 网格内容大小
 function M:get_size_for(count)
 	if not count or count == 0 then
 		return vmath.vector3(0)
@@ -276,14 +276,14 @@ function M:get_size_for(count)
 		0)
 end
 
----Return grid content borders
----@return vector4 borders The grid content borders
+---返回网格内容边框
+---@return vector4 borders 网格内容边框
 function M:get_borders()
 	return self.border
 end
 
----Return array of all node positions
----@return vector3[] positions All grid node positions
+---返回所有节点位置的数组
+---@return vector3[] positions 所有网格节点位置
 function M:get_all_pos()
 	local result = {}
 	for i, node in pairs(self.nodes) do
@@ -293,19 +293,19 @@ function M:get_all_pos()
 	return result
 end
 
----Change set position function for grid nodes. It will call on
--- update poses on grid elements. Default: gui.set_position
----@param callback function Function on node set position
----@return druid.grid self Current grid instance
+---更改网格节点的位置设置函数。它将在
+-- 更新网格元素位置时被调用。默认：gui.set_position
+---@param callback function 节点位置设置函数
+---@return druid.grid self 当前网格实例
 function M:set_position_function(callback)
 	self._set_position_function = callback or gui.set_position
 
 	return self
 end
 
----Clear grid nodes array. GUI nodes will be not deleted!
--- If you want to delete GUI nodes, use static_grid.nodes array before grid:clear
----@return druid.grid self Current grid instance
+---清除网格节点数组。GUI节点不会被删除！
+-- 如果您想删除GUI节点，请在grid:clear之前使用static_grid.nodes数组
+---@return druid.grid self 当前网格实例
 function M:clear()
 	self.border.x = 0
 	self.border.y = 0
@@ -321,8 +321,8 @@ function M:clear()
 	return self
 end
 
----Return StaticGrid offset, where StaticGrid content starts.
----@return vector3 offset The StaticGrid offset
+---返回StaticGrid的偏移量，StaticGrid内容从此开始
+---@return vector3 offset StaticGrid的偏移量
 function M:get_offset()
 	local borders = self:get_borders()
 	local size = self:get_size()
@@ -335,9 +335,9 @@ function M:get_offset()
 	return offset
 end
 
----Set new in_row elements for grid
----@param in_row number The new in_row value
----@return druid.grid self Current grid instance
+---为网格设置新的每行元素数量
+---@param in_row number 新的in_row值
+---@return druid.grid self 当前网格实例
 function M:set_in_row(in_row)
 	self.in_row = in_row
 	self._grid_horizonal_offset = self.node_size.x * (self.in_row - 1) * self.anchor.x
@@ -352,10 +352,10 @@ function M:set_in_row(in_row)
 	return self
 end
 
----Set new node size for grid
----@param width number|nil The new node width
----@param height number|nil The new node height
----@return druid.grid self Current grid instance
+---为网格设置新的节点大小
+---@param width number|nil 新的节点宽度
+---@param height number|nil 新的节点高度
+---@return druid.grid self 当前网格实例
 function M:set_item_size(width, height)
 	if width then
 		self.node_size.x = width
@@ -375,9 +375,9 @@ function M:set_item_size(width, height)
 	return self
 end
 
----Sort grid nodes by custom comparator function
----@param comparator function The comparator function. (a, b) -> boolean
----@return druid.grid self Current grid instance
+---通过自定义比较函数对网格节点进行排序
+---@param comparator function 比较函数。(a, b) -> boolean
+---@return druid.grid self 当前网格实例
 function M:sort_nodes(comparator)
 	table.sort(self.nodes, comparator)
 	self:_update(true)
@@ -385,8 +385,8 @@ function M:sort_nodes(comparator)
 	return self
 end
 
----Update grid inner state
----@param is_instant boolean|nil If true, node position update instantly, otherwise with set_position_function callback
+---更新网格内部状态
+---@param is_instant boolean|nil 如果为true，节点位置立即更新，否则使用set_position_function回调
 ---@private
 function M:_update(is_instant)
 	self:_update_indexes()
@@ -394,7 +394,7 @@ function M:_update(is_instant)
 	self:_update_pos(is_instant)
 end
 
----Update first and last indexes of grid nodes
+---更新网格节点的第一个和最后一个索引
 ---@private
 function M:_update_indexes()
 	self.first_index = nil
@@ -408,7 +408,7 @@ function M:_update_indexes()
 	end
 end
 
----Update grid content borders, recalculate min and max values
+---更新网格内容边框，重新计算最小和最大值
 ---@private
 function M:_update_borders()
 	if not self.first_index then
@@ -425,8 +425,8 @@ function M:_update_borders()
 	end
 end
 
----Update grid nodes position
----@param is_instant boolean|nil If true, node position update instantly, otherwise with set_position_function callback
+---更新网格节点位置
+---@param is_instant boolean|nil 如果为true，节点位置立即更新，否则使用set_position_function回调
 ---@private
 function M:_update_pos(is_instant)
 	local zero_offset = self:_get_zero_offset()
@@ -446,9 +446,9 @@ function M:_update_pos(is_instant)
 	self.on_update_positions:trigger(self:get_context())
 end
 
----Return elements offset for correct posing nodes. Correct posing at
----parent pivot node (0:0) with adjusting of node sizes and anchoring
----@return vector3 The offset vector
+---返回正确设置节点位置时的元素偏移量。在父枢轴节点(0:0)
+---处正确设置位置，调整节点大小和锚点
+---@return vector3 偏移向量
 ---@private
 function M:_get_zero_offset()
 	if not self.style.IS_DYNAMIC_NODE_POSES then
@@ -463,8 +463,8 @@ function M:_get_zero_offset()
 	)
 end
 
----Return offset x for last row in grid. Used to align this row accorting to grid's anchor
----@return number The offset x value
+---返回网格最后一行的X偏移量。用于根据网格的锚点对齐该行
+---@return number X偏移量值
 ---@private
 function M:_get_zero_offset_x(row_index)
 	if not self.style.IS_DYNAMIC_NODE_POSES or not self.style.IS_ALIGN_LAST_ROW then
@@ -483,10 +483,10 @@ function M:_get_zero_offset_x(row_index)
 	return offset_x
 end
 
----@param border vector4 Will be updated with new border values
----@param pos vector3
----@param size vector3
----@param pivot vector3
+---@param border vector4 将使用新的边框值更新
+---@param pos vector3 位置
+---@param size vector3 大小
+---@param pivot vector3 枢轴
 function M:_extend_border(border, pos, size, pivot)
 	local left = pos.x - size.x / 2 - (size.x * pivot.x)
 	local right = pos.x + size.x / 2 - (size.x * pivot.x)

@@ -12,12 +12,12 @@ local M = {}
 ---@param text string Defold文本格式的字符串
 ---@return table 解析后的Lua表
 function M.decode_defold_object(text)
-	-- Create a root object, which will contain all the file data
+	-- 创建一个根对象，它将包含所有文件数据
 	local root = {}
-	-- Stack to keep track of nested objects. Always insert data to the last object in the stack
+	-- 用于跟踪嵌套对象的栈。始终将数据插入到栈中的最后一个对象
 	local stack = { root }
 
-	-- For each line in the text, we go through the following steps:
+	-- 对于文本中的每一行，我们执行以下步骤：
 	for raw_line in text:gmatch("[^\r\n]+") do
 		parser_internal.parse_line(raw_line, stack)
 	end
@@ -51,21 +51,21 @@ function M.encode_defold_object(obj, spaces, data_level, extension)
 		return index_a < index_b
 	end)
 
-	-- Iterate over the sorted keys
+	-- 遍历排序后的键
 	for _, key in ipairs(keys) do
 		local value = obj[key]
 		local value_type = type(value)
 
-		-- Handle different types of values
+		-- 处理不同类型的值
 		if value_type == "table" then
-			-- Check if it's an array-like table
+			-- 检查是否为类数组表
 			if #value > 0 then
-				-- It's an array-like table, process each element
+				-- 这是类数组表，处理每个元素
 				for _, array_item in ipairs(value) do
 					local item_type = type(array_item)
 
 					if key == "data" and item_type == "table" then
-						-- Handle nested data
+						-- 处理嵌套数据
 						local encodedChild = M.encode_defold_object(array_item, spaces + 2, data_level + 1, extension)
 						result = result .. tabString .. key .. ': "' .. encodedChild .. '"\n'
 					elseif item_type == "number" or item_type == "boolean" then
@@ -81,7 +81,7 @@ function M.encode_defold_object(obj, spaces, data_level, extension)
 							result = result ..
 									tabString .. key .. ': "' .. array_item:gsub("\n", '\\n"\n' .. tabString .. '"') .. '"\n'
 						else
-							-- Check if the key should not have quotes
+							-- 检查键是否不应有引号
 							local is_uppercase = (array_item == string.upper(array_item))
 							local is_boolean = (array_item == "true" or array_item == "false")
 							if (is_uppercase and not config.string_keys[key]) or is_boolean then
@@ -113,7 +113,7 @@ function M.encode_defold_object(obj, spaces, data_level, extension)
 					result = result .. tabString .. key .. ': ' .. tostring(value) .. '\n'
 				end
 			elseif value_type == "string" then
-				-- Handle multiline text
+				-- 处理多行文本
 				if key == "text" then
 					result = result .. tabString .. key .. ': "' .. value:gsub("\n", '\\n"\n' .. tabString .. '"') .. '"\n'
 				else

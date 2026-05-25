@@ -123,9 +123,9 @@ function M:on_input_interrupt()
 end
 
 ---@private
----@param action_id hash Action id from on_input
----@param action table Action from on_input
----@return boolean is_consumed True if the input was consumed
+---@param action_id hash 来自on_input的动作ID
+---@param action table 来自on_input的动作表
+---@return boolean is_consumed 如果输入被消耗则为真
 function M:on_input(action_id, action)
 	if action_id ~= const.ACTION_TOUCH and action_id ~= const.ACTION_MULTITOUCH then
 		return false
@@ -160,10 +160,10 @@ function M:on_input(action_id, action)
 
 	if touch.released and self.is_touch then
 		if action.touch then
-			-- Mobile
+			-- 移动设备
 			self:_on_touch_release(action_id, action, touch)
 		else
-			-- PC
+			-- PC端
 			self:_end_touch(touch)
 		end
 	end
@@ -202,26 +202,26 @@ function M:on_input(action_id, action)
 	return self.is_drag
 end
 
----Set Drag click zone
----@param node node|string|nil Node or node id
----@return druid.drag self Current instance
+---设置拖动点击区域
+---@param node node|string|nil 节点或节点ID
+---@return druid.drag self 当前实例
 function M:set_click_zone(node)
 	self.click_zone = node and self:get_node(node) or nil
 
 	return self
 end
 
----Set Drag component enabled state.
+---设置拖动组件启用状态
 ---@param is_enabled boolean
----@return druid.drag self Current instance
+---@return druid.drag self 当前实例
 function M:set_enabled(is_enabled)
 	self._is_enabled = is_enabled
 
 	return self
 end
 
----Check if Drag component is capture input
----@return boolean is_enabled True if Drag component is enabled
+---检查拖动组件是否捕获输入
+---@return boolean is_enabled 如果拖动组件已启用则返回true
 function M:is_enabled()
 	return self._is_enabled
 end
@@ -244,7 +244,7 @@ function M:_start_touch(touch)
 	self.on_touch_start:trigger(self:get_context(), touch)
 end
 
----@param touch touch|nil
+---@param touch touch|nil 触摸动作对象
 function M:_end_touch(touch)
 	if self.is_drag then
 		self.on_drag_end:trigger(
@@ -264,7 +264,7 @@ function M:_end_touch(touch)
 	self.touch_id = 0
 end
 
----@param touch touch Touch action
+---@param touch touch 触摸动作对象
 function M:_process_touch(touch)
 	if not self.can_x then
 		self.touch_start_pos.x = touch.x
@@ -282,12 +282,12 @@ function M:_process_touch(touch)
 	end
 end
 
----Return current touch action from action input data
----If touch_id stored - return exact this touch action
----@param action_id hash Action id from on_input
----@param action table Action from on_input
----@param touch_id number Touch id
----@return table|nil touch Touch action
+---从动作输入数据返回当前触摸动作
+---如果存储了touch_id - 返回确切的触摸动作
+---@param action_id hash 来自on_input的动作ID
+---@param action table 来自on_input的动作
+---@param touch_id number 触摸ID
+---@return table|nil touch 触摸动作对象
 function M:_find_touch(action_id, action, touch_id)
 	local act = helper.is_mobile() and const.ACTION_MULTITOUCH or const.ACTION_TOUCH
 
@@ -308,11 +308,11 @@ function M:_find_touch(action_id, action, touch_id)
 	end
 end
 
----Process on touch release. We should to find, if any other
----touches exists to switch to another touch.
----@param action_id hash Action id from on_input
----@param action table Action from on_input
----@param touch table Touch action
+---处理触摸释放事件。我们需要查找是否存在其他
+---触摸动作以切换到另一个触摸
+---@param action_id hash 来自on_input的动作ID
+---@param action table 来自on_input的动作
+---@param touch table 触摸动作
 function M:_on_touch_release(action_id, action, touch)
 	if #action.touch >= 2 then
 		-- Find next unpressed touch
