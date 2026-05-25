@@ -73,7 +73,7 @@ function M:show_hint(node, hint_text, pivot_point, content_pivot)
 
 	self.is_shown = true
 
-	do -- Animate appear
+	do -- 显示动画
 		gui.set_enabled(self.root, true)
 		gui.set_alpha(self.root, 0)
 		gui.animate(self.root, "color.w", 1, gui.EASING_OUTSINE, 0.2)
@@ -108,17 +108,17 @@ function M:refresh_position(node, pivot_point, content_pivot)
 	node_size.x = node_size.x + HINT_OFFSET * 2
 	node_size.y = node_size.y + HINT_OFFSET * 2
 
-	-- Offset for trigger node
+	-- 触发节点的偏移（根据触发节点自身 pivot 计算）
 	local offset = -vmath.mul_per_elem(node_size, druid_const.PIVOTS[gui.get_pivot(node)])
 
-	-- Offset from center to pivot pointi
+	-- 从中心偏移到目标 pivot 点
 	offset = offset + vmath.mul_per_elem(node_size, druid_const.PIVOTS[pivot_point])
 
-	-- Offset for hint component
+	-- 提示框自身 pivot 的偏移
 	local hint_size = gui.get_size(self.root)
 	offset = offset - vmath.mul_per_elem(hint_size, druid_const.PIVOTS[content_pivot])
 
-	-- Position
+	-- 计算并设置最终位置
 	local world_scale = helper.get_scene_scale(self.root)
 	local local_pos = gui.screen_to_local(self.root, screen_position) / world_scale.x
 	gui.set_position(self.root, local_pos)

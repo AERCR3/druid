@@ -1,37 +1,37 @@
-# Advanced Druid Setup
+# 高级 Druid 设置
 
-## Input Bindings
+## 输入绑定
 
-By default, **Druid** uses all key names from Defold's default `/builtins/input/all.input_binding` for input bindings.
+默认情况下，**Druid** 使用 Defold 默认的 `/builtins/input/all.input_binding` 中的所有键名进行输入绑定。
 
-**Druid** requires the following input bindings:
+**Druid** 需要以下输入绑定：
 
-- Mouse trigger: `Button 1` -> `touch` (for basic input components)
-- Mouse trigger: `Wheel up` -> `mouse_wheel_up` (for Scroll component)
-- Mouse trigger: `Wheel down` -> `mouse_wheel_down` (for Scroll component)
-- Key trigger: `Backspace` -> `key_backspace` (for BackHandler component, input component)
-- Key trigger: `Back` -> `key_back` (for BackHandler component, Android back button, input component)
-- Key trigger: `Enter` -> `key_enter` (for Input component, optional)
-- Key trigger: `Space` -> `key_space` (for Navigation Handler widget, optional)
-- Key trigger: `Esc` -> `key_esc` (for Input component, optional)
-- Key trigger: `Left` -> `key_left` (for Rich Input component, optional)
-- Key trigger: `Right` -> `key_right` (for Rich Input component, optional)
-- Key trigger: `Up` -> `key_up` (for Navigation Handler widget, optional)
-- Key trigger: `Down` -> `key_down` (for Navigation Handler widget, optional)
-- Key trigger: `Shift` -> `key_lshift` (for Rich Input component, optional)
-- Key trigger: `Ctrl` -> `key_lctrl` (for Rich Input component, optional)
-- Key trigger: `Super` -> `key_lsuper` (for Rich Input component, optional)
-- Touch triggers: `Touch multi` -> `touch_multi` (for Scroll component)
+- 鼠标触发器: `Button 1` -> `touch` (用于基本输入组件)
+- 鼠标触发器: `Wheel up` -> `mouse_wheel_up` (用于滚动组件)
+- 鼠标触发器: `Wheel down` -> `mouse_wheel_down` (用于滚动组件)
+- 键盘触发器: `Backspace` -> `key_backspace` (用于返回处理器组件，输入组件)
+- 键盘触发器: `Back` -> `key_back` (用于返回处理器组件，Android 返回键，输入组件)
+- 键盘触发器: `Enter` -> `key_enter` (用于输入组件，可选)
+- 键盘触发器: `Space` -> `key_space` (用于导航处理器小部件，可选)
+- 键盘触发器: `Esc` -> `key_esc` (用于输入组件，可选)
+- 键盘触发器: `Left` -> `key_left` (用于富输入组件，可选)
+- 键盘触发器: `Right` -> `key_right` (用于富输入组件，可选)
+- 键盘触发器: `Up` -> `key_up` (用于导航处理器小部件，可选)
+- 键盘触发器: `Down` -> `key_down` (用于导航处理器小部件，可选)
+- 键盘触发器: `Shift` -> `key_lshift` (用于富输入组件，可选)
+- 键盘触发器: `Ctrl` -> `key_lctrl` (用于富输入组件，可选)
+- 键盘触发器: `Super` -> `key_lsuper` (用于富输入组件，可选)
+- 触摸触发器: `Touch multi` -> `touch_multi` (用于滚动组件)
 
 ![](../media/input_binding_2.png)
 ![](../media/input_binding_1.png)
 
+## 更改键绑定
 
-## Changing Key Bindings
+如果您需要使用自己的键绑定或键名，可以在您的 _game.project_ 文件中修改它们。
 
-If you need to use your own key bindings or key names, you can modify them in your *game.project* file.
+以下是键绑定的默认值：
 
-Here are the default values for key bindings:
 ```
 [druid]
 input_text = text
@@ -54,66 +54,62 @@ input_key_lctrl = key_lctrl
 input_key_lsuper = key_lsuper
 ```
 
+## 输入捕获
 
-## Input Capturing
+默认情况下，**Druid** 在创建任何输入组件时会自动捕获输入焦点。因此，您不需要调用 `msg.post(".", "acquire_input_focus")`。
 
-By default, **Druid** automatically captures input focus if any input component is created. Therefore, you do not need to call `msg.post(".", "acquire_input_focus")`.
+如果您不需要此行为，可以通过在 _game.project_ 文件中设置 `druid.no_auto_input` 字段来禁用它：
 
-If you do not require this behavior, you can disable it by setting the `druid.no_auto_input` field in the _game.project_ file:
 ```
 [druid]
 no_auto_input = 1
 ```
 
+## 设置声音函数
 
-## Set Sound Function
-
-You can set the sound function to play sounds in the Druid components. Mostly used as a click sound for the buttons.
+您可以设置声音函数来播放 Druid 组件中的声音。主要用于按钮的点击声。
 
 ```lua
 local druid = require("druid.druid")
 
--- The callback should play the sound by name: function(sound_id) ... end
+-- 回调函数应按名称播放声音: function(sound_id) ... end
 druid.set_sound_function(function(sound_id)
     sound.play("/sounds#" .. sound_id)
 end)
 ```
 
+## 设置文本函数
 
-## Set Text Function
-
-You can set the text function to get the localized string by locale ID.
+您可以设置文本函数以根据语言环境ID获取本地化字符串。
 
 ```lua
 local lang = require("lang.lang")
 local druid = require("druid.druid")
 
--- You can use lang.txp function to get the localized string by locale ID
+-- 您可以使用 lang.txp 函数根据语言环境ID获取本地化字符串
 druid.set_text_function(lang.txp)
 
--- or custom function with your own logic
+-- 或带有您自己逻辑的自定义函数
 druid.set_text_function(function(locale_id)
     return my_lang_table[locale_id] or locale_id
 end)
 ```
 
+## 设置默认样式
 
-## Set Default Style
-
-You can set the default style for the Druid components.
+您可以为 Druid 组件设置默认样式。
 
 ```lua
--- Copy the default style from the Druid folder and modify it as needed
+-- 从 Druid 文件夹复制默认样式并根据需要修改
 local my_custom_style = require("my.custom.style")
 local druid = require("druid.druid")
 
 druid.set_default_style(my_custom_style)
 ```
 
+## 语言变化时
 
-## On Language Change
-
-You can set the function to be called when the language changes.
+您可以设置语言更改时要调用的函数。
 
 ```lua
 local lang = require("lang.lang")
@@ -121,25 +117,24 @@ local druid = require("druid.druid")
 
 function M.next_language()
     lang.set_next_lang()
-	-- When game language changes, call this function to retranslate all Druid components
+	-- 当游戏语言更改时，调用此函数以重新翻译所有 Druid 组件
     druid.on_language_change()
 end
 ```
 
+## 窗口回调
 
-## On Window Callback
-
-You can set the function to be called when the window event occurs.
+您可以设置窗口事件发生时要调用的函数。
 
 ```lua
 local druid = require("druid.druid")
 
--- Initialize the window listener, will override the previous window listener
+-- 初始化窗口监听器，将覆盖之前的窗口监听器
 druid.init_window_listener()
 
--- Or call this function inside window.set_listener
+-- 或在 window.set_listener 内部调用此函数
 
--- The callback should be called when the window event occurs: function(event) ... end
+-- 回调函数应在窗口事件发生时调用: function(event) ... end
 window.set_listener(function(self, event)
 	druid.on_window_callback(event)
 end)

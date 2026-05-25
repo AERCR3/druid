@@ -36,13 +36,13 @@ function M:on_movement(x, y, dt)
 	self.character_position.x = self.character_position.x + x * CHARACTER_SPEED * dt
 	self.character_position.y = self.character_position.y + y * CHARACTER_SPEED * dt
 
-	-- Clamp to -436, 436, area of the screen
+	-- 将位置限制在屏幕区域内（-436..436）
 	self.character_position.x = math.min(436, math.max(-436, self.character_position.x))
 	self.character_position.y = math.min(436, math.max(-436, self.character_position.y))
 
 	gui.set_position(self.character, self.character_position)
 
-	-- Adjust angle of the eyes
+	-- 根据移动方向调整眼睛转向
 	local angle = math.deg(math.atan2(y, x)) - 135
 	gui.set(self.character_eye_left, "euler.z", angle)
 	gui.set(self.character_eye_right, "euler.z", angle)

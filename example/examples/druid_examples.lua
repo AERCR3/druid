@@ -18,9 +18,9 @@ local M = {}
 ---@field name_id string
 ---@field root string
 ---@field template string|nil
----@field code_url string|nil @URL to the source code
+---@field code_url string|nil @源代码链接
 ---@field component_class druid.component|nil
----@field widget_class druid.widget|nil New way to create components
+---@field widget_class druid.widget|nil 创建组件/控件的新方式
 ---@field on_create fun(instance: druid.component|druid.widget, output_list: output_list)|nil
 ---@field get_debug_info (fun(instance: druid.component):string)|nil
 ---@field properties_control (fun(instance: druid.component, properties_panel: properties_panel))|nil

@@ -34,13 +34,13 @@ function M:init()
 	for _ = 1, 12 do
 		local node = gui.clone(self.prefab)
 
-		-- Set different size for some nodes
+		-- 为部分节点设置不同尺寸，方便观察布局换行/对齐效果
 		if math.random() > 0.5 then
 			local size = vmath.vector3(default_size.x * 2, default_size.y, 0)
 			gui.set_size(node, size)
 		end
 
-		-- Set random pivot point for each node
+		-- 为每个节点随机设置 pivot，演示 pivot 对布局的影响
 		local pivot = PIVOTS[math.random(1, #PIVOTS)]
 		gui.set_pivot(node, pivot)
 

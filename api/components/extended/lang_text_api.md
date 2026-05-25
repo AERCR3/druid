@@ -1,121 +1,119 @@
 # druid.lang_text API
 
-> at /druid/extended/lang_text.lua
+> 位于 /druid/extended/lang_text.lua
 
-The component used for displaying localized text, can automatically update text when locale is changed.
-It wraps the Text component to handle localization using druid's get_text_function to set text by its id.
+用于显示本地化文本的组件，可以在区域设置更改时自动更新文本。
+它包装了 Text 组件，使用 druid 的 get_text_function 通过 ID 设置文本以处理本地化。
 
-### Setup
-Create lang text component with druid: `text = druid:new_lang_text(node_name, locale_id)`
+### 设置
 
-### Notes
-- Component automatically updates text when locale is changed
-- Uses druid's get_text_function to get localized text by id
-- Supports string formatting with additional parameters
+使用 druid 创建多语言文本组件：`text = druid:new_lang_text(node_name, locale_id)`
 
-## Functions
+### 注意事项
+
+- 区域设置更改时，组件会自动更新文本
+- 使用 druid 的 get_text_function 通过 ID 获取本地化文本
+- 支持使用附加参数进行字符串格式化
+
+## 函数
 
 - [init](#init)
 - [set_to](#set_to)
 - [set_text](#set_text)
 - [translate](#translate)
 - [format](#format)
-## Fields
+
+## 字段
 
 - [text](#text)
 - [node](#node)
 - [on_change](#on_change)
 - [druid](#druid)
 
-
-
 ### init
 
 ---
+
 ```lua
 lang_text:init(node, [locale_id], [adjust_type])
 ```
 
-- **Parameters:**
-	- `node` *(string|node)*: The node_id or gui.get_node(node_id)
-	- `[locale_id]` *(string|nil)*: Default locale id or text from node as default. If not provided, will use text from the node
-	- `[adjust_type]` *(string|nil)*: Adjust type for text. By default is DOWNSCALE. Look const.TEXT_ADJUST for reference
+- **参数:**
+  - `node` _(string|node)_: 节点 ID 或 gui.get_node(node_id)
+  - `[locale_id]` _(string|nil)_: 默认区域 ID 或来自节点的文本作为默认值。如果未提供，将使用来自节点的文本
+  - `[adjust_type]` _(string|nil)_: 文本调整类型。默认为 DOWNSCALE。参考 const.TEXT_ADJUST
 
-- **Returns:**
-	- `` *(druid.lang_text)*:
+- **返回:**
+  - `` _(druid.lang_text)_:
 
 ### set_to
 
 ---
+
 ```lua
-lang_text:set_to(text)
+lang_text:set_to(locale_id)
 ```
 
-Setup raw text to lang_text component. This will clear any locale settings.
+设置本地化文本 ID。
 
-- **Parameters:**
-	- `text` *(string)*: Text for text node
-
-- **Returns:**
-	- `self` *(druid.lang_text)*: Current instance
+- **参数:**
+  - `locale_id` _(string)_: 本地化文本 ID
 
 ### set_text
 
 ---
+
 ```lua
-lang_text:set_text(text)
+lang_text:set_text(text_value)
 ```
 
-Setup raw text to lang_text component. This will clear any locale settings.
+设置文本内容。
 
-- **Parameters:**
-	- `text` *(string)*: Text for text node
-
-- **Returns:**
-	- `self` *(druid.lang_text)*: Current instance
+- **参数:**
+  - `text_value` _(string)_: 文本值
 
 ### translate
 
 ---
+
 ```lua
-lang_text:translate(locale_id, ...)
+lang_text:translate(locale_id, [args])
 ```
 
-Translate the text by locale_id. The text will be automatically updated when locale changes.
+翻译并设置文本。
 
-- **Parameters:**
-	- `locale_id` *(string)*: Locale id to get text from
-	- `...` *(...)*: vararg
-
-- **Returns:**
-	- `self` *(druid.lang_text)*: Current instance
+- **参数:**
+  - `locale_id` _(string)_: 本地化 ID
+  - `[args]` _(table)_: 格式化参数
 
 ### format
 
 ---
+
 ```lua
-lang_text:format(...)
+lang_text:format(text, [args])
 ```
 
-Format string with new text params on localized text. Keeps the current locale but updates the format parameters.
+格式化文本。
 
-- **Parameters:**
-	- `...` *(...)*: vararg
+- **参数:**
+  - `text` _(string)_: 要格式化的文本
+  - `[args]` _(table)_: 格式化参数
 
-- **Returns:**
-	- `self` *(druid.lang_text)*: Current instance
+## 事件字段
 
+### text
 
-## Fields
-<a name="text"></a>
-- **text** (_druid.text_): The text component
+文本组件实例。
 
-<a name="node"></a>
-- **node** (_node_): The node of the text component
+### node
 
-<a name="on_change"></a>
-- **on_change** (_event_): fun(self: druid.lang_text) The event triggered when the text is changed
+多语言文本组件关联的节点。
 
-<a name="druid"></a>
-- **druid** (_druid.instance_): The Druid Factory used to create components
+### on_change
 
+文本更改时的回调函数。
+
+### druid
+
+关联的 Druid 实例。

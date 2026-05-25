@@ -8,7 +8,7 @@ function M:init()
 	self.root = self:get_node("root")
 
 	self.button_root = self.druid:new_button(self.root, self.on_root_click)
-	-- This blocker forbid input to all previous nodes in node zone
+	-- blocker 会拦截指定区域内的输入事件，阻止事件继续传递到其下层/后面的节点
 	self.blocker = self.druid:new_blocker("blocker")
 	self.button = self.druid:new_button("button/root", self.on_button_click)
 end

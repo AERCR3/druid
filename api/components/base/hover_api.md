@@ -1,10 +1,10 @@
 # druid.hover API
 
-> at /druid/base/hover.lua
+> 位于 /druid/base/hover.lua
 
-The component for handling hover events on a node
+用于处理节点上悬停事件的组件
 
-## Functions
+## 函数
 
 - [init](#init)
 - [set_hover](#set_hover)
@@ -15,7 +15,7 @@ The component for handling hover events on a node
 - [set_enabled](#set_enabled)
 - [is_enabled](#is_enabled)
 
-## Fields
+## 字段
 
 - [node](#node)
 - [on_hover](#on_hover)
@@ -23,122 +23,130 @@ The component for handling hover events on a node
 - [style](#style)
 - [click_zone](#click_zone)
 
-
-
 ### init
 
 ---
+
 ```lua
 hover:init(node, on_hover_callback, on_mouse_hover)
 ```
 
-The constructor for the hover component
+悬停组件的构造函数。
 
-- **Parameters:**
-	- `node` *(node)*: Gui node
-	- `on_hover_callback` *(function)*: Hover callback
-	- `on_mouse_hover` *(function)*: On mouse hover callback
+- **参数:**
+  - `node` _(node)_: GUI 节点
+  - `on_hover_callback` _(function)_: 悬停回调函数
+  - `on_mouse_hover` _(function)_: 鼠标悬停回调函数
 
 ### set_hover
 
 ---
+
 ```lua
 hover:set_hover([state])
 ```
 
-Set hover state
+设置悬停状态。
 
-- **Parameters:**
-	- `[state]` *(boolean|nil)*: The hover state
+- **参数:**
+  - `[state]` _(boolean)_: 悬停状态（true 为悬停，false 为非悬停，默认为 true）
 
 ### is_hovered
 
 ---
+
 ```lua
 hover:is_hovered()
 ```
 
-Return current hover state. True if touch action was on the node at current time
+检查是否有触摸悬停。
 
-- **Returns:**
-	- `is_hovered` *(boolean)*: The current hovered state
+- **返回:**
+  - `hovered` _(boolean)_: 是否有触摸悬停
 
 ### set_mouse_hover
 
 ---
+
 ```lua
 hover:set_mouse_hover([state])
 ```
 
-Set mouse hover state
+设置鼠标悬停状态。
 
-- **Parameters:**
-	- `[state]` *(boolean|nil)*: The mouse hover state
+- **参数:**
+  - `[state]` _(boolean)_: 鼠标悬停状态（true 为悬停，false 为非悬停，默认为 true）
 
 ### is_mouse_hovered
 
 ---
+
 ```lua
 hover:is_mouse_hovered()
 ```
 
-Return current hover state. True if nil action_id (usually desktop mouse) was on the node at current time
+检查是否有鼠标悬停。
 
-- **Returns:**
-	- `The` *(boolean)*: current hovered state
+- **返回:**
+  - `hovered` _(boolean)_: 是否有鼠标悬停
 
 ### set_click_zone
 
 ---
+
 ```lua
-hover:set_click_zone([zone])
+hover:set_click_zone(zone_node)
 ```
 
-Strict hover click area. Useful for no click events outside stencil node
+设置点击区域。
 
-- **Parameters:**
-	- `[zone]` *(string|node|nil)*: Gui node
+- **参数:**
+  - `zone_node` _(node)_: 用作点击区域的节点
 
 ### set_enabled
 
 ---
+
 ```lua
-hover:set_enabled([state])
+hover:set_enabled(enabled)
 ```
 
-Set enable state of hover component.
-If hover is not enabled, it will not generate
-any hover events
+设置组件是否启用。
 
-- **Parameters:**
-	- `[state]` *(boolean|nil)*: The hover enabled state
+- **参数:**
+  - `enabled` _(boolean)_: 是否启用
 
 ### is_enabled
 
 ---
+
 ```lua
 hover:is_enabled()
 ```
 
-Return current hover enabled state
+检查组件是否启用。
 
-- **Returns:**
-	- `The` *(boolean)*: hover enabled state
+- **返回:**
+  - `enabled` _(boolean)_: 是否启用
 
+## 事件字段
 
-## Fields
-<a name="node"></a>
-- **node** (_node_): Gui node
+### node
 
-<a name="on_hover"></a>
-- **on_hover** (_event_): fun(self: druid.hover, is_hover: boolean) Hover event
+悬停组件关联的节点。
 
-<a name="on_mouse_hover"></a>
-- **on_mouse_hover** (_event_): fun(self: druid.hover, is_hover: boolean) Mouse hover event
+### on_hover
 
-<a name="style"></a>
-- **style** (_druid.hover.style_): Style of the hover component
+触摸悬停时的回调函数。
 
-<a name="click_zone"></a>
-- **click_zone** (_node_): Click zone of the hover component
+### on_mouse_hover
 
+鼠标悬停时的回调函数。
+
+### style
+
+悬停组件样式配置。
+
+### click_zone
+
+点击区域节点。

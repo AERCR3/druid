@@ -8,7 +8,7 @@ local M = {}
 function M:init()
 	self.slider = self.druid:new_slider("slider/slider_pin", vmath.vector3(0, 118, 0), self.on_slider_change) --[[@as druid.slider]]
 
-	-- To add input across all slider widget add a root node to acquire additional input
+	-- 如需让整个 slider 区域都能响应拖动，可指定根节点作为额外的输入节点
 	self.slider:set_input_node("slider/root")
 
 	self.text_value = self:get_node("slider_value")

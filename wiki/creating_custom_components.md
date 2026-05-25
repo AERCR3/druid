@@ -1,25 +1,26 @@
-# Creating Custom Components
+# 创建自定义组件
 
-# Deprecated
-Custom compomnents from 1.1 release are deprecated. Now we have a new way to create custom components - widgets.
+# 已弃用
 
-Custom components are will exists for more system things like basic components. You don't have to migrate to widgets.
+1.1版本中的自定义组件已被弃用。现在我们有了创建自定义组件的新方法 - 小部件。
 
-The editor script for creating custom components is removed. Now you can create widgets with the new editor script.
+自定义组件将继续存在于基础组件等系统性事物中。您不必迁移到小部件。
 
-Read more about widgets in [widgets.md](widgets.md)
+创建自定义组件的编辑器脚本已被移除。现在您可以使用新的编辑器脚本创建小部件。
 
-## Overview
+在 [widgets.md](widgets.md) 中阅读更多关于小部件的信息
 
-Druid offers the flexibility to create custom components that contain your own logic, as well as other Druid basic components or custom components. While Druid provides a set of predefined components like buttons and scrolls, it goes beyond that and provides a way to handle all your GUI elements in a more abstract manner. Custom components are a powerful way to separate logic and create higher levels of abstraction in your code.
+## 概述
 
-Every component is a child of the Basic Druid component. You can call methods of basic components using `self:{method_name}`.
+Druid 提供了创建包含您自己逻辑的自定义组件的灵活性，以及其他 Druid 基础组件或自定义组件。虽然 Druid 提供了一组预定义的组件，如按钮和滚动条，但它超越了这一点，提供了一种更抽象的方式来处理所有 GUI 元素。自定义组件是分离逻辑并在代码中创建更高级别抽象的强大方法。
 
-## Custom Components
+每个组件都是基础 Druid 组件的子类。您可以使用 `self:{method_name}` 调用基础组件的方法。
 
-### Basic Component Template
+## 自定义组件
 
-A basic custom component template looks like this (you can copy it from `/druid/templates/component.lua.template`):
+### 基础组件模板
+
+基础自定义组件模板如下所示（您可以从 `/druid/templates/component.lua.template` 复制）：
 
 ```lua
 local component = require("druid.component")
@@ -35,13 +36,13 @@ function M:init(template, nodes)
 end
 
 function M:hello()
-    print("Hello from custom component")
+    print("来自自定义组件的问候")
 end
 
 return M
 ```
 
-Then you can create your custom component with Druid:
+然后您可以使用 Druid 创建您的自定义组件：
 
 ```lua
 local druid = require("druid.druid")
@@ -51,16 +52,16 @@ local my_component = require("my.amazing.component")
 function init(self)
     self.druid = druid.new(self)
 
-    -- We pass a GUI template "template_name" and skip nodes due it already on the scene
+    -- 我们传递一个GUI模板"template_name"并跳过节点，因为它已经在场景中
     self.my_component = self.druid:new(my_component, "template_name")
-    self.my_component:hello() -- Hello from custom component
+    self.my_component:hello() -- 来自自定义组件的问候
 end
 
 ```
 
-### Full Component Template
+### 完整组件模板
 
-A full custom component template looks like this (you can copy it from `/druid/templates/component_full.lua.template`):
+完整自定义组件模板如下所示（您可以从 `/druid/templates/component_full.lua.template` 复制）：
 
 ```lua
 local component =  require("druid.component")
@@ -98,9 +99,9 @@ function M:on_remove() end
 return M
 ```
 
-### Spawning a Custom Component
+### 生成自定义组件
 
-After creating your custom component, you can spawn it in your code. For example, if you have a component named `my_component`, you can create it like this:
+创建自定义组件后，您可以在代码中生成它。例如，如果您有一个名为 `my_component` 的组件，您可以这样创建它：
 
 ```lua
 local druid = require("druid.druid")
@@ -112,23 +113,23 @@ function init(self)
 end
 ```
 
-In the code above, `template_name` refers to the name of the GUI template file if you're using it in your custom component. `nodes` is a table obtained from `gui.clone_tree(node)`. If you're spawning multiple nodes for the component, pass the table to the component constructor. Inside the component, you need to set the template and nodes using `self:set_template(template)` and `self:set_nodes(nodes)`.
+在上面的代码中，`template_name` 指的是 GUI 模板文件的名称，如果您在自定义组件中使用它的话。`nodes` 是从 `gui.clone_tree(node)` 获取的表。如果您为组件生成多个节点，请将表传递给组件构造函数。在组件内部，您需要使用 `self:set_template(template)` 和 `self:set_nodes(nodes)` 设置模板和节点。
 
-### Registering a Custom Component
+### 注册自定义组件
 
-You can register your custom component to use it without requiring the component module in every file. Registering components is convenient for very basic components in your game. Here's how you can register a custom component in Druid:
+您可以注册您的自定义组件，以便在不需在每个文件中要求组件模块的情况下使用它。注册组件对于游戏中非常基础的组件很方便。以下是您如何在 Druid 中注册自定义组件的方法：
 
 ```lua
 local druid = require("druid.druid")
 local my_component = require("my.amazing.component")
 
 function init(self)
-    -- Register makes a "druid:new_{component_name}" function available
+    -- 注册使"druid:new_{component_name}"函数可用
     druid.register("my_component", my_component)
 end
 ```
 
-Once the component is registered, a new function will be available with the name "new_{component_name}". In our example, it will be `druid:new_my_component()`. With the component registered, you can create an instance of it using the following code:
+一旦组件注册，一个名为"new\_{component_name}"的新函数将可用。在我们的示例中，它将是 `druid:new_my_component()`。组件注册后，您可以使用以下代码创建其实例：
 
 ```lua
 local druid = require("druid.druid")
@@ -140,6 +141,6 @@ function init(self)
 end
 ```
 
-## The Power of Using Templates
+## 使用模板的力量
 
-With Druid, you can use a single component but create and customize templates for it. Templates only need to match the component scheme. For example, you can have a component named `player_panel` and two GUI templates named `player_panel` and `enemy_panel` with different layouts. The same component script can be used for both templates.
+使用 Druid，您可以使用单个组件但为其创建和自定义模板。模板只需要匹配组件方案。例如，您可以有一个名为 `player_panel` 的组件和两个名为 `player_panel` 和 `enemy_panel` 的 GUI 模板，它们有不同的布局。相同的组件脚本可用于两个模板。

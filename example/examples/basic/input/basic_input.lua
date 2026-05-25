@@ -30,8 +30,8 @@ function M:init(template, nodes)
 		gui.set_color(self.input_2.text.node, COLOR_UNSELECTED)
 	end)
 
-	-- you can set custom style for input and their components
-	-- Check in the example, how long tap on bottom input will erase text
+	-- 可以为 input 及其内部组件设置自定义 style
+	-- 本示例中：长按下方输入框会清空文本（通过 style 开关实现）
 	self.input_2.style.IS_LONGTAP_ERASE = true
 	self.input_2.button.style.AUTOHOLD_TRIGGER = 1.5
 end

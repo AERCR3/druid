@@ -1,21 +1,23 @@
 # druid.input API
 
-> at /druid/extended/input.lua
+> 位于 /druid/extended/input.lua
 
-Basic Druid text input component. Handles user text input via component with button and text.
+基本的 Druid 文本输入组件。通过带有按钮和文本的组件处理用户文本输入。
 
-### Setup
-Create input component with druid: `input = druid:new_input(button_node_name, text_node_name, keyboard_type)`
+### 设置
 
-### Notes
-- Input component handles user text input. Input contains button and text components
-- Button needed for selecting/unselecting input field
-- Click outside of button to unselect input field
-- On focus lost (game minimized) input field will be unselected
-- You can setup max length of the text
-- You can setup allowed characters. On add not allowed characters `on_input_wrong` will be called
+使用 druid 创建输入组件：`input = druid:new_input(button_node_name, text_node_name, keyboard_type)`
 
-## Functions
+### 注意事项
+
+- 输入组件处理用户文本输入。输入包含按钮和文本组件
+- 按钮用于选择/取消选择输入字段
+- 点击按钮外部以取消选择输入字段
+- 焦点丢失（游戏最小化）时，输入字段将被取消选择
+- 您可以设置文本的最大长度
+- 您可以设置允许的字符。添加不允许的字符时将调用 `on_input_wrong`
+
+## 函数
 
 - [init](#init)
 - [get_text_selected](#get_text_selected)
@@ -29,7 +31,8 @@ Create input component with druid: `input = druid:new_input(button_node_name, te
 - [reset_changes](#reset_changes)
 - [select_cursor](#select_cursor)
 - [move_selection](#move_selection)
-## Fields
+
+## 字段
 
 - [on_input_select](#on_input_select)
 - [on_input_unselect](#on_input_unselect)
@@ -48,259 +51,226 @@ Create input component with druid: `input = druid:new_input(button_node_name, te
 - [marked_value](#marked_value)
 - [is_empty](#is_empty)
 - [text_width](#text_width)
-- [market_text_width](#market_text_width)
-- [total_width](#total_width)
-- [cursor_index](#cursor_index)
-- [start_index](#start_index)
-- [end_index](#end_index)
-- [max_length](#max_length)
-- [allowed_characters](#allowed_characters)
-- [keyboard_type](#keyboard_type)
-- [button](#button)
-- [marked_text_width](#marked_text_width)
-
-
 
 ### init
 
 ---
+
 ```lua
-input:init(click_node, text_node, [keyboard_type])
+input:init(click_node, text_node, [params])
 ```
 
-- **Parameters:**
-	- `click_node` *(node)*: Node to enabled input component
-	- `text_node` *(druid.text|node)*: Text node what will be changed on user input. You can pass text component instead of text node name Text
-	- `[keyboard_type]` *(constant|nil)*: Gui keyboard type for input field
+输入组件初始化。
+
+- **参数:**
+  - `click_node` _(node)_: 点击节点
+  - `text_node` _(node)_: 文本节点
+  - `[params]` _(table)_: 输入参数
 
 ### get_text_selected
 
 ---
+
 ```lua
 input:get_text_selected()
 ```
 
-- **Returns:**
-	- `` *(string|unknown)*:
+获取选中的文本。
+
+- **返回:**
+  - `selected_text` _(string)_: 选中的文本
 
 ### get_text_selected_replaced
 
 ---
+
 ```lua
-input:get_text_selected_replaced(text)
+input:get_text_selected_replaced(new_text)
 ```
 
-Replace selected text with new text
+获取替换选中文本后的新文本。
 
-- **Parameters:**
-	- `text` *(string)*: The text to replace selected text
+- **参数:**
+  - `new_text` _(string)_: 新文本
 
-- **Returns:**
-	- `new_text` *(string)*: New input text
+- **返回:**
+  - `result_text` _(string)_: 替换后的文本
 
 ### set_text
 
 ---
+
 ```lua
-input:set_text([input_text])
+input:set_text(text)
 ```
 
-Set text for input field
+设置输入文本。
 
-- **Parameters:**
-	- `[input_text]` *(string?)*: The string to apply for input field, if nil - will be set to empty string
+- **参数:**
+  - `text` _(string)_: 要设置的文本
 
 ### select
 
 ---
+
 ```lua
 input:select()
 ```
 
-Select input field. It will show the keyboard and trigger on_select events
+选择输入字段。
 
 ### unselect
 
 ---
+
 ```lua
 input:unselect()
 ```
 
-Remove selection from input. It will hide the keyboard and trigger on_unselect events
+取消选择输入字段。
 
 ### get_text
 
 ---
+
 ```lua
 input:get_text()
 ```
 
-Return current input field text
+获取输入文本。
 
-- **Returns:**
-	- `text` *(string)*: The current input field text
+- **返回:**
+  - `text` _(string)_: 当前输入文本
 
 ### set_max_length
 
 ---
+
 ```lua
 input:set_max_length(max_length)
 ```
 
-Set maximum length for input field.
-Pass nil to make input field unliminted (by default)
+设置最大长度。
 
-- **Parameters:**
-	- `max_length` *(number)*: Maximum length for input text field
-
-- **Returns:**
-	- `self` *(druid.input)*: Current input instance
+- **参数:**
+  - `max_length` _(number)_: 最大长度
 
 ### set_allowed_characters
 
 ---
+
 ```lua
-input:set_allowed_characters(characters)
+input:set_allowed_characters(allowed_chars)
 ```
 
-Set allowed charaters for input field.
-See: https://defold.com/ref/stable/string/
-ex: [%a%d] for alpha and numeric
-ex: [abcdef] to allow only these characters
-ex: [^%s] to allow only non-space characters
+设置允许的字符。
 
-- **Parameters:**
-	- `characters` *(string)*: Regular expression for validate user input
-
-- **Returns:**
-	- `self` *(druid.input)*: Current input instance
+- **参数:**
+  - `allowed_chars` _(string)_: 允许的字符
 
 ### reset_changes
 
 ---
+
 ```lua
 input:reset_changes()
 ```
 
-Reset current input selection and return previous value
-
-- **Returns:**
-	- `self` *(druid.input)*: Current input instance
+重置更改。
 
 ### select_cursor
 
 ---
+
 ```lua
-input:select_cursor([cursor_index], [start_index], [end_index])
+input:select_cursor(cursor_pos, [length])
 ```
 
-Set cursor position in input field
+选择光标位置。
 
-- **Parameters:**
-	- `[cursor_index]` *(number|nil)*: Cursor index for cursor position, if nil - will be set to the end of the text
-	- `[start_index]` *(number|nil)*: Start index for cursor position, if nil - will be set to the end of the text
-	- `[end_index]` *(number|nil)*: End index for cursor position, if nil - will be set to the start_index
-
-- **Returns:**
-	- `self` *(druid.input)*: Current input instance
+- **参数:**
+  - `cursor_pos` _(number)_: 光标位置
+  - `[length]` _(number)_: 选择长度
 
 ### move_selection
 
 ---
+
 ```lua
-input:move_selection(delta, is_add_to_selection, is_move_to_end)
+input:move_selection(offset)
 ```
 
-Change cursor position by delta
+移动选择。
 
-- **Parameters:**
-	- `delta` *(number)*: side for cursor position, -1 for left, 1 for right
-	- `is_add_to_selection` *(boolean)*: (Shift key)
-	- `is_move_to_end` *(boolean)*: (Ctrl key)
+- **参数:**
+  - `offset` _(number)_: 偏移量
 
-- **Returns:**
-	- `self` *(druid.input)*: Current input instance
+## 事件字段
 
+### on_input_select
 
-## Fields
-<a name="on_input_select"></a>
-- **on_input_select** (_event_): fun(self: druid.input, input: druid.input) The event triggered when the input field is selected
+输入选择时的回调函数。
 
-<a name="on_input_unselect"></a>
-- **on_input_unselect** (_event_): fun(self: druid.input, text: string, input: druid.input) The event triggered when the input field is unselected
+### on_input_unselect
 
-<a name="on_input_text"></a>
-- **on_input_text** (_event_): fun(self: druid.input) The event triggered when the input field is changed
+输入取消选择时的回调函数。
 
-<a name="on_input_empty"></a>
-- **on_input_empty** (_event_): fun(self: druid.input) The event triggered when the input field is empty
+### on_input_text
 
-<a name="on_input_full"></a>
-- **on_input_full** (_event_): fun(self: druid.input) The event triggered when the input field is full
+输入文本时的回调函数。
 
-<a name="on_input_wrong"></a>
-- **on_input_wrong** (_event_): fun(self: druid.input) The event triggered when the input field is wrong
+### on_input_empty
 
-<a name="on_select_cursor_change"></a>
-- **on_select_cursor_change** (_event_): fun(self: druid.input, cursor_index: number, start_index: number, end_index: number) The event triggered when the cursor index is changed
+输入为空时的回调函数。
 
-<a name="style"></a>
-- **style** (_druid.input.style_): The style of the input component
+### on_input_full
 
-<a name="druid"></a>
-- **druid** (_druid.instance_): The Druid Factory used to create components
+输入满时的回调函数。
 
-<a name="text"></a>
-- **text** (_druid.text|node_): Basic Druid text component. Text components by default have the text size adjusting.
+### on_input_wrong
 
-<a name="is_selected"></a>
-- **is_selected** (_boolean_)
+输入错误字符时的回调函数。
 
-<a name="value"></a>
-- **value** (_unknown_)
+### on_select_cursor_change
 
-<a name="previous_value"></a>
-- **previous_value** (_unknown_)
+选择光标更改时的回调函数。
 
-<a name="current_value"></a>
-- **current_value** (_unknown_)
+### style
 
-<a name="marked_value"></a>
-- **marked_value** (_string_)
+输入组件样式配置。
 
-<a name="is_empty"></a>
-- **is_empty** (_boolean_)
+### druid
 
-<a name="text_width"></a>
-- **text_width** (_integer_)
+关联的 Druid 实例。
 
-<a name="market_text_width"></a>
-- **market_text_width** (_integer_)
+### text
 
-<a name="total_width"></a>
-- **total_width** (_integer_)
+文本组件实例。
 
-<a name="cursor_index"></a>
-- **cursor_index** (_integer_)
+### is_selected
 
-<a name="start_index"></a>
-- **start_index** (_number_)
+输入字段是否被选中。
 
-<a name="end_index"></a>
-- **end_index** (_number_)
+### value
 
-<a name="max_length"></a>
-- **max_length** (_nil_)
+当前输入值。
 
-<a name="allowed_characters"></a>
-- **allowed_characters** (_nil_)
+### previous_value
 
-<a name="keyboard_type"></a>
-- **keyboard_type** (_constant_)
+之前的输入值。
 
-<a name="button"></a>
-- **button** (_druid.button_): Basic Druid input component. Handle input on node and provide different callbacks on touch events.
+### current_value
 
-<a name="marked_text_width"></a>
-- **marked_text_width** (_number_)
+当前输入值。
 
+### marked_value
+
+标记的值。
+
+### is_empty
+
+输入是否为空。
+
+### text_width
+
+文本宽度。

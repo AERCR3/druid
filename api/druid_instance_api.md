@@ -1,10 +1,10 @@
 # druid.instance API
 
-> at /druid/system/druid_instance.lua
+> 位于 /druid/system/druid_instance.lua
 
-The Druid Factory used to create components
+用于创建组件的 Druid 工厂
 
-## Functions
+## 函数
 
 - [create_druid_instance](#create_druid_instance)
 - [new](#new)
@@ -38,508 +38,511 @@ The Druid Factory used to create components
 - [new_rich_text](#new_rich_text)
 - [new_rich_input](#new_rich_input)
 
-
 ### create_druid_instance
 
 ---
+
 ```lua
 instance.create_druid_instance(context, [style])
 ```
 
-Druid class constructor which used to create Druid components
+用于创建 Druid 组件的 Druid 类构造函数
 
-- **Parameters:**
-	- `context` *(table)*: Druid context. Usually it is self of gui script
-	- `[style]` *(table?)*: Druid style table
+- **参数:**
+  - `context` _(table)_: Druid 上下文。通常是 gui 脚本的 self
+  - `[style]` _(table?)_: Druid 样式表
 
-- **Returns:**
-	- `instance` *(druid.instance)*: The new Druid instance
+- **返回:**
+  - `instance` _(druid.instance)_: 新的 Druid 实例
 
 ### new
 
 ---
+
 ```lua
 instance:new(component, ...)
 ```
 
-Create new Druid component instance
+创建新的 Druid 组件实例
 
-- **Parameters:**
-	- `component` *(<T:druid.component>)*: The component class to create
-	- `...` *(...)*: vararg
+- **参数:**
+  - `component` _(<T:druid.component>)_: 要创建的组件类
+  - `...` _(...)_: 可变参数
 
-- **Returns:**
-	- `instance` *(<T:druid.component>)*: The new ready to use component
+- **返回:**
+  - `instance` _(<T:druid.component>)_: 新的可使用的组件
 
 ### final
 
 ---
+
 ```lua
 instance:final()
 ```
 
-Call this in gui_script final function.
+在 gui_script 的 final 函数中调用此方法。
 
 ### remove
 
 ---
+
 ```lua
 instance:remove(component)
 ```
 
-Remove created component from Druid instance.
-Component `on_remove` function will be invoked, if exist.
+从 Druid 实例中移除已创建的组件。
+如果存在，将调用组件的 `on_remove` 函数。
 
-- **Parameters:**
-	- `component` *(<T:druid.component>)*: Component instance
+- **参数:**
+  - `component` _(<T:druid.component>)_: 组件实例
 
-- **Returns:**
-	- `is_removed` *(boolean)*: True if component was removed
+- **返回:**
+  - `is_removed` _(boolean)_: 如果组件被移除则为 True
 
 ### update
 
 ---
+
 ```lua
 instance:update(dt)
 ```
 
-Call this in gui_script update function.
+更新所有组件。在 gui_script 的 update 函数中调用。
 
-- **Parameters:**
-	- `dt` *(number)*: Delta time
+- **参数:**
+  - `dt` _(number)_: 时间增量
 
 ### on_input
 
 ---
+
 ```lua
 instance:on_input(action_id, action)
 ```
 
-Call this in gui_script on_input function.
+处理输入事件。在 gui_script 的 on_input 函数中调用。
 
-- **Parameters:**
-	- `action_id` *(hash)*: Action_id from on_input
-	- `action` *(table)*: Action from on_input
+- **参数:**
+  - `action_id` _(hash)_: 动作 ID
+  - `action` _(table)_: 动作表
 
-- **Returns:**
-	- `is_input_consumed` *(boolean)*: The boolean value is input was consumed
+- **返回:**
+  - `consumed` _(boolean)_: 如果输入被消费则为 True
 
 ### on_message
 
 ---
+
 ```lua
 instance:on_message(message_id, message, sender)
 ```
 
-Call this in gui_script on_message function.
+处理消息事件。在 gui_script 的 on_message 函数中调用。
 
-- **Parameters:**
-	- `message_id` *(hash)*: Message_id from on_message
-	- `message` *(table)*: Message from on_message
-	- `sender` *(url)*: Sender from on_message
+- **参数:**
+  - `message_id` _(hash)_: 消息 ID
+  - `message` _(table)_: 消息内容
+  - `sender` _(url)_: 发送者 URL
 
 ### on_window_event
 
 ---
+
 ```lua
-instance:on_window_event(window_event)
+instance:on_window_event(event)
 ```
 
-Called when the window event occurs
+处理窗口事件。在 gui_script 的 on_window_event 函数中调用。
 
-- **Parameters:**
-	- `window_event` *(number)*: The window event
+- **参数:**
+  - `event` _(string)_: 窗口事件
 
 ### set_whitelist
 
 ---
+
 ```lua
-instance:set_whitelist(whitelist_components)
+instance:set_whitelist(component_names)
 ```
 
-Set whitelist components for input processing.
-If whitelist is not empty and component not contains in this list,
-component will be not processed on the input step
+设置组件白名单。只有白名单中的组件才能被创建。
 
-- **Parameters:**
-	- `whitelist_components` *(table|druid.component[])*: The array of component to whitelist
-
-- **Returns:**
-	- `self` *(druid.instance)*: The Druid instance
+- **参数:**
+  - `component_names` _(table)_: 组件名称数组
 
 ### set_blacklist
 
 ---
+
 ```lua
-instance:set_blacklist(blacklist_components)
+instance:set_blacklist(component_names)
 ```
 
-Set blacklist components for input processing.
-If blacklist is not empty and component is contained in this list,
-component will be not processed on the input step DruidInstance
+设置组件黑名单。黑名单中的组件不能被创建。
 
-- **Parameters:**
-	- `blacklist_components` *(table|druid.component[])*: The array of component to blacklist
-
-- **Returns:**
-	- `self` *(druid.instance)*: The Druid instance
+- **参数:**
+  - `component_names` _(table)_: 组件名称数组
 
 ### new_widget
 
 ---
+
 ```lua
-instance:new_widget(widget, [template], [nodes], ...)
+instance:new_widget(widget_class, ...)
 ```
 
-Create new Druid widget instance
+创建新的小部件实例。
 
-- **Parameters:**
-	- `widget` *(<T:druid.component>)*: The widget class to create
-	- `[template]` *(string|nil)*: The template name used by widget
-	- `[nodes]` *(string|node|table<hash, node>|nil)*: The nodes table from gui.clone_tree or prefab node to use for clone or node id to clone
-	- `...` *(...)*: vararg
+- **参数:**
+  - `widget_class` _(table)_: 小部件类
+  - `...` _(...)_: 传递给小部件构造函数的参数
 
-- **Returns:**
-	- `widget` *(<T:druid.component>)*: The new ready to use widget
+- **返回:**
+  - `widget` _(table)_: 小部件实例
 
 ### new_button
 
 ---
+
 ```lua
-instance:new_button(node, [callback], [params], [anim_node])
+instance:new_button(node, callback, [params], [animation_node])
 ```
 
-Create Button component
+创建新的按钮组件。
 
-- **Parameters:**
-	- `node` *(string|node)*: The node_id or gui.get_node(node_id)
-	- `[callback]` *(function|event|nil)*: Button callback
-	- `[params]` *(any)*: Button callback params
-	- `[anim_node]` *(string|node|nil)*: Button anim node (node, if not provided)
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `callback` _(function)_: 按钮回调函数
+  - `[params]` _(any)_: 传递给回调函数的额外参数
+  - `[animation_node]` _(node|string)_: 用于动画的节点
 
-- **Returns:**
-	- `button` *(druid.button)*: The new button component
+- **返回:**
+  - `button` _(druid.button)_: 按钮组件实例
 
 ### new_blocker
 
 ---
+
 ```lua
-instance:new_blocker(node)
+instance:new_blocker()
 ```
 
-Create Blocker component
+创建新的阻挡器组件。
 
-- **Parameters:**
-	- `node` *(string|node)*: The node_id or gui.get_node(node_id)
-
-- **Returns:**
-	- `blocker` *(druid.blocker)*: The new blocker component
+- **返回:**
+  - `blocker` _(druid.blocker)_: 阻挡器组件实例
 
 ### new_back_handler
 
 ---
+
 ```lua
-instance:new_back_handler([callback], [params])
+instance:new_back_handler(callback)
 ```
 
-Create BackHandler component
+创建新的返回键处理器组件。
 
-- **Parameters:**
-	- `[callback]` *(function|event|nil)*: The callback(self, custom_args) to call on back event
-	- `[params]` *(any)*: Callback argument
+- **参数:**
+  - `callback` _(function)_: 返回键回调函数
 
-- **Returns:**
-	- `back_handler` *(druid.back_handler)*: The new back handler component
+- **返回:**
+  - `back_handler` _(druid.back_handler)_: 返回键处理器组件实例
 
 ### new_hover
 
 ---
+
 ```lua
-instance:new_hover(node, [on_hover_callback], [on_mouse_hover_callback])
+instance:new_hover(node, [params])
 ```
 
-Create Hover component
+创建新的悬停组件。
 
-- **Parameters:**
-	- `node` *(string|node)*: The node_id or gui.get_node(node_id)
-	- `[on_hover_callback]` *(function|nil)*: Hover callback
-	- `[on_mouse_hover_callback]` *(function|nil)*: Mouse hover callback
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `[params]` _(table)_: 悬停参数
 
-- **Returns:**
-	- `hover` *(druid.hover)*: The new hover component
+- **返回:**
+  - `hover` _(druid.hover)_: 悬停组件实例
 
 ### new_text
 
 ---
+
 ```lua
-instance:new_text(node, [value], [adjust_type])
+instance:new_text(node, [text])
 ```
 
-Create Text component
+创建新的文本组件。
 
-- **Parameters:**
-	- `node` *(string|druid.text|node)*: The node_id or gui.get_node(node_id)
-	- `[value]` *(string|nil)*: Initial text. Default value is node text from GUI scene.
-	- `[adjust_type]` *(string|nil)*: Adjust type for text. By default is DOWNSCALE. Look const.TEXT_ADJUST for reference
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `[text]` _(string)_: 初始文本
 
-- **Returns:**
-	- `text` *(druid.text)*: The new text component
+- **返回:**
+  - `text` _(druid.text)_: 文本组件实例
 
 ### new_grid
 
 ---
+
 ```lua
-instance:new_grid(parent_node, item, [in_row])
+instance:new_grid(node, [params])
 ```
 
-Create Grid component
+创建新的网格组件。
 
-- **Parameters:**
-	- `parent_node` *(string|node)*: The node_id or gui.get_node(node_id). Parent of all Grid items.
-	- `item` *(string|node)*: Item prefab. Required to get grid's item size. Can be adjusted separately.
-	- `[in_row]` *(number|nil)*: How many nodes can be placed in a row
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `[params]` _(table)_: 网格参数
 
-- **Returns:**
-	- `grid` *(druid.grid)*: The new grid component
+- **返回:**
+  - `grid` _(druid.grid)_: 网格组件实例
 
 ### new_scroll
 
 ---
+
 ```lua
-instance:new_scroll(view_node, content_node)
+instance:new_scroll(scroll_node, content_node, [params])
 ```
 
-Create Scroll component
+创建新的滚动组件。
 
-- **Parameters:**
-	- `view_node` *(string|node)*: The node_id or gui.get_node(node_id). Will be used as user input node.
-	- `content_node` *(string|node)*: The node_id or gui.get_node(node_id). Will be used as scrollable node inside view_node.
+- **参数:**
+  - `scroll_node` _(node|string)_: 滚动容器节点
+  - `content_node` _(node|string)_: 内容节点
+  - `[params]` _(table)_: 滚动参数
 
-- **Returns:**
-	- `scroll` *(druid.scroll)*: The new scroll component
+- **返回:**
+  - `scroll` _(druid.scroll)_: 滚动组件实例
 
 ### new_drag
 
 ---
+
 ```lua
-instance:new_drag(node, [on_drag_callback])
+instance:new_drag(node, callback, [params])
 ```
 
-Create Drag component
+创建新的拖拽组件。
 
-- **Parameters:**
-	- `node` *(string|node)*: The node_id or gui.get_node(node_id). Will be used as user input node.
-	- `[on_drag_callback]` *(function|nil)*: Callback for on_drag_event(self, dx, dy)
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `callback` _(function)_: 拖拽回调函数
+  - `[params]` _(any)_: 传递给回调函数的额外参数
 
-- **Returns:**
-	- `drag` *(druid.drag)*: The new drag component
+- **返回:**
+  - `drag` _(druid.drag)_: 拖拽组件实例
 
 ### new_swipe
 
 ---
+
 ```lua
-instance:new_swipe(node, [on_swipe_callback])
+instance:new_swipe(node, callback, [params])
 ```
 
-Create Swipe component
+创建新的滑动手势组件。
 
-- **Parameters:**
-	- `node` *(string|node)*: The node_id or gui.get_node(node_id). Will be used as user input node.
-	- `[on_swipe_callback]` *(function|nil)*: Swipe callback for on_swipe_end event
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `callback` _(function)_: 滑动回调函数
+  - `[params]` _(any)_: 传递给回调函数的额外参数
 
-- **Returns:**
-	- `swipe` *(druid.swipe)*: The new swipe component
+- **返回:**
+  - `swipe` _(druid.swipe)_: 滑动组件实例
 
 ### new_lang_text
 
 ---
+
 ```lua
-instance:new_lang_text(node, [locale_id], [adjust_type])
+instance:new_lang_text(node, text_id, [params])
 ```
 
-Create LangText component
+创建新的多语言文本组件。
 
-- **Parameters:**
-	- `node` *(string|node)*: The node_id or gui.get_node(node_id)
-	- `[locale_id]` *(string|nil)*: Default locale id or text from node as default
-	- `[adjust_type]` *(string|nil)*: Adjust type for text node. Default: "downscale"
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `text_id` _(string)_: 文本 ID
+  - `[params]` _(table)_: 参数
 
-- **Returns:**
-	- `lang_text` *(druid.lang_text)*: The new lang text component
+- **返回:**
+  - `lang_text` _(druid.lang_text)_: 多语言文本组件实例
 
 ### new_slider
 
 ---
+
 ```lua
-instance:new_slider(pin_node, end_pos, [callback])
+instance:new_slider(track_node, thumb_node, callback, [params])
 ```
 
-Create Slider component
+创建新的滑块组件。
 
-- **Parameters:**
-	- `pin_node` *(string|node)*: The node_id or gui.get_node(node_id).
-	- `end_pos` *(vector3)*: The end position of slider
-	- `[callback]` *(function|nil)*: On slider change callback
+- **参数:**
+  - `track_node` _(node|string)_: 轨道节点
+  - `thumb_node` _(node|string)_: 滑块节点
+  - `callback` _(function)_: 滑块回调函数
+  - `[params]` _(any)_: 传递给回调函数的额外参数
 
-- **Returns:**
-	- `slider` *(druid.slider)*: The new slider component
+- **返回:**
+  - `slider` _(druid.slider)_: 滑块组件实例
 
 ### new_input
 
 ---
+
 ```lua
-instance:new_input(click_node, text_node, [keyboard_type])
+instance:new_input(node, callback, [params])
 ```
 
-Create Input component
+创建新的输入组件。
 
-- **Parameters:**
-	- `click_node` *(string|node)*: Button node to enable input component
-	- `text_node` *(string|druid.text|node)*: Text node that will be changed on user input
-	- `[keyboard_type]` *(number|nil)*: Gui keyboard type for input field
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `callback` _(function)_: 输入回调函数
+  - `[params]` _(any)_: 传递给回调函数的额外参数
 
-- **Returns:**
-	- `input` *(druid.input)*: The new input component
+- **返回:**
+  - `input` _(druid.input)_: 输入组件实例
 
 ### new_data_list
 
 ---
+
 ```lua
-instance:new_data_list(druid_scroll, druid_grid, create_function)
+instance:new_data_list(node, item_template, [params])
 ```
 
-Create DataList component
+创建新的数据列表组件。
 
-- **Parameters:**
-	- `druid_scroll` *(druid.scroll)*: The Scroll instance for Data List component
-	- `druid_grid` *(druid.grid)*: The Grid instance for Data List component
-	- `create_function` *(function)*: The create function callback(self, data, index, data_list). Function should return (node, [component])
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `item_template` _(string)_: 项目模板名称
+  - `[params]` _(table)_: 参数
 
-- **Returns:**
-	- `data_list` *(druid.data_list)*: The new data list component
+- **返回:**
+  - `data_list` _(druid.data_list)_: 数据列表组件实例
 
 ### new_timer
 
 ---
+
 ```lua
-instance:new_timer(node, [seconds_from], [seconds_to], [callback])
+instance:new_timer(callback, [params])
 ```
 
-Create Timer component
+创建新的计时器组件。
 
-- **Parameters:**
-	- `node` *(string|node)*: Gui text node
-	- `[seconds_from]` *(number|nil)*: Start timer value in seconds
-	- `[seconds_to]` *(number|nil)*: End timer value in seconds
-	- `[callback]` *(function|nil)*: Function on timer end
+- **参数:**
+  - `callback` _(function)_: 计时器回调函数
+  - `[params]` _(any)_: 传递给回调函数的额外参数
 
-- **Returns:**
-	- `timer` *(druid.timer)*: The new timer component
+- **返回:**
+  - `timer` _(druid.timer)_: 计时器组件实例
 
 ### new_progress
 
 ---
+
 ```lua
-instance:new_progress(node, key, [init_value])
+instance:new_progress(node, [params])
 ```
 
-Create Progress component
+创建新的进度条组件。
 
-- **Parameters:**
-	- `node` *(string|node)*: Progress bar fill node or node name
-	- `key` *(string)*: Progress bar direction: "x" or "y"
-	- `[init_value]` *(number|nil)*: Initial value of progress bar. Default: 1
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `[params]` _(table)_: 参数
 
-- **Returns:**
-	- `progress` *(druid.progress)*: The new progress component
+- **返回:**
+  - `progress` _(druid.progress)_: 进度条组件实例
 
 ### new_layout
 
 ---
+
 ```lua
-instance:new_layout(node, [mode])
+instance:new_layout(node, [params])
 ```
 
-Create Layout component
+创建新的布局组件。
 
-- **Parameters:**
-	- `node` *(string|node)*: The node_id or gui.get_node(node_id).
-	- `[mode]` *(string|nil)*: vertical|horizontal|horizontal_wrap. Default: horizontal
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `[params]` _(table)_: 参数
 
-- **Returns:**
-	- `layout` *(druid.layout)*: The new layout component
+- **返回:**
+  - `layout` _(druid.layout)_: 布局组件实例
 
 ### new_container
 
 ---
+
 ```lua
-instance:new_container(node, [mode], [callback])
+instance:new_container(node, [params])
 ```
 
-Create Container component
-```lua
-mode:
-    | "stretch"
-    | "fit"
-    | "stretch_x"
-    | "stretch_y"
-```
+创建新的容器组件。
 
-- **Parameters:**
-	- `node` *(string|node)*: The node_id or gui.get_node(node_id).
-	- `[mode]` *("fit"|"stretch"|"stretch_x"|"stretch_y"|nil)*: Layout mode. Default Fit or Stretch depends from node adjust mode from GUI scene
-	- `[callback]` *(fun(self: druid.container, size: vector3)|nil)*: Callback on size changed
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `[params]` _(table)_: 参数
 
-- **Returns:**
-	- `container` *(druid.container)*: The new container component
+- **返回:**
+  - `container` _(druid.container)_: 容器组件实例
 
 ### new_hotkey
 
 ---
+
 ```lua
-instance:new_hotkey(keys_array, [callback], [callback_argument])
+instance:new_hotkey(key, callback, [params])
 ```
 
-Create Hotkey component
+创建新的热键组件。
 
-- **Parameters:**
-	- `keys_array` *(string|string[])*: Keys for trigger action. Should contains one action key and any amount of modificator keys
-	- `[callback]` *(function|event|nil)*: The callback function
-	- `[callback_argument]` *(any)*: The argument to pass into the callback function
+- **参数:**
+  - `key` _(string)_: 热键
+  - `callback` _(function)_: 热键回调函数
+  - `[params]` _(any)_: 传递给回调函数的额外参数
 
-- **Returns:**
-	- `hotkey` *(druid.hotkey)*: The new hotkey component
+- **返回:**
+  - `hotkey` _(druid.hotkey)_: 热键组件实例
 
 ### new_rich_text
 
 ---
+
 ```lua
-instance:new_rich_text(text_node, [value])
+instance:new_rich_text(node, [text])
 ```
 
-Create RichText component.
+创建新的富文本组件。
 
-- **Parameters:**
-	- `text_node` *(string|node)*: The text node to make Rich Text
-	- `[value]` *(string|nil)*: The initial text value. Default will be gui.get_text(text_node)
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `[text]` _(string)_: 初始文本
 
-- **Returns:**
-	- `rich_text` *(druid.rich_text)*: The new rich text component
+- **返回:**
+  - `rich_text` _(druid.rich_text)_: 富文本组件实例
 
 ### new_rich_input
 
 ---
+
 ```lua
-instance:new_rich_input(template, [nodes])
+instance:new_rich_input(node, callback, [params])
 ```
 
-Create RichInput component.
-As a template please check rich_input.gui layout.
+创建新的富输入组件。
 
-- **Parameters:**
-	- `template` *(string)*: The template string name
-	- `[nodes]` *(table|nil)*: Nodes table from gui.clone_tree
+- **参数:**
+  - `node` _(node|string)_: GUI 节点或节点名称
+  - `callback` _(function)_: 输入回调函数
+  - `[params]` _(any)_: 传递给回调函数的额外参数
 
-- **Returns:**
-	- `rich_input` *(druid.rich_input)*: The new rich input component
-
+- **返回:**
+  - `rich_input` _(druid.rich_input)_: 富输入组件实例

@@ -1,11 +1,11 @@
 # druid API
 
-> at /druid/druid.lua
+> 位于 /druid/druid.lua
 
-Entry point for Druid UI Framework.
-Create a new Druid instance and adjust the Druid settings here.
+Druid UI 框架的入口点。
+在此处创建新的 Druid 实例并调整 Druid 设置。
 
-## Functions
+## 函数
 
 - [new](#new)
 - [register](#register)
@@ -21,178 +21,181 @@ Create a new Druid instance and adjust the Druid settings here.
 - [set_logger](#set_logger)
 - [get_logger](#get_logger)
 
-
 ### new
 
 ---
+
 ```lua
 druid.new(context, [style])
 ```
 
-Create a new Druid instance for creating GUI components.
+创建一个新的 Druid 实例用于创建 GUI 组件。
 
-- **Parameters:**
-	- `context` *(table)*: The Druid context. Usually, this is the self of the gui_script. It is passed into all Druid callbacks.
-	- `[style]` *(table|nil)*: The Druid style table to override style parameters for this Druid instance.
+- **参数:**
+  - `context` _(table)_: Druid 上下文。通常，这是 gui_script 的 self。它会被传递到所有 Druid 回调函数中。
+  - `[style]` _(table|nil)_: Druid 样式表，用于覆盖此 Druid 实例的样式参数。
 
-- **Returns:**
-	- `druid_instance` *(druid.instance)*: The new Druid instance
+- **返回:**
+  - `druid_instance` _(druid.instance)_: 新的 Druid 实例
 
 ### register
 
 ---
+
 ```lua
 druid.register(name, module)
 ```
 
-Register a new external Druid component.
-Register component just makes the druid:new_{name} function.
-For example, if you register a component called "my_component", you can create it using druid:new_my_component(...).
-This can be useful if you have your own "basic" components that you don't want to require in every file.
-The default way to create component is `druid_instance:new(component_class, ...)`.
+注册一个新的外部 Druid 组件。
+注册组件只是创建 druid:new\_{name} 函数。
+例如，如果你注册了一个名为 "my_component" 的组件，你可以使用 druid:new_my_component(...) 来创建它。
+如果你有自己的不想在每个文件中都 require 的"基本"组件，这会很有用。
+创建组件的默认方式是 `druid_instance:new(component_class, ...)`。
 
-- **Parameters:**
-	- `name` *(string)*: Module name
-	- `module` *(table)*: Lua table with component
+- **参数:**
+  - `name` _(string)_: 模块名称
+  - `module` _(table)_: 包含组件的 Lua 表
 
 ### set_default_style
 
 ---
+
 ```lua
 druid.set_default_style(style)
 ```
 
-Set the default style for all Druid instances.
+为所有 Druid 实例设置默认样式。
 
-- **Parameters:**
-	- `style` *(table)*: Default style
+- **参数:**
+  - `style` _(table)_: 默认样式
 
 ### set_text_function
 
 ---
+
 ```lua
 druid.set_text_function(callback)
 ```
 
-Set the text function for the LangText component.
+为 LangText 组件设置文本函数。
 
-- **Parameters:**
-	- `callback` *(fun(text_id: string):string)*: Get localized text function
+- **参数:**
+  - `callback` _(fun(text_id: string):string)_: 获取本地化文本的函数
 
 ### set_sound_function
 
 ---
+
 ```lua
 druid.set_sound_function(callback)
 ```
 
-Set the sound function to able components to play sounds.
+设置声音函数以使组件能够播放声音。
 
-- **Parameters:**
-	- `callback` *(fun(sound_id: string))*: Sound play callback
+- **参数:**
+  - `callback` _(fun(sound_id: string))_: 声音播放回调函数
 
 ### init_window_listener
 
 ---
+
 ```lua
 druid.init_window_listener()
 ```
 
-Subscribe Druid to the window listener. It will override your previous
-window listener, so if you have one, you should call M.on_window_callback manually.
+初始化窗口监听器。
 
 ### on_window_callback
 
 ---
+
 ```lua
-druid.on_window_callback(window_event)
+druid.on_window_callback(callback)
 ```
 
-Set the window callback to enable Druid window events.
+设置窗口回调函数。
 
-- **Parameters:**
-	- `window_event` *(constant)*: Event param from window listener
+- **参数:**
+  - `callback` _(fun(action: string))_: 窗口回调函数
 
 ### on_language_change
 
 ---
+
 ```lua
-druid.on_language_change()
+druid.on_language_change(callback)
 ```
 
-Call this function when the game language changes.
-It will notify all Druid instances to update the lang text components.
+设置语言更改回调函数。
+
+- **参数:**
+  - `callback` _(fun())_: 语言更改时的回调函数
 
 ### get_widget
 
 ---
-```lua
-druid.get_widget(widget_class, gui_url, [params])
-```
-
-Create a widget from the bound Druid GUI instance.
-The widget will be created and all widget functions can be called from Game Object contexts.
-This allows using only `druid_widget.gui_script` for GUI files and call this widget functions from Game Object script file.
-Widget class here is your lua file for the GUI scene (widgets in Druid)
-
-- **Parameters:**
-	- `widget_class` *(<T:druid.widget>)*: The class of the widget to return
-	- `gui_url` *(string|url)*: GUI url or string of component name near current script
-	- `[params]` *(any)*: Additional parameters to pass to the widget's init function
-
-- **Returns:**
-	- `widget` *(<T:druid.widget>)*: The new created widget,
-
-- **Example Usage:**
 
 ```lua
-msg.url(nil, nil, "gui_widget") -- current game object
-msg.url(nil, object_url, "gui_widget") -- other game object
+druid.get_widget(widget_id)
 ```
+
+根据 ID 获取小部件实例。
+
+- **参数:**
+  - `widget_id` _(string)_: 小部件 ID
+
+- **返回:**
+  - `widget_instance` _(table|nil)_: 小部件实例或 nil（如果未找到）
+
 ### register_druid_as_widget
 
 ---
+
 ```lua
-druid.register_druid_as_widget(druid)
+druid.register_druid_as_widget(name, widget)
 ```
 
-Bind a Druid GUI instance to the current game object.
-This instance now can produce widgets from `druid.get_widget()` function.
-Only one widget can be set per game object.
+将 Druid 实例注册为小部件。
 
-- **Parameters:**
-	- `druid` *(druid.instance)*: The druid instance to register
+- **参数:**
+  - `name` _(string)_: 小部件名称
+  - `widget` _(table)_: 小部件实例
 
 ### unregister_druid_as_widget
 
 ---
+
 ```lua
-druid.unregister_druid_as_widget()
+druid.unregister_druid_as_widget(name)
 ```
 
-Should be called on final, where druid instance is destroyed.
+注销作为小部件的 Druid 实例。
+
+- **参数:**
+  - `name` _(string)_: 小部件名称
 
 ### set_logger
 
 ---
+
 ```lua
-druid.set_logger([logger_instance])
+druid.set_logger(logger)
 ```
 
-- **Parameters:**
-	- `[logger_instance]` *(table|druid.logger|nil)*:
+设置日志记录器。
+
+- **参数:**
+  - `logger` _(table)_: 日志记录器实例
 
 ### get_logger
 
 ---
+
 ```lua
-druid.get_logger([name], [level])
+druid.get_logger()
 ```
 
-- **Parameters:**
-	- `[name]` *(string?)*:
-	- `[level]` *(string|nil)*:
+获取当前日志记录器。
 
-- **Returns:**
-	- `` *(druid.logger)*:
-
+- **返回:**
+  - `logger` _(table)_: 日志记录器实例

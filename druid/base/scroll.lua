@@ -3,70 +3,73 @@ local const = require("druid.const")
 local helper = require("druid.helper")
 local component = require("druid.component")
 
----Scroll style parameters
+---滚动样式参数
+---这些参数控制滚动组件的行为和动画效果
 ---@class druid.scroll.style
----@field FRICT number|nil Multiplier for free inertion. Default: 0
----@field FRICT_HOLD number|nil Multiplier for inertion, while touching. Default: 0
----@field INERT_THRESHOLD number|nil Scroll speed to stop inertion. Default: 3
----@field INERT_SPEED number|nil Multiplier for inertion speed. Default: 30
----@field POINTS_DEADZONE number|nil Speed to check points of interests in no_inertion mode. Default: 20
----@field BACK_SPEED number|nil Scroll back returning lerp speed. Default: 35
----@field ANIM_SPEED number|nil Scroll gui.animation speed for scroll_to function. Default: 2
----@field EXTRA_STRETCH_SIZE number|nil extra size in pixels outside of scroll (stretch effect). Default: 0
----@field SMALL_CONTENT_SCROLL boolean|nil If true, content node with size less than view node size can be scrolled. Default: false
----@field WHEEL_SCROLL_SPEED number|nil The scroll speed via mouse wheel scroll or touchpad. Set to 0 to disable wheel scrolling. Default: 0
----@field WHEEL_SCROLL_INVERTED boolean|nil If true, invert direction for touchpad and mouse wheel scroll. Default: false
----@field WHEEL_SCROLL_BY_INERTION boolean|nil If true, wheel will add inertion to scroll. Direct set position otherwise.. Default: false
+---@field FRICT number|nil 自由惯性的乘数。默认值: 0
+---@field FRICT_HOLD number|nil 触摸时惯性的乘数。默认值: 0
+---@field INERT_THRESHOLD number|nil 停止惯性的滚动速度阈值。默认值: 3
+---@field INERT_SPEED number|nil 惯性速度的乘数。默认值: 30
+---@field POINTS_DEADZONE number|nil 无惯性模式下检查兴趣点的速度。默认值: 20
+---@field BACK_SPEED number|nil 滚动回弹的lerp速度。默认值: 35
+---@field ANIM_SPEED number|nil scroll_to函数的GUI动画速度。默认值: 2
+---@field EXTRA_STRETCH_SIZE number|nil 滚动区域外的额外像素大小（拉伸效果）。默认值: 0
+---@field SMALL_CONTENT_SCROLL boolean|nil 如果为真，内容节点小于视图节点时也可滚动。默认值: false
+---@field WHEEL_SCROLL_SPEED number|nil 鼠标滚轮或触控板的滚动速度。设为0可禁用滚轮滚动。默认值: 0
+---@field WHEEL_SCROLL_INVERTED boolean|nil 如果为真，反转触控板和鼠标滚轮的滚动方向。默认值: false
+---@field WHEEL_SCROLL_BY_INERTION boolean|nil 如果为真，滚轮将添加惯性到滚动。否则直接设置位置。默认值: false
 
----Basic Druid scroll component. Handles all scrolling behavior in Druid GUI.
+---基本的Druid滚动组件。处理Druid GUI中的所有滚动行为。
 ---
----### Setup
----Create scroll component with druid: `druid:new_scroll(view_node, content_node)`
+---### 设置
+---使用druid创建滚动组件: `druid:new_scroll(view_node, content_node)`
 ---
----### Notes
----- View_node is the static part that captures user input and recognizes scrolling touches
----- Content_node is the dynamic part that will change position according to the scroll system
----- Initial scroll size will be equal to content_node size
----- The initial view box will be equal to view_node size
----- Scroll by default style has inertia and extra size for stretching effect
----- You can setup "points of interest" to make scroll always center on closest point
----- Scroll events:
-----   - on_scroll(self, position): On scroll move callback
-----   - on_scroll_to(self, position, is_instant): On scroll_to function callback
-----   - on_point_scroll(self, item_index, position): On scroll_to_index function callback
----- Multitouch is required for scroll. Scroll correctly handles touch_id swap while dragging
+---### 注意事项
+---- View_node是捕获用户输入和识别滚动触摸的静态部分
+---- Content_node是根据滚动系统改变位置的动态部分
+---- 初始滚动大小将等于content_node大小
+---- 初始视图框将等于view_node大小
+---- 滚动默认样式具有惯性和额外大小以实现拉伸效果
+---- 您可以设置"兴趣点"使滚动始终集中在最近的点上
+---- 滚动事件:
+----   - on_scroll(self, position): 滚动移动回调
+----   - on_scroll_to(self, position, is_instant): scroll_to函数回调
+----   - on_point_scroll(self, item_index, position): scroll_to_index函数回调
+---- 滚动需要多点触控。滚动在拖动时正确处理touch_id交换
+---滚动组件是UI中处理大量内容展示的核心组件，支持惯性滚动和精确控制
 ---@class druid.scroll: druid.component
----@field node node The root node
----@field click_zone node|nil Optional click zone to restrict scroll area
----@field on_scroll event fun(self: druid.scroll, position: vector3) Triggered on scroll move
----@field on_scroll_to event fun(self: druid.scroll, target: vector3, is_instant: boolean) Triggered on scroll_to
----@field on_point_scroll event fun(self: druid.scroll, index: number, point: vector3) Triggered on scroll_to_index
----@field view_node node The scroll view node (static part)
----@field view_border vector4 The scroll view borders
----@field content_node node The scroll content node (moving part)
----@field view_size vector3 Size of the view node
----@field position vector3 Current scroll position
----@field target_position vector3 Target scroll position for animations
----@field available_pos vector4 Available content position (min_x, max_y, max_x, min_y)
----@field available_size vector3 Size of available positions (width, height, 0)
----@field drag druid.drag The drag component instance
----@field selected number|nil Current selected point of interest index
----@field is_animate boolean True if scroll is animating
----@field style druid.scroll.style Component style parameters
----@field private _is_inert boolean True if inertial scrolling is enabled
----@field private inertion vector3 Current inertial movement vector
----@field private _is_horizontal_scroll boolean True if horizontal scroll enabled
----@field private _is_vertical_scroll boolean True if vertical scroll enabled
----@field private _grid_on_change event Grid items change event
----@field private _grid_on_change_callback function Grid change callback
----@field private _offset vector3 Content start offset
----@field private _layout_on_change_callback function Layout change callback
+---@field node node 根节点
+---@field click_zone node|nil 可选的点击区域，用于限制滚动区域
+---@field on_scroll event fun(self: druid.scroll, position: vector3) 滚动移动时触发
+---@field on_scroll_to event fun(self: druid.scroll, target: vector3, is_instant: boolean) scroll_to时触发
+---@field on_point_scroll event fun(self: druid.scroll, index: number, point: vector3) scroll_to_index时触发
+---@field view_node node 滚动视图节点（静态部分）
+---@field view_border vector4 滚动视图边界
+---@field content_node node 滚动内容节点（移动部分）
+---@field view_size vector3 视图节点的大小
+---@field position vector3 当前滚动位置
+---@field target_position vector3 动画的目标滚动位置
+---@field available_pos vector4 可用内容位置（min_x, max_y, max_x, min_y）
+---@field available_size vector3 可用位置的大小（宽度，高度，0）
+---@field drag druid.drag 拖拽组件实例
+---@field selected number|nil 当前选中的兴趣点索引
+---@field is_animate boolean 滚动是否在动画中
+---@field style druid.scroll.style 组件样式参数
+---@field private _is_inert boolean 是否启用了惯性滚动
+---@field private inertion vector3 当前惯性运动向量
+---@field private _is_horizontal_scroll boolean 是否启用水平滚动
+---@field private _is_vertical_scroll boolean 是否启用垂直滚动
+---@field private _grid_on_change event 网格项目更改事件
+---@field private _grid_on_change_callback function 网格更改回调
+---@field private _offset vector3 内容起始偏移
+---@field private _layout_on_change_callback function 布局更改回调
 local M = component.create("scroll")
 
 
----The Scroll constructor
----@param view_node string|node GUI view scroll node - the static part that captures user input
----@param content_node string|node GUI content scroll node - the dynamic part that will change position
+---滚动组件的构造函数
+---初始化滚动组件，设置视图节点和内容节点
+---@param view_node string|node GUI视图滚动节点 - 捕获用户输入的静态部分
+---@param content_node string|node GUI内容滚动节点 - 改变位置的动态部分
 function M:init(view_node, content_node)
 	self.druid = self:get_druid()
 
@@ -104,9 +107,10 @@ function M:init(view_node, content_node)
 	self:_update_size()
 end
 
-
+---内部方法：处理样式变化
+---当滚动组件样式发生变化时调用此私有方法
 ---@private
----@param style druid.scroll.style
+---@param style druid.scroll.style 样式配置
 function M:on_style_change(style)
 	self.style = {}
 	self.style.EXTRA_STRETCH_SIZE = style.EXTRA_STRETCH_SIZE or 0
@@ -129,7 +133,6 @@ function M:on_style_change(style)
 		self.style.INERT_SPEED == 0)
 end
 
-
 ---@private
 function M:on_late_init()
 	if not self.click_zone then
@@ -140,12 +143,10 @@ function M:on_late_init()
 	end
 end
 
-
 ---@private
 function M:on_layout_change()
 	gui.set_position(self.content_node, self.position)
 end
-
 
 ---@private
 function M:update(dt)
@@ -162,18 +163,15 @@ function M:update(dt)
 	end
 end
 
-
 ---@private
 function M:on_input(action_id, action)
 	return self:_process_scroll_wheel(action_id, action)
 end
 
-
 ---@private
 function M:on_remove()
 	self:bind_grid(nil)
 end
-
 
 ---Start scroll to target point.
 ---@param point vector3 Target point
@@ -205,7 +203,6 @@ function M:scroll_to(point, is_instant)
 	self.on_scroll_to:trigger(self:get_context(), target, is_instant)
 end
 
-
 ---Scroll to the node, if node is not visible in scroll view
 ---@param node node The node to make visible
 ---@param is_instant boolean|nil Instant scroll flag
@@ -213,10 +210,6 @@ function M:scroll_to_make_node_visible(node, is_instant)
 	-- Can be any node not only directly at scroll content
 	local screen_position = gui.get_screen_position(node)
 	local local_position = gui.screen_to_local(self.content_node, screen_position)
-
-	local content_position = gui.get_position(self.content_node)
-	local_position.x = local_position.x - content_position.x
-	local_position.y = local_position.y - content_position.y
 
 	-- Get the node borders in content node space
 	local node_border = helper.get_border(node, local_position)
@@ -265,12 +258,10 @@ function M:scroll_to_make_node_visible(node, is_instant)
 	end
 end
 
-
 ---Scroll to item in scroll by point index.
 ---@param index number Point index
----@param is_silent boolean|nil If true, skip the point callback
----@param is_instant boolean|nil Instant scroll flag
-function M:scroll_to_index(index, is_silent, is_instant)
+---@param skip_cb boolean|nil If true, skip the point callback
+function M:scroll_to_index(index, skip_cb)
 	if not self.points then
 		return
 	end
@@ -280,14 +271,13 @@ function M:scroll_to_index(index, is_silent, is_instant)
 	if self.selected ~= index then
 		self.selected = index
 
-		if not is_silent then
+		if not skip_cb then
 			self.on_point_scroll:trigger(self:get_context(), index, self.points[index])
 		end
 	end
 
-	self:scroll_to(self.points[index], is_instant)
+	self:scroll_to(self.points[index])
 end
-
 
 ---Start scroll to target scroll percent
 ---@param percent vector3 target percent
@@ -311,7 +301,6 @@ function M:scroll_to_percent(percent, is_instant)
 	self:scroll_to(pos, is_instant)
 end
 
-
 ---Return current scroll progress status.
 -- Values will be in [0..1] interval
 ---@return vector3 New vector with scroll progress values
@@ -321,7 +310,6 @@ function M:get_percent()
 
 	return vmath.vector3(x_perc, y_perc, 0)
 end
-
 
 ---Set scroll content size.
 -- It will change content gui node size
@@ -338,7 +326,6 @@ function M:set_size(size, offset)
 	return self
 end
 
-
 ---Set new scroll view size in case the node size was changed.
 ---@param size vector3 The new size for view node
 ---@return druid.scroll self Current scroll instance
@@ -351,7 +338,6 @@ function M:set_view_size(size)
 	return self
 end
 
-
 ---Refresh scroll view size, used when view node size is changed
 ---@return druid.scroll self Current scroll instance
 function M:update_view_size()
@@ -361,7 +347,6 @@ function M:update_view_size()
 
 	return self
 end
-
 
 ---Enable or disable scroll inert
 -- If disabled, scroll through points (if exist)
@@ -374,13 +359,11 @@ function M:set_inert(state)
 	return self
 end
 
-
 ---Return if scroll have inertion
 ---@return boolean is_inert If scroll have inertion
 function M:is_inert()
 	return self._is_inert
 end
-
 
 ---Set extra size for scroll stretching
 -- Set 0 to disable stretching effect
@@ -393,13 +376,11 @@ function M:set_extra_stretch_size(stretch_size)
 	return self
 end
 
-
 ---Return vector of scroll size with width and height.
 ---@return vector3 Available scroll size
 function M:get_scroll_size()
 	return self.available_size
 end
-
 
 ---Set points of interest.
 -- Scroll will always centered on closer points
@@ -408,11 +389,14 @@ end
 function M:set_points(points)
 	self.points = points
 
+	table.sort(self.points, function(a, b)
+		return a.x > b.x or a.y < b.y
+	end)
+
 	self:_check_threshold()
 
 	return self
 end
-
 
 ---Lock or unlock horizontal scroll
 ---@param state boolean True, if horizontal scroll is enabled
@@ -423,7 +407,6 @@ function M:set_horizontal_scroll(state)
 	return self
 end
 
-
 ---Lock or unlock vertical scroll
 ---@param state boolean True, if vertical scroll is enabled
 ---@return druid.scroll self Current scroll instance
@@ -432,7 +415,6 @@ function M:set_vertical_scroll(state)
 	self.drag.can_y = self.available_size.y > 0 and state or false
 	return self
 end
-
 
 ---Check node if it visible now on scroll.
 -- Extra border is not affected. Return true for elements in extra scroll zone
@@ -473,7 +455,6 @@ function M:is_node_in_view(node)
 	return true
 end
 
-
 ---Bind the grid component (Static or Dynamic) to recalculate
 -- scroll size on grid changes
 ---@param grid druid.grid|nil Druid grid component
@@ -502,7 +483,6 @@ function M:bind_grid(grid)
 	return self
 end
 
-
 ---Bind the layout component to recalculate
 -- scroll size on layout changes
 ---@param layout druid.layout|nil Druid layout component
@@ -529,14 +509,12 @@ function M:bind_layout(layout)
 	return self
 end
 
-
 ---Strict drag scroll area. Useful for
 -- restrict events outside stencil node
 ---@param node node|string Gui node
 function M:set_click_zone(node)
 	self.drag:set_click_zone(node)
 end
-
 
 function M:_on_scroll_drag(dx, dy)
 	local t = self.target_position
@@ -578,7 +556,6 @@ function M:_on_scroll_drag(dx, dy)
 	t.y = t.y + dy * y_perc
 end
 
-
 function M:_check_soft_zone()
 	local target = self.target_position
 	local border = self.available_pos
@@ -613,7 +590,6 @@ function M:_check_soft_zone()
 	return is_changed
 end
 
-
 -- Cancel animation on other animation or input touch
 function M:_cancel_animate()
 	self.inertion.x = 0
@@ -628,7 +604,6 @@ function M:_cancel_animate()
 	end
 end
 
-
 function M:_set_scroll_position(position_x, position_y)
 	local available_extra = self.available_pos_extra
 	position_x = helper.clamp(position_x, available_extra.x, available_extra.z)
@@ -642,7 +617,6 @@ function M:_set_scroll_position(position_x, position_y)
 		self.on_scroll:trigger(self:get_context(), self.position)
 	end
 end
-
 
 ---Find closer point of interest
 -- if no inert, scroll to next point by scroll direction
@@ -703,7 +677,6 @@ function M:_check_points()
 	end
 end
 
-
 function M:_check_threshold()
 	local is_stopped = false
 
@@ -720,7 +693,6 @@ function M:_check_threshold()
 		self:_check_points()
 	end
 end
-
 
 function M:_update_free_scroll(dt)
 	if self.is_animate then
@@ -744,13 +716,11 @@ function M:_update_free_scroll(dt)
 	if is_changed then
 		self.inertion.x = 0
 		self.inertion.y = 0
-		self:_check_threshold()
 	end
 	if self.position.x ~= target.x or self.position.y ~= target.y then
 		self:_set_scroll_position(target.x, target.y)
 	end
 end
-
 
 function M:_update_hand_scroll(dt)
 	if self.is_animate then
@@ -766,7 +736,6 @@ function M:_update_hand_scroll(dt)
 	self:_set_scroll_position(self.target_position.x, self.target_position.y)
 end
 
-
 function M:_on_touch_start()
 	self.inertion.x = 0
 	self.inertion.y = 0
@@ -774,11 +743,9 @@ function M:_on_touch_start()
 	self.target_position.y = self.position.y
 end
 
-
 function M:_on_touch_end()
 	self:_check_threshold()
 end
-
 
 function M:_update_size()
 	local content_border = helper.get_border(self.content_node)
@@ -819,7 +786,6 @@ function M:_update_size()
 	self.drag:set_drag_cursors(self.drag.can_x or self.drag.can_y)
 end
 
-
 function M:_process_scroll_wheel(action_id, action)
 	if not self._is_mouse_hover or self.style.WHEEL_SCROLL_SPEED == 0 then
 		return false
@@ -856,16 +822,13 @@ function M:_process_scroll_wheel(action_id, action)
 	return true
 end
 
-
 function M:_on_mouse_hover(state)
 	self._is_mouse_hover = state
 end
 
-
 function M:_inverse_lerp(min, max, current)
 	return helper.clamp((current - min) / (max - min), 0, 1)
 end
-
 
 ---Update vector with next conditions:
 ---Field x have to <= field z
@@ -887,13 +850,11 @@ function M:_get_border_vector(vector, offset)
 	return vector
 end
 
-
 ---Return size from scroll border vector4
 ---@param vector vector4
 ---@return vector3
 function M:_get_size_vector(vector)
 	return vmath.vector3(vector.z - vector.x, vector.w - vector.y, 0)
 end
-
 
 return M

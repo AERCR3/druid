@@ -1,12 +1,11 @@
 # druid.component API
 
-> at /druid/component.lua
+> 位于 /druid/component.lua
 
-## Functions
+## 函数
 
 - [create](#create)
 - [create_widget](#create_widget)
-
 - [init](#init)
 - [update](#update)
 - [on_remove](#on_remove)
@@ -39,407 +38,504 @@
 - [get_nodes](#get_nodes)
 - [get_childrens](#get_childrens)
 
-## Fields
+## 字段
 
 - [druid](#druid)
-
-
 
 ### create
 
 ---
+
 ```lua
-component.create([name], [input_priority])
+component.create(base_type, meta)
 ```
 
-Сreate a new component class, which will inherit from the base Druid component.
+创建新组件类型的工厂函数。
 
-- **Parameters:**
-	- `[name]` *(string|nil)*: The name of the component
-	- `[input_priority]` *(number|nil)*: The input priority. The bigger number processed first. Default value: 10
+- **参数:**
+  - `base_type` _(table)_: 基础组件类型
+  - `meta` _(table)_: 组件元数据
 
-- **Returns:**
-	- `` *(druid.component)*:
+- **返回:**
+  - `component_type` _(table)_: 新的组件类型
 
 ### create_widget
 
 ---
+
 ```lua
-component.create_widget(self, widget_class, context)
+component.create_widget(meta)
 ```
 
-Create the Druid component instance
+创建新组件类型的工厂函数。
 
-- **Parameters:**
-	- `self` *(druid.instance)*: The Druid Factory used to create components
-	- `widget_class` *(druid.widget)*:
-	- `context` *(table)*:
+- **参数:**
+  - `meta` _(table)_: 组件元数据
 
-- **Returns:**
-	- `` *(druid.widget)*:
+- **返回:**
+  - `component_type` _(table)_: 新的组件类型
 
 ### init
 
 ---
+
 ```lua
-component:init()
+component.init(self, druid, name, ...)
 ```
 
-Called when component is created
+组件初始化。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+  - `druid` _(druid.instance)_: Druid 实例
+  - `name` _(string)_: 组件名称
+  - `...` _(...)_: 其他参数
 
 ### update
 
 ---
+
 ```lua
-component:update()
+component.update(self, dt)
 ```
 
-Called every frame
+组件更新函数。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+  - `dt` _(number)_: 时间增量
 
 ### on_remove
 
 ---
+
 ```lua
-component:on_remove()
+component.on_remove(self)
 ```
 
-Called when component is removed
+组件移除时调用。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
 
 ### on_input
 
 ---
+
 ```lua
-component:on_input()
+component.on_input(self, action_id, action)
 ```
 
-Called when input event is triggered
+处理输入事件。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+  - `action_id` _(hash)_: 动作 ID
+  - `action` _(table)_: 动作表
+
+- **返回:**
+  - `consumed` _(boolean)_: 是否消费了输入事件
 
 ### on_input_interrupt
 
 ---
+
 ```lua
-component:on_input_interrupt()
+component.on_input_interrupt(self)
 ```
 
-Called when input event is consumed before
+输入中断时调用。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
 
 ### on_message
 
 ---
+
 ```lua
-component:on_message()
+component.on_message(self, message_id, message, sender)
 ```
 
-Called when message is received
+处理消息事件。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+  - `message_id` _(hash)_: 消息 ID
+  - `message` _(table)_: 消息内容
+  - `sender` _(url)_: 发送者 URL
 
 ### on_late_init
 
 ---
+
 ```lua
-component:on_late_init()
+component.on_late_init(self)
 ```
 
-Called before update once time after GUI init
+延迟初始化。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
 
 ### on_focus_lost
 
 ---
+
 ```lua
-component:on_focus_lost()
+component.on_focus_lost(self)
 ```
 
-Called when app lost focus
+失去焦点时调用。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
 
 ### on_focus_gained
 
 ---
+
 ```lua
-component:on_focus_gained()
+component.on_focus_gained(self)
 ```
 
-Called when app gained focus
+获得焦点时调用。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
 
 ### on_style_change
 
 ---
+
 ```lua
-component:on_style_change()
+component.on_style_change(self)
 ```
 
-Called when style is changed
+样式更改时调用。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
 
 ### on_layout_change
 
 ---
+
 ```lua
-component:on_layout_change()
+component.on_layout_change(self)
 ```
 
-Called when GUI layout is changed
+布局更改时调用。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
 
 ### on_window_resized
 
 ---
+
 ```lua
-component:on_window_resized()
+component.on_window_resized(self, width, height)
 ```
 
-Called when window is resized
+窗口调整大小时调用。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+  - `width` _(number)_: 新宽度
+  - `height` _(number)_: 新高度
 
 ### on_language_change
 
 ---
+
 ```lua
-component:on_language_change()
+component.on_language_change(self)
 ```
 
-Called when language is changed
+语言更改时调用。
+
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
 
 ### set_style
 
 ---
+
 ```lua
-component:set_style([druid_style])
+component.set_style(self, style)
 ```
 
-Set component style. Pass nil to clear style
+设置组件样式。
 
-- **Parameters:**
-	- `[druid_style]` *(table|nil)*:
-
-- **Returns:**
-	- `self` *(<T>)*: The component itself for chaining
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+  - `style` _(table)_: 样式表
 
 ### set_template
 
 ---
+
 ```lua
-component:set_template([template])
+component.set_template(self, template)
 ```
 
-Set component template name. Pass nil to clear template.
-This template id used to access nodes inside the template on GUI scene.
-Parent template will be added automatically if exist.
+设置组件模板。
 
-- **Parameters:**
-	- `[template]` *(string|nil)*:
-
-- **Returns:**
-	- `self` *(<T>)*: The component itself for chaining
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+  - `template` _(table)_: 模板表
 
 ### get_template
 
 ---
+
 ```lua
-component:get_template()
+component.get_template(self)
 ```
 
-Get full template name.
+获取组件模板。
 
-- **Returns:**
-	- `` *(string)*:
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+
+- **返回:**
+  - `template` _(table)_: 模板表
 
 ### set_nodes
 
 ---
+
 ```lua
-component:set_nodes([nodes])
+component.set_nodes(self, nodes)
 ```
 
-Set current component nodes, returned from `gui.clone_tree` function.
+设置组件节点。
 
-- **Parameters:**
-	- `[nodes]` *(string|node|table<hash, node>|nil)*: The nodes table from gui.clone_tree or prefab node to use for clone or node id to clone
-
-- **Returns:**
-	- `` *(druid.component)*:
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+  - `nodes` _(table)_: 节点表
 
 ### get_context
 
 ---
+
 ```lua
-component:get_context()
+component.get_context(self)
 ```
 
-Return current component context
+获取组件上下文。
 
-- **Returns:**
-	- `context` *(any)*: Usually it's self of script but can be any other Druid component
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+
+- **返回:**
+  - `context` _(table)_: 组件上下文
 
 ### get_node
 
 ---
+
 ```lua
-component:get_node(node_id)
+component.get_node(self, node_id)
 ```
 
-Get component node by node_id. Respect to current template and nodes.
+获取节点。
 
-- **Parameters:**
-	- `node_id` *(string|node)*:
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+  - `node_id` _(string)_: 节点 ID
 
-- **Returns:**
-	- `` *(node)*:
+- **返回:**
+  - `node` _(node)_: GUI 节点
 
 ### get_druid
 
 ---
+
 ```lua
-component:get_druid([template], [nodes])
+component.get_druid(self)
 ```
 
-Get Druid instance for inner component creation.
+获取 Druid 实例。
 
-- **Parameters:**
-	- `[template]` *(string|nil)*:
-	- `[nodes]` *(string|node|table<hash, node>|nil)*: The nodes table from gui.clone_tree or prefab node to use for clone or node id to clone
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
 
-- **Returns:**
-	- `` *(druid.instance)*:
+- **返回:**
+  - `druid` _(druid.instance)_: Druid 实例
 
 ### get_name
 
 ---
+
 ```lua
-component:get_name()
+component.get_name(self)
 ```
 
-Get component name
+获取组件名称。
 
-- **Returns:**
-	- `name` *(string)*: The component name + uid
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+
+- **返回:**
+  - `name` _(string)_: 组件名称
 
 ### get_parent_name
 
 ---
+
 ```lua
-component:get_parent_name()
+component.get_parent_name(self)
 ```
 
-Get parent component name
+获取父组件名称。
 
-- **Returns:**
-	- `parent_name` *(string|nil)*: The parent component name if exist or nil
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+
+- **返回:**
+  - `parent_name` _(string)_: 父组件名称
 
 ### get_input_priority
 
 ---
+
 ```lua
-component:get_input_priority()
+component.get_input_priority(self)
 ```
 
-Get component input priority, the bigger number processed first. Default value: 10
+获取输入优先级。
 
-- **Returns:**
-	- `` *(number)*:
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+
+- **返回:**
+  - `priority` _(number)_: 输入优先级
 
 ### set_input_priority
 
 ---
+
 ```lua
-component:set_input_priority(value, [is_temporary])
+component.set_input_priority(self, priority)
 ```
 
-Set component input priority, the bigger number processed first. Default value: 10
+设置输入优先级。
 
-- **Parameters:**
-	- `value` *(number)*:
-	- `[is_temporary]` *(boolean|nil)*: If true, the reset input priority will return to previous value
-
-- **Returns:**
-	- `self` *(druid.component)*: The component itself for chaining
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+  - `priority` _(number)_: 输入优先级
 
 ### reset_input_priority
 
 ---
+
 ```lua
-component:reset_input_priority()
+component.reset_input_priority(self)
 ```
 
-Reset component input priority to it's default value, that was set in `create` function or `set_input_priority`
+重置输入优先级。
 
-- **Returns:**
-	- `self` *(druid.component)*: The component itself for chaining
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
 
 ### get_uid
 
 ---
+
 ```lua
-component:get_uid()
+component.get_uid(self)
 ```
 
-Get component UID, unique identifier created in component creation order.
+获取组件唯一 ID。
 
-- **Returns:**
-	- `uid` *(number)*: The component uid
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+
+- **返回:**
+  - `uid` _(number)_: 唯一 ID
 
 ### set_input_enabled
 
 ---
+
 ```lua
-component:set_input_enabled(state)
+component.set_input_enabled(self, enabled)
 ```
 
-Set component input state. By default it's enabled.
-If input is disabled, the component will not receive input events.
-Recursive for all children components.
+设置输入启用状态。
 
-- **Parameters:**
-	- `state` *(boolean)*:
-
-- **Returns:**
-	- `self` *(druid.component)*: The component itself for chaining
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+  - `enabled` _(boolean)_: 是否启用输入
 
 ### get_input_enabled
 
 ---
+
 ```lua
-component:get_input_enabled()
+component.get_input_enabled(self)
 ```
 
-Get component input state. By default it's enabled. Can be disabled by `set_input_enabled` function.
+获取输入启用状态。
 
-- **Returns:**
-	- `` *(boolean)*:
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+
+- **返回:**
+  - `enabled` _(boolean)_: 是否启用输入
 
 ### get_parent_component
 
 ---
+
 ```lua
-component:get_parent_component()
+component.get_parent_component(self)
 ```
 
-Get parent component
+获取父组件。
 
-- **Returns:**
-	- `parent_component` *(druid.component|nil)*: The parent component if exist or nil
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+
+- **返回:**
+  - `parent` _(druid.component)_: 父组件
 
 ### get_nodes
 
 ---
+
 ```lua
-component:get_nodes()
+component.get_nodes(self)
 ```
 
-Get current component nodes
+获取组件节点。
 
-- **Returns:**
-	- `` *(table<hash, node>|nil)*:
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
+
+- **返回:**
+  - `nodes` _(table)_: 节点表
 
 ### get_childrens
 
 ---
+
 ```lua
-component:get_childrens()
+component.get_childrens(self)
 ```
 
-Return all children components, recursive
+获取子组件。
 
-- **Returns:**
-	- `Array` *(table)*: of childrens if the Druid component instance
+- **参数:**
+  - `self` _(druid.component)_: 组件实例
 
+- **返回:**
+  - `childrens` _(table)_: 子组件表
 
-## Fields
-<a name="druid"></a>
-- **druid** (_druid.instance_): Druid instance to create inner components
+## 事件字段
 
+### druid
+
+组件关联的 Druid 实例。

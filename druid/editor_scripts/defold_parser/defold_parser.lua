@@ -1,4 +1,5 @@
---- Defold Text Proto format encoder/decoder to lua table
+--- Defold文本协议格式编解码器，用于转换为Lua表
+--- 此模块提供对Defold资源文件的解析和编码功能
 
 local config = require("druid.editor_scripts.defold_parser.system.config")
 local parser_internal = require("druid.editor_scripts.defold_parser.system.parser_internal")
@@ -6,9 +7,10 @@ local parser_internal = require("druid.editor_scripts.defold_parser.system.parse
 local M = {}
 
 
---- Decode a Defold object from a string
----@param text string
----@return table
+--- 从字符串解码Defold对象
+--- 此函数将Defold文本格式的字符串解析为Lua表结构
+---@param text string Defold文本格式的字符串
+---@return table 解析后的Lua表
 function M.decode_defold_object(text)
 	-- Create a root object, which will contain all the file data
 	local root = {}
@@ -23,8 +25,13 @@ function M.decode_defold_object(text)
 	return root
 end
 
-
--- Encoding Functions
+--- 编码函数：将Lua表转换为Defold文本格式
+--- 此函数将Lua表结构编码为Defold文本格式的字符串
+---@param obj table 要编码的Lua表
+---@param spaces number 缩进空格数
+---@param data_level number 数据层级
+---@param extension string 扩展名（用于确定键的顺序）
+---@return string 编码后的Defold文本格式字符串
 function M.encode_defold_object(obj, spaces, data_level, extension)
 	spaces = spaces or 0
 	data_level = data_level or 0
@@ -71,7 +78,8 @@ function M.encode_defold_object(obj, spaces, data_level, extension)
 					elseif item_type == "string" then
 						-- Handle multiline text
 						if key == "text" then
-							result = result .. tabString .. key .. ': "' .. array_item:gsub("\n", '\\n"\n' .. tabString .. '"') .. '"\n'
+							result = result ..
+									tabString .. key .. ': "' .. array_item:gsub("\n", '\\n"\n' .. tabString .. '"') .. '"\n'
 						else
 							-- Check if the key should not have quotes
 							local is_uppercase = (array_item == string.upper(array_item))
@@ -83,12 +91,17 @@ function M.encode_defold_object(obj, spaces, data_level, extension)
 							end
 						end
 					elseif item_type == "table" then
-						result = result .. tabString .. key .. ' {\n' .. M.encode_defold_object(array_item, spaces + 2, data_level, extension) .. tabString .. '}\n'
+						result = result ..
+								tabString ..
+								key ..
+								' {\n' .. M.encode_defold_object(array_item, spaces + 2, data_level, extension) .. tabString .. '}\n'
 					end
 				end
 			else
 				-- It's a dictionary-like table
-				result = result .. tabString .. key .. ' {\n' .. M.encode_defold_object(value, spaces + 2, data_level, extension) .. tabString .. '}\n'
+				result = result ..
+						tabString ..
+						key .. ' {\n' .. M.encode_defold_object(value, spaces + 2, data_level, extension) .. tabString .. '}\n'
 			end
 		else
 			-- Handle scalar values (string, number, boolean)
@@ -120,7 +133,6 @@ function M.encode_defold_object(obj, spaces, data_level, extension)
 	return result
 end
 
-
 ---Load lua table from file in Defold Text Proto format
 ---@param file_path string
 ---@return table|nil, string|nil
@@ -132,7 +144,6 @@ function M.load_from_file(file_path)
 
 	return M.decode_defold_object(content), nil
 end
-
 
 ---Write lua table to file in Defold Text Proto format
 ---The path file extension will be used to determine the Defold format (*.atlas, *.gui, *.font, etc)
@@ -148,6 +159,5 @@ function M.save_to_file(file_path, lua_table)
 
 	return parser_internal.write_file(file_path, encoded_object)
 end
-
 
 return M

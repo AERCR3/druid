@@ -29,7 +29,7 @@ function M:init(template, nodes)
 	local hover = self.druid:new_hover("root")
 	hover.on_mouse_hover:subscribe(self.on_hover)
 
-	-- External Events
+	-- 对外事件
 	self.on_click = self.button.on_click
 end
 

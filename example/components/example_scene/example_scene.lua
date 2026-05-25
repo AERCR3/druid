@@ -30,8 +30,8 @@ end
 
 ---@param path string
 function M:set_gui_path(path)
-	-- Path is a path to lua file
-	-- We need add "/" before path and replace .lua to .gui
+	-- path 是示例 lua 文件的相对路径
+	-- 这里转换成对应的 .gui 资源路径：前面补 "/"，并把 .lua 替换为 .gui
 	path = "/" .. path:gsub(".lua", ".gui")
 
 	self.text_gui_path:set_text(path)

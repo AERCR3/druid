@@ -806,23 +806,3 @@ And all my other supporters! Much appreciated!
 Please support me if you like this project! It will help me keep engaged to update **Druid** and make it even better!
 
 [![Github-sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA)](https://github.com/sponsors/insality) [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/insality) [![BuyMeACoffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/insality)
-
-
-### Druid 1.2.1
-- Fix scroll points of interest order
-- Fix static grid `get_index` function for correct index calculation by node element
-- Add `is_instant` parameter to `scroll:scroll_to_index` function
-- Fix case, when scroll stuck on the edge of the points of interest
-- Add Scroll Bind Grid example
-- Add Scroll Bind Layout example
-
-### Druid 1.2.2
-- [Rich Text] Fix centered alignment by excluding trailing space from line width calculation
-- [Rich Text] Fix render images size handling
-- [Data List] Fix for visible bounds calculation in matrix grid mode
-- [Scroll] Fix for `scroll_to_make_node_visible` for some cases
-- [Layout] Refresh layout component when window layout is changed
-
-### Druid 1.2.3
-- [Hotkey] Should not trigger hotkey without modificators when modificator is pressed
-- [Editor Scripts] Rename go -> root to druid game collection from editor scripts

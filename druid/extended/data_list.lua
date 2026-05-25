@@ -3,18 +3,19 @@ local helper = require("druid.helper")
 local component = require("druid.component")
 local event = require("event.event")
 
----Druid component to manage a list of data with a scrollable view, used to manage huge list data and render only visible elements.
+---Druid组件，用于管理带有可滚动视图的数据列表，用于管理大量列表数据并仅渲染可见元素。
 ---
----### Setup
----Create data list component with druid: `data_list = druid:new_data_list(scroll, grid, create_function)`
+---### 设置
+---使用druid创建数据列表组件: `data_list = druid:new_data_list(scroll, grid, create_function)`
 ---
----### Notes
----- Data List uses a scroll component for scrolling and a grid component for layout
----- Data List only renders visible elements for better performance
----- Data List supports caching of elements for better performance
----- Data List supports adding, removing and updating elements
----- Data List supports scrolling to specific elements
----- Data List supports custom element creation and cleanup
+---### 注意事项
+---- 数据列表使用滚动组件进行滚动，使用网格组件进行布局
+---- 数据列表仅渲染可见元素以获得更好的性能
+---- 数据列表支持缓存元素以获得更好的性能
+---- 数据列表支持添加、删除和更新元素
+---- 数据列表支持滚动到特定元素
+---- 数据列表支持自定义元素创建和清理
+---DataList组件是处理大量数据展示的高性能组件，采用虚拟滚动技术优化性能
 ---@class druid.data_list: druid.component
 ---@field scroll druid.scroll The scroll instance for Data List component
 ---@field grid druid.grid The StaticGrid or DynamicGrid instance for Data List component
@@ -32,10 +33,11 @@ local event = require("event.event")
 local M = component.create("data_list")
 
 
----The DataList constructor
----@param scroll druid.scroll The Scroll instance for Data List component
----@param grid druid.grid The StaticGrid instance for Data List component
----@param create_function function The create function callback(self, data, index, data_list). Function should return (node, [component])
+---DataList构造函数
+---初始化DataList组件，设置滚动实例、网格实例和创建函数
+---@param scroll druid.scroll 数据列表组件的滚动实例
+---@param grid druid.grid 数据列表组件的静态网格实例
+---@param create_function function 创建函数回调(self, data, index, data_list)。函数应返回(node, [component])
 function M:init(scroll, grid, create_function)
 	self.scroll = scroll
 	self.grid = grid
@@ -61,26 +63,25 @@ function M:init(scroll, grid, create_function)
 	self.on_element_remove = event.create()
 end
 
-
 ---@private
 function M:on_remove()
 	self:clear()
 	self.scroll.on_scroll:unsubscribe(self._refresh, self)
 end
 
-
----Set use cache version of DataList. Requires make setup of components in on_element_add callback and clean in on_element_remove
----@param is_use_cache boolean Use cache version of DataList
----@return druid.data_list self Current DataList instance
+---设置使用DataList的缓存版本。需要在on_element_add回调中设置组件并在on_element_remove中清理
+---启用缓存可以显著提高性能，特别是在频繁添加/删除元素的情况下
+---@param is_use_cache boolean 使用DataList的缓存版本
+---@return druid.data_list self 当前DataList实例
 function M:set_use_cache(is_use_cache)
 	self._is_use_cache = is_use_cache
 	return self
 end
 
-
----Set new data set for DataList component
----@param data table The new data array
----@return druid.data_list self Current DataList instance
+---为DataList组件设置新数据集
+---此函数替换现有数据并刷新显示，适用于数据完全更新的情况
+---@param data table 新的数据数组
+---@return druid.data_list self 当前DataList实例
 function M:set_data(data)
 	self._data = data or {}
 	self:_refresh()
@@ -88,13 +89,11 @@ function M:set_data(data)
 	return self
 end
 
-
 ---Return current data from DataList component
 ---@return table data The current data array
 function M:get_data()
 	return self._data
 end
-
 
 ---Add element to DataList
 ---@param data table The data to add
@@ -111,7 +110,6 @@ function M:add(data, index, shift_policy)
 	return self
 end
 
-
 ---Remove element from DataList
 ---@param index number|nil The index to remove the data at
 ---@param shift_policy number|nil The constant from const.SHIFT.*
@@ -122,7 +120,6 @@ function M:remove(index, shift_policy)
 
 	return self
 end
-
 
 ---Remove element from DataList by data value
 ---@param data table The data to remove
@@ -138,7 +135,6 @@ function M:remove_by_data(data, shift_policy)
 	return self
 end
 
-
 ---Clear the DataList and refresh visuals
 ---@return druid.data_list self Current DataList instance
 function M:clear()
@@ -147,7 +143,6 @@ function M:clear()
 
 	return self
 end
-
 
 ---Return index for data value
 ---@param data table
@@ -161,7 +156,6 @@ function M:get_index(data)
 	return nil
 end
 
-
 ---Return all currently created nodes in DataList
 ---@return node[] List of created nodes
 function M:get_created_nodes()
@@ -173,7 +167,6 @@ function M:get_created_nodes()
 
 	return nodes
 end
-
 
 ---Return all currently created components in DataList
 ---@return druid.component[] components List of created components
@@ -187,14 +180,12 @@ function M:get_created_components()
 	return components
 end
 
-
 ---Instant scroll to element with passed index
 ---@param index number The index to scroll to
 function M:scroll_to_index(index)
 	local pos = self.grid:get_pos(index)
 	self.scroll:scroll_to(pos)
 end
-
 
 ---Add element at passed index using cache or create new
 ---@param index number The index to add the element at
@@ -228,7 +219,6 @@ function M:_add_at(index)
 	self.on_element_add:trigger(self:get_context(), index, node, instance, data)
 end
 
-
 ---Remove element from passed index and add it to cache if applicable
 ---@param index number The index to remove the element at
 ---@private
@@ -245,7 +235,7 @@ function M:_remove_at(index)
 	if self._is_use_cache then
 		-- Disable the node and add it to the cache instead of deleting it
 		gui.set_enabled(node, false)
-		table.insert(self._cache, visual_data)  -- Cache the removed element
+		table.insert(self._cache, visual_data) -- Cache the removed element
 	else
 		-- If no refresh function, delete the node and component as usual
 		gui.delete_node(node)
@@ -257,45 +247,27 @@ function M:_remove_at(index)
 	self._data_visual[index] = nil
 end
 
-
----Get the visible area bounds in content-local coordinates (top-left and bottom-right),
----clamped to the grid coordinate range so get_index_xy produces valid results.
----@return number left
----@return number top
----@return number right
----@return number bottom
----@private
-function M:_get_visible_bounds()
-	local scroll_pos = self.scroll.position
-	local view_border = self.scroll.view_border
-	local grid = self.grid
-	local grid_zero = grid._base_offset
-	local grid_max_x = grid_zero.x + (grid.in_row - 1) * grid.node_size.x
-
-	local left = math.max(-scroll_pos.x + view_border.x, grid_zero.x)
-	local top = math.min(-scroll_pos.y + view_border.y, grid_zero.y)
-	local right = math.min(-scroll_pos.x + view_border.z, grid_max_x)
-	local bottom = -scroll_pos.y + view_border.w
-
-	if #self._data <= grid.in_row then
-		bottom = top
-	end
-
-	return left, top, right, bottom
-end
-
-
 ---Refresh all elements in DataList
 ---@private
 function M:_refresh()
 	self.scroll:set_size(self.grid:get_size_for(#self._data))
 
-	local left, top, right, bottom = self:_get_visible_bounds()
-
-	local start_index = self.grid:get_index_xy(left, top)
+	local start_pos = -self.scroll.position --[[@as vector3]]
+	local start_index = self.grid:get_index(start_pos)
 	start_index = math.max(1, start_index)
 
-	local end_index = self.grid:get_index_xy(right, bottom)
+	local offset_x = self.scroll.view_size.x
+	local offset_y = self.scroll.view_size.y
+	local end_pos = vmath.vector3(start_pos.x + offset_x, start_pos.y - offset_y, 0)
+
+	local max_offset_x = (self.grid.in_row - 1) * self.grid.node_size.x
+	end_pos.x = math.min(end_pos.x, start_pos.x + max_offset_x)
+
+	if #self._data <= self.grid.in_row then
+		end_pos.y = start_pos.y
+	end
+
+	local end_index = self.grid:get_index(end_pos)
 	end_index = math.min(#self._data, end_index)
 
 	self.top_index = start_index
@@ -319,6 +291,5 @@ function M:_refresh()
 		end
 	end
 end
-
 
 return M

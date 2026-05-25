@@ -7,7 +7,7 @@ function M:init()
 	self.text_counter = self:get_node("text_counter")
 	gui.set_text(self.text_counter, self.counter)
 
-	-- Init drag and move the drag node on drag callback
+	-- 初始化拖拽：在拖拽回调中移动节点，并检测是否拖入目标区域
 	self.drag = self.druid:new_drag("drag/root", self.on_drag)
 	self.drag.on_drag_end:subscribe(self.on_drag_end)
 
@@ -17,7 +17,7 @@ function M:init()
 		self:on_drop_to_zone()
 	end)
 
-	-- Save start position for animation
+	-- 保存初始位置，用于拖拽结束时回弹
 	self.start_position = gui.get_position(self.drag.node)
 end
 

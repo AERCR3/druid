@@ -31,7 +31,7 @@ function M:play_animation()
 end
 
 
----@param position vector3 The position to set
+---@param position vector3 要设置的位置
 function M:set_position(position)
 	gui.set_position(self.root, position)
 end

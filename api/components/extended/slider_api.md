@@ -1,150 +1,141 @@
 # druid.slider API
 
-> at /druid/extended/slider.lua
+> 位于 /druid/extended/slider.lua
 
-Basic Druid slider component. Creates a draggable node over a line with progress reporting.
+基本的 Druid 滑块组件。创建一个可在直线上拖动的节点，并报告进度。
 
-### Setup
-Create slider component with druid: `slider = druid:new_slider(node_name, end_pos, callback)`
+### 设置
 
-### Notes
-- Pin node should be placed in initial position at zero progress
-- It will be available to move Pin node between start pos and end pos
-- You can setup points of interests on slider via `slider:set_steps`. If steps exist, slider values will be only from these steps (notched slider)
-- Start pos and end pos should be on vertical or horizontal line (their x or y value should be equal)
-- To catch input across all slider, you can setup input node via `slider:set_input_node`
+使用 druid 创建滑块组件：`slider = druid:new_slider(node_name, end_pos, callback)`
 
-## Functions
+### 注意事项
+
+- 滑块节点应放置在零进度的初始位置
+- 它将能够在起始位置和结束位置之间移动滑块节点
+- 您可以通过 `slider:set_steps` 在滑块上设置兴趣点。如果存在步骤，滑块值将仅来自这些步骤（刻度滑块）
+- 起始位置和结束位置应在垂直或水平线上（它们的 x 或 y 值应相等）
+- 要在整个滑块上捕捉输入，您可以通过 `slider:set_input_node` 设置输入节点
+
+## 函数
 
 - [init](#init)
 - [set](#set)
-- [set_steps](#set_steps)
 - [set_end_pos](#set_end_pos)
+- [set_steps](#set_steps)
 - [set_input_node](#set_input_node)
 - [set_enabled](#set_enabled)
 - [is_enabled](#is_enabled)
-## Fields
+
+## 字段
 
 - [node](#node)
 - [on_change_value](#on_change_value)
 - [style](#style)
 
-
-
 ### init
 
 ---
+
 ```lua
 slider:init(node, end_pos, [callback])
 ```
 
-The Slider constructor
+滑块构造函数。
 
-- **Parameters:**
-	- `node` *(node)*: GUI node to drag as a slider
-	- `end_pos` *(vector3)*: The end position of slider, should be on the same axis as the node
-	- `[callback]` *(function|nil)*: On slider change callback
+- **参数:**
+  - `node` _(node)_: 作为滑块拖动的 GUI 节点
+  - `end_pos` _(vector3)_: 滑块的结束位置，应与节点在同一轴上
+  - `[callback]` _(function|nil)_: 滑块更改回调函数
 
 ### set
 
 ---
+
 ```lua
-slider:set(value, [is_silent])
+slider:set(value, [is_instant])
 ```
 
-Set value for slider
+设置滑块值。
 
-- **Parameters:**
-	- `value` *(number)*: Value from 0 to 1
-	- `[is_silent]` *(boolean|nil)*: Don't trigger event if true
-
-- **Returns:**
-	- `self` *(druid.slider)*: Current slider instance
-
-### set_steps
-
----
-```lua
-slider:set_steps(steps)
-```
-
-Set slider steps. Pin node will
-apply closest step position
-
-- **Parameters:**
-	- `steps` *(number[])*: Array of steps
-
-- **Returns:**
-	- `self` *(druid.slider)*: Current slider instance
+- **参数:**
+  - `value` _(number)_: 滑块值（0-1）
+  - `[is_instant]` _(boolean)_: 是否立即设置（无动画）
 
 ### set_end_pos
 
 ---
+
 ```lua
 slider:set_end_pos(end_pos)
 ```
 
-Adjust the end position of the slider
+设置结束位置。
 
-- **Parameters:**
-	- `end_pos` *(vector3)*: The end position of the slider
+- **参数:**
+  - `end_pos` _(vector3)_: 结束位置
 
-- **Returns:**
-	- `self` *(druid.slider)*: Current slider instance
+### set_steps
+
+---
+
+```lua
+slider:set_steps(steps)
+```
+
+设置滑块步进。
+
+- **参数:**
+  - `steps` _(table)_: 步进值数组
 
 ### set_input_node
 
 ---
+
 ```lua
-slider:set_input_node([input_node])
+slider:set_input_node(input_node)
 ```
 
-Set input zone for slider.
-User can touch any place of node, pin instantly will
-move at this position and node drag will start.
-This function require the Defold version 1.3.0+
+设置输入节点。
 
-- **Parameters:**
-	- `[input_node]` *(string|node|nil)*:
-
-- **Returns:**
-	- `self` *(druid.slider)*: Current slider instance
+- **参数:**
+  - `input_node` _(node)_: 输入节点
 
 ### set_enabled
 
 ---
+
 ```lua
-slider:set_enabled(is_enabled)
+slider:set_enabled(enabled)
 ```
 
-Set Slider input enabled or disabled
+设置滑块是否启用。
 
-- **Parameters:**
-	- `is_enabled` *(boolean)*: True if slider is enabled
-
-- **Returns:**
-	- `self` *(druid.slider)*: Current slider instance
+- **参数:**
+  - `enabled` _(boolean)_: 是否启用
 
 ### is_enabled
 
 ---
+
 ```lua
 slider:is_enabled()
 ```
 
-Check if Slider component is enabled
+检查滑块是否启用。
 
-- **Returns:**
-	- `is_enabled` *(boolean)*: True if slider is enabled
+- **返回:**
+  - `enabled` _(boolean)_: 是否启用
 
+## 事件字段
 
-## Fields
-<a name="node"></a>
-- **node** (_node_): The node to manage the slider
+### node
 
-<a name="on_change_value"></a>
-- **on_change_value** (_event_): fun(self: druid.slider, value: number) The event triggered when the slider value changes
+滑块组件关联的节点。
 
-<a name="style"></a>
-- **style** (_table_): The style of the slider
+### on_change_value
 
+值更改时的回调函数。
+
+### style
+
+滑块组件样式配置。

@@ -1,10 +1,10 @@
 # druid.drag API
 
-> at /druid/base/drag.lua
+> 位于 /druid/base/drag.lua
 
-A component that allows you to subscribe to drag events over a node
+一个允许您订阅节点上拖动事件的组件
 
-## Functions
+## 函数
 
 - [init](#init)
 - [set_drag_cursors](#set_drag_cursors)
@@ -12,7 +12,7 @@ A component that allows you to subscribe to drag events over a node
 - [set_enabled](#set_enabled)
 - [is_enabled](#is_enabled)
 
-## Fields
+## 字段
 
 - [node](#node)
 - [on_touch_start](#on_touch_start)
@@ -37,140 +37,158 @@ A component that allows you to subscribe to drag events over a node
 - [druid](#druid)
 - [hover](#hover)
 
-
-
 ### init
 
 ---
+
 ```lua
 drag:init(node_or_node_id, [on_drag_callback])
 ```
 
-The constructor for Drag component
+拖动组件的构造函数。
 
-- **Parameters:**
-	- `node_or_node_id` *(string|node)*: The node to subscribe to drag events over
-	- `[on_drag_callback]` *(fun(self: any, touch: any))*: The callback to call when a drag occurs
+- **参数:**
+  - `node_or_node_id` _(node|string)_: GUI 节点或节点 ID
+  - `[on_drag_callback]` _(function)_: 拖动回调函数
 
 ### set_drag_cursors
 
 ---
+
 ```lua
-drag:set_drag_cursors(is_enabled)
+drag:set_drag_cursors(cursors)
 ```
 
-Set Drag component enabled state.
+设置拖动光标。
 
-- **Parameters:**
-	- `is_enabled` *(boolean)*: True if Drag component is enabled
+- **参数:**
+  - `cursors` _(table)_: 光标配置表
 
 ### set_click_zone
 
 ---
+
 ```lua
-drag:set_click_zone([node])
+drag:set_click_zone(zone_node)
 ```
 
-Set Drag click zone
+设置点击区域。
 
-- **Parameters:**
-	- `[node]` *(string|node|nil)*: Node or node id
-
-- **Returns:**
-	- `self` *(druid.drag)*: Current instance
+- **参数:**
+  - `zone_node` _(node)_: 用作点击区域的节点
 
 ### set_enabled
 
 ---
+
 ```lua
-drag:set_enabled(is_enabled)
+drag:set_enabled(enabled)
 ```
 
-Set Drag component enabled state.
+设置组件是否启用。
 
-- **Parameters:**
-	- `is_enabled` *(boolean)*:
-
-- **Returns:**
-	- `self` *(druid.drag)*: Current instance
+- **参数:**
+  - `enabled` _(boolean)_: 是否启用
 
 ### is_enabled
 
 ---
+
 ```lua
 drag:is_enabled()
 ```
 
-Check if Drag component is capture input
+检查组件是否启用。
 
-- **Returns:**
-	- `is_enabled` *(boolean)*: True if Drag component is enabled
+- **返回:**
+  - `enabled` _(boolean)_: 是否启用
 
+## 事件字段
 
-## Fields
-<a name="node"></a>
-- **node** (_node_): The node to subscribe to drag events over
+### node
 
-<a name="on_touch_start"></a>
-- **on_touch_start** (_event_): fun(self, touch) The event triggered when a touch starts
+拖动组件关联的节点。
 
-<a name="on_touch_end"></a>
-- **on_touch_end** (_event_): fun(self, touch) The event triggered when a touch ends
+### on_touch_start
 
-<a name="on_drag_start"></a>
-- **on_drag_start** (_event_): fun(self, touch) The event triggered when a drag starts
+触摸开始时的回调函数。
 
-<a name="on_drag"></a>
-- **on_drag** (_event_): fun(self, touch) The event triggered when a drag occurs
+### on_touch_end
 
-<a name="on_drag_end"></a>
-- **on_drag_end** (_event_): fun(self, touch) The event triggered when a drag ends
+触摸结束时的回调函数。
 
-<a name="style"></a>
-- **style** (_druid.drag.style_): The style of Drag component
+### on_drag_start
 
-<a name="click_zone"></a>
-- **click_zone** (_node_): The click zone of Drag component
+拖动开始时的回调函数。
 
-<a name="is_touch"></a>
-- **is_touch** (_boolean_): True if a touch is active
+### on_drag
 
-<a name="is_drag"></a>
-- **is_drag** (_boolean_): True if a drag is active
+拖动过程中的回调函数。
 
-<a name="can_x"></a>
-- **can_x** (_boolean_): True if Drag can move horizontally
+### on_drag_end
 
-<a name="can_y"></a>
-- **can_y** (_boolean_): True if Drag can move vertically
+拖动结束时的回调函数。
 
-<a name="dx"></a>
-- **dx** (_number_): The horizontal drag distance
+### style
 
-<a name="dy"></a>
-- **dy** (_number_): The vertical drag distance
+拖动组件样式配置。
 
-<a name="touch_id"></a>
-- **touch_id** (_number_): The touch id
+### click_zone
 
-<a name="x"></a>
-- **x** (_number_): The current x position
+点击区域节点。
 
-<a name="y"></a>
-- **y** (_number_): The current y position
+### is_touch
 
-<a name="screen_x"></a>
-- **screen_x** (_number_): The current screen x position
+是否正在触摸。
 
-<a name="screen_y"></a>
-- **screen_y** (_number_): The current screen y position
+### is_drag
 
-<a name="touch_start_pos"></a>
-- **touch_start_pos** (_vector3_): The touch start position
+是否正在拖动。
 
-<a name="druid"></a>
-- **druid** (_druid.instance_): The Druid Factory used to create components
+### can_x
 
-<a name="hover"></a>
-- **hover** (_druid.hover_): The component for handling hover events on a node
+是否可以在 X 轴上拖动。
 
+### can_y
+
+是否可以在 Y 轴上拖动。
+
+### dx
+
+X 轴拖动距离。
+
+### dy
+
+Y 轴拖动距离。
+
+### touch_id
+
+触摸 ID。
+
+### x
+
+当前 X 坐标。
+
+### y
+
+当前 Y 坐标。
+
+### screen_x
+
+屏幕 X 坐标。
+
+### screen_y
+
+屏幕 Y 坐标。
+
+### touch_start_pos
+
+触摸开始位置。
+
+### druid
+
+关联的 Druid 实例。
+
+### hover
+
+悬停组件引用。

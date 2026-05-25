@@ -3,36 +3,38 @@ local helper = require("druid.helper")
 local const = require("druid.const")
 local component = require("druid.component")
 
----Basic Druid slider component. Creates a draggable node over a line with progress reporting.
+---基本的Druid滑块组件。在一条线上创建一个可拖动的节点并报告进度。
 ---
----### Setup
----Create slider component with druid: `slider = druid:new_slider(node_name, end_pos, callback)`
+---### 设置
+---使用druid创建滑块组件: `slider = druid:new_slider(node_name, end_pos, callback)`
 ---
----### Notes
----- Pin node should be placed in initial position at zero progress
----- It will be available to move Pin node between start pos and end pos
----- You can setup points of interests on slider via `slider:set_steps`. If steps exist, slider values will be only from these steps (notched slider)
----- Start pos and end pos should be on vertical or horizontal line (their x or y value should be equal)
----- To catch input across all slider, you can setup input node via `slider:set_input_node`
+---### 注意事项
+---- 引脚节点应放置在零进度的初始位置
+---- 将可以在起始位置和结束位置之间移动引脚节点
+---- 您可以通过`slider:set_steps`在滑块上设置兴趣点。如果存在步骤，滑块值将仅来自这些步骤（带刻度的滑块）
+---- 起始位置和结束位置应在垂直或水平线上（它们的x或y值应相等）
+---- 要捕获整个滑块的输入，您可以通过`slider:set_input_node`设置输入节点
+---滑块组件是用户界面中常用的交互控件，常用于数值调节和进度控制
 ---@class druid.slider: druid.component
----@field node node The node to manage the slider
----@field on_change_value event fun(self: druid.slider, value: number) The event triggered when the slider value changes
----@field style table The style of the slider
----@field private start_pos vector3 The start position of the slider
----@field private pos vector3 The current position of the slider
----@field private target_pos vector3 The target position of the slider
----@field private end_pos vector3 The end position of the slider
----@field private dist vector3 The distance between the start and end positions of the slider
----@field private is_drag boolean True if the slider is being dragged
----@field private value number The current value of the slider
----@field private steps number[]? The steps of the slider
+---@field node node 用于管理滑块的节点
+---@field on_change_value event fun(self: druid.slider, value: number) 滑块值改变时触发的事件
+---@field style table 滑块的样式
+---@field private start_pos vector3 滑块的起始位置
+---@field private pos vector3 滑块的当前位置
+---@field private target_pos vector3 滑块的目标位置
+---@field private end_pos vector3 滑块的结束位置
+---@field private dist vector3 滑块起始和结束位置之间的距离
+---@field private is_drag boolean 滑块是否正在被拖动
+---@field private value number 滑块的当前值
+---@field private steps number[]? 滑块的步骤
 local M = component.create("slider", const.PRIORITY_INPUT_HIGH)
 
 
----The Slider constructor
----@param node node GUI node to drag as a slider
----@param end_pos vector3 The end position of slider, should be on the same axis as the node
----@param callback function|nil On slider change callback
+---滑块构造函数
+---初始化滑块组件，设置可拖动节点、结束位置和回调函数
+---@param node node 作为滑块拖动的GUI节点
+---@param end_pos vector3 滑块的结束位置，应与节点在同一轴上
+---@param callback function|nil 滑块改变时的回调
 function M:init(node, end_pos, callback)
 	self.node = self:get_node(node)
 
@@ -52,19 +54,16 @@ function M:init(node, end_pos, callback)
 	assert(self.dist.x == 0 or self.dist.y == 0, "Slider for now can be only vertical or horizontal")
 end
 
-
 ---@private
 function M:on_layout_change()
 	self:set(self.value)
 end
-
 
 ---@private
 function M:on_remove()
 	-- Return pin to start position
 	gui.set_position(self.node, self.start_pos)
 end
-
 
 ---@private
 ---@param style table
@@ -74,7 +73,6 @@ function M:on_style_change(style)
 	end
 end
 
-
 ---@private
 function M:on_window_resized()
 	local x_koef, y_koef = helper.get_screen_aspect_koef()
@@ -83,11 +81,12 @@ function M:on_window_resized()
 	self._scene_scale = helper.get_scene_scale(self.node)
 end
 
-
+---内部方法：处理输入事件
+---此函数处理滑块的拖动输入，计算滑块的新位置和值
 ---@private
----@param action_id hash Action id from on_input
----@param action table Action table from on_input
----@return boolean is_consumed True if input was consumed
+---@param action_id hash 来自on_input的动作ID
+---@param action table 来自on_input的动作表
+---@return boolean is_consumed 如果输入被消耗则为真
 function M:on_input(action_id, action)
 	if action_id ~= const.ACTION_TOUCH then
 		return false
@@ -171,7 +170,6 @@ function M:on_input(action_id, action)
 	return self.is_drag
 end
 
-
 ---Set value for slider
 ---@param value number Value from 0 to 1
 ---@param is_silent boolean|nil Don't trigger event if true
@@ -187,7 +185,6 @@ function M:set(value, is_silent)
 	return self
 end
 
-
 ---Set slider steps. Pin node will
 ---apply closest step position
 ---@param steps number[] Array of steps
@@ -196,7 +193,6 @@ function M:set_steps(steps)
 	self.steps = steps
 	return self
 end
-
 
 ---Adjust the end position of the slider
 ---@param end_pos vector3 The end position of the slider
@@ -207,7 +203,6 @@ function M:set_end_pos(end_pos)
 	self:set(self.value)
 	return self
 end
-
 
 ---Set input zone for slider.
 ---User can touch any place of node, pin instantly will
@@ -225,7 +220,6 @@ function M:set_input_node(input_node)
 	return self
 end
 
-
 ---Set Slider input enabled or disabled
 ---@param is_enabled boolean True if slider is enabled
 ---@return druid.slider self Current slider instance
@@ -235,25 +229,21 @@ function M:set_enabled(is_enabled)
 	return self
 end
 
-
 ---Check if Slider component is enabled
 ---@return boolean is_enabled True if slider is enabled
 function M:is_enabled()
 	return self._is_enabled
 end
 
-
 ---@private
 function M:_on_change_value()
 	self.on_change_value:trigger(self:get_context(), self.value)
 end
-
 
 ---@private
 function M:_set_position(value)
 	value = helper.clamp(value, 0, 1)
 	gui.set_position(self.node, self.start_pos + self.dist * value)
 end
-
 
 return M

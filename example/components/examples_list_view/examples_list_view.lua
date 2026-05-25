@@ -57,13 +57,13 @@ end
 ---@field get_debug_info fun(self: example_instance):string?
 
 ---@param examples druid.examples
----@param druid_example druid.example @The main GUI component
+---@param druid_example druid.example @主界面组件
 function M:add_example(examples, druid_example)
 	local example_name_id = examples.example_name_id
 	local examples_list = examples.examples_list
 
 	if false then
-		do -- Add section name
+		do -- 添加分组标题（示例里默认关闭）
 			local nodes = gui.clone_tree(self.prefab)
 			local item = self.druid:new(examples_list_view_item, "examples_list_view_item", nodes) --[[@as examples_list_view_item]]
 			gui.set_enabled(item.root.node, true)
@@ -95,8 +95,8 @@ function M:add_example(examples, druid_example)
 				self.selected_example = nil
 			end
 
-			-- This one helps only to help with a select the same example
-			-- Cause the nodes can't be returned to initial state SO fast, need a little brake here
+			-- 这里的延迟用于处理“再次选择同一个示例”的情况
+			-- 由于节点状态无法立刻恢复到初始状态，这里需要短暂让出一帧
 			timer.delay(0, false, function()
 				self:on_example_click(druid_example, example_data, item)
 
@@ -127,7 +127,7 @@ function M:on_example_click(druid_example, example_data, item)
 	local instance
 	if example_data.widget_class then
 		instance = druid_example.druid:new_widget(example_data.widget_class, example_data.template)
-	elseif example_data.component_class then -- Keep for backward compatibility
+	elseif example_data.component_class then -- 保持向后兼容
 		instance = druid_example.druid:new(example_data.component_class, example_data.template)
 	end
 	---@cast instance example_instance
@@ -157,7 +157,7 @@ function M:on_example_click(druid_example, example_data, item)
 
 	druid_example.properties_panel:clear()
 
-	-- First we want to chec
+	-- 优先使用示例实例提供的属性面板控制逻辑；否则尝试使用数据表里的回调
 	if instance.properties_control then
 		instance:properties_control(druid_example.properties_panel)
 	elseif example_data.properties_control then
@@ -167,18 +167,18 @@ end
 
 
 ---@param name_id string
----@return boolean @true if example was found and selected
+---@return boolean @如果找到并成功选中示例则返回 true（否则返回 false）
 function M:select_example_by_name_id(name_id)
 	print("Select example by name_id", name_id)
 	for index = 1, #self.examples do
 		local example = self.examples[index]
 
-		-- Scroll to the element
+		-- 滚动到该条目附近
 		local target_pos = gui.get_position(example.list_item.root.node)
 		target_pos.y = target_pos.y + self.scroll.view_size.y / 2
 		self.scroll:scroll_to(target_pos, true)
 
-		-- Select the element
+		-- 选中该条目
 		if example.data.name_id == name_id then
 			example.list_item.on_click:trigger()
 			return true

@@ -4,26 +4,29 @@ local helper = require("druid.helper")
 local component = require("druid.component")
 
 ---@class druid.swipe.style
----@field SWIPE_TIME number|nil Maximum time for swipe trigger. Default: 0.4
----@field SWIPE_THRESHOLD number|nil Minimum distance for swipe trigger. Default: 50
----@field SWIPE_TRIGGER_ON_MOVE boolean|nil If true, trigger on swipe moving, not only release action. Default: false
+---@field SWIPE_TIME number|nil 触发滑动的最大时间。默认值: 0.4
+---@field SWIPE_THRESHOLD number|nil 触发滑动的最小距离。默认值: 50
+---@field SWIPE_TRIGGER_ON_MOVE boolean|nil 如果为真，则在滑动移动时触发，而不仅仅是在释放操作时。默认值: false
 
----The component to manage swipe events over a node
+---用于管理节点上的滑动手势事件的组件
+---滑动组件用于检测用户在UI元素上的滑动手势，常用于页面切换或菜单操作
 ---@class druid.swipe: druid.component
----@field node node The node to manage the swipe
----@field on_swipe event fun(context, side, dist, dt) The event triggered when a swipe is detected
----@field style druid.swipe.style The style of the swipe
----@field click_zone node The click zone of the swipe
----@field private _trigger_on_move boolean True if the swipe should trigger on move
----@field private _swipe_start_time number The time the swipe started
----@field private _start_pos vector3 The start position of the swipe
----@field private _is_enabled boolean True if the swipe is enabled
----@field private _is_mobile boolean True if the swipe is on a mobile device
+---@field node node 管理滑动的节点
+---@field on_swipe event fun(context, side, dist, dt) 检测到滑动时触发的事件
+---@field style druid.swipe.style 滑动的样式
+---@field click_zone node 滑动的点击区域
+---@field private _trigger_on_move boolean 如果滑动应在移动时触发则为真
+---@field private _swipe_start_time number 滑动开始的时间
+---@field private _start_pos vector3 滑动的起始位置
+---@field private _is_enabled boolean 如果滑动已启用则为真
+---@field private _is_mobile boolean 如果滑动在移动设备上则为真
 local M = component.create("swipe")
 
 
----@param node_or_node_id node|string
----@param on_swipe_callback function
+---滑动组件构造函数
+---初始化滑动组件，设置管理滑动的节点和滑动回调函数
+---@param node_or_node_id node|string 节点或节点ID
+---@param on_swipe_callback function 滑动回调函数
 function M:init(node_or_node_id, on_swipe_callback)
 	self._trigger_on_move = self.style.SWIPE_TRIGGER_ON_MOVE
 	self.node = self:get_node(node_or_node_id)
@@ -35,7 +38,6 @@ function M:init(node_or_node_id, on_swipe_callback)
 	self.on_swipe = event.create(on_swipe_callback)
 end
 
-
 ---@private
 function M:on_late_init()
 	if not self.click_zone then
@@ -46,9 +48,10 @@ function M:on_late_init()
 	end
 end
 
-
+---内部方法：处理样式变化
+---当滑动组件样式发生变化时调用此私有方法
 ---@private
----@param style druid.swipe.style
+---@param style druid.swipe.style 滑动样式
 function M:on_style_change(style)
 	self.style = {
 		SWIPE_TIME = style.SWIPE_TIME or 0.4,
@@ -57,11 +60,12 @@ function M:on_style_change(style)
 	}
 end
 
-
+---内部方法：处理输入事件
+---此函数处理滑动组件的输入事件，检测滑动手势
 ---@private
----@param action_id hash The action id
----@param action action The action table
----@return boolean is_consumed True if the input was consumed
+---@param action_id hash 动作ID
+---@param action action 动作表
+---@return boolean is_consumed 如果输入被消耗则为真
 function M:on_input(action_id, action)
 	if action_id ~= const.ACTION_TOUCH then
 		return false
@@ -92,12 +96,10 @@ function M:on_input(action_id, action)
 	return true
 end
 
-
 ---@private
 function M:on_input_interrupt()
 	self:_reset_swipe()
 end
-
 
 ---Set the click zone for the swipe, useful for restricting events outside stencil node
 ---@param zone node|string|nil Gui node
@@ -110,7 +112,6 @@ function M:set_click_zone(zone)
 	self.click_zone = self:get_node(zone)
 end
 
-
 ---Start swipe event
 ---@param action action The action table
 function M:_start_swipe(action)
@@ -119,12 +120,10 @@ function M:_start_swipe(action)
 	self._start_pos.y = action.y
 end
 
-
 ---Reset swipe event
 function M:_reset_swipe()
 	self._swipe_start_time = 0
 end
-
 
 ---Check swipe event
 ---@param self druid.swipe
@@ -157,6 +156,5 @@ function M:_check_swipe(action)
 		self:_reset_swipe()
 	end
 end
-
 
 return M

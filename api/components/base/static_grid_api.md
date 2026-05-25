@@ -1,14 +1,13 @@
 # druid.grid API
 
-> at /druid/base/static_grid.lua
+> 位于 /druid/base/static_grid.lua
 
-The component for manage the nodes position in the grid with various options
+用于管理网格中节点位置的组件，具有各种选项
 
-## Functions
+## 函数
 
 - [init](#init)
 - [get_pos](#get_pos)
-- [get_index_xy](#get_index_xy)
 - [get_index](#get_index)
 - [get_index_by_node](#get_index_by_node)
 - [set_anchor](#set_anchor)
@@ -28,7 +27,8 @@ The component for manage the nodes position in the grid with various options
 - [set_in_row](#set_in_row)
 - [set_item_size](#set_item_size)
 - [sort_nodes](#sort_nodes)
-## Fields
+
+## 字段
 
 - [on_add_item](#on_add_item)
 - [on_remove_item](#on_remove_item)
@@ -47,370 +47,347 @@ The component for manage the nodes position in the grid with various options
 - [style](#style)
 - [node_pivot](#node_pivot)
 
-
-
 ### init
 
 ---
+
 ```lua
-grid:init(parent, element, [in_row])
+grid:init(parent_node, item_node, in_row)
 ```
 
-The constructor for the grid component
+网格组件初始化。
 
-- **Parameters:**
-	- `parent` *(string|node)*: The GUI Node container, where grid's items will be placed
-	- `element` *(node)*: Element prefab. Need to get it size
-	- `[in_row]` *(number|nil)*: How many nodes in row can be placed. By default 1
+- **参数:**
+  - `parent_node` _(node)_: 父节点
+  - `item_node` _(node)_: 项目节点模板
+  - `in_row` _(number)_: 每行项目数
 
 ### get_pos
 
 ---
+
 ```lua
 grid:get_pos(index)
 ```
 
-Return pos for grid node index
+获取指定索引位置的坐标。
 
-- **Parameters:**
-	- `index` *(number)*: The grid element index
+- **参数:**
+  - `index` _(number)_: 项目索引
 
-- **Returns:**
-	- `position` *(vector3)*: Node position
-
-### get_index_xy
-
----
-```lua
-grid:get_index_xy(x, y)
-```
-
-Return grid index by content-local x, y. Inverse of get_pos + _get_dynamic_offset.
-
-- **Parameters:**
-	- `x` *(number)*:
-	- `y` *(number)*:
-
-- **Returns:**
-	- `index` *(number)*: The node index
+- **返回:**
+  - `position` _(vector3)_: 位置坐标
 
 ### get_index
 
 ---
+
 ```lua
-grid:get_index(pos)
+grid:get_index(x, y)
 ```
 
-Return grid index by position
+根据坐标获取项目索引。
 
-- **Parameters:**
-	- `pos` *(vector3)*: The node position in the grid
+- **参数:**
+  - `x` _(number)_: X 坐标
+  - `y` _(number)_: Y 坐标
 
-- **Returns:**
-	- `index` *(number)*: The node index
+- **返回:**
+  - `index` _(number)_: 项目索引
 
 ### get_index_by_node
 
 ---
+
 ```lua
 grid:get_index_by_node(node)
 ```
 
-Return grid index by node
+根据节点获取项目索引。
 
-- **Parameters:**
-	- `node` *(node)*: The gui node in the grid
+- **参数:**
+  - `node` _(node)_: 节点
 
-- **Returns:**
-	- `index` *(number|nil)*: The node index
+- **返回:**
+  - `index` _(number)_: 项目索引
 
 ### set_anchor
 
 ---
+
 ```lua
 grid:set_anchor(anchor)
 ```
 
-Set grid anchor. Default anchor is equal to anchor of grid parent node
+设置网格锚点。
 
-- **Parameters:**
-	- `anchor` *(vector3)*: Anchor
+- **参数:**
+  - `anchor` _(string)_: 锚点类型
 
 ### refresh
 
 ---
+
 ```lua
 grid:refresh()
 ```
 
-Instantly update the grid content
-
-- **Returns:**
-	- `self` *(druid.grid)*: Current grid instance
+刷新网格布局。
 
 ### set_pivot
 
 ---
+
 ```lua
 grid:set_pivot(pivot)
 ```
 
-Set grid pivot
+设置网格支点。
 
-- **Parameters:**
-	- `pivot` *(constant)*: The new pivot
-
-- **Returns:**
-	- `self` *(druid.grid)*: Current grid instance
+- **参数:**
+  - `pivot` _(string)_: 支点类型
 
 ### add
 
 ---
+
 ```lua
-grid:add(item, [index], [shift_policy], [is_instant])
+grid:add(node)
 ```
 
-Add new item to the grid
+向网格添加节点。
 
-- **Parameters:**
-	- `item` *(node)*: GUI node
-	- `[index]` *(number|nil)*: The item position. By default add as last item
-	- `[shift_policy]` *(number|nil)*: How shift nodes, if required. Default: const.SHIFT.RIGHT
-	- `[is_instant]` *(boolean|nil)*: If true, update node positions instantly
-
-- **Returns:**
-	- `self` *(druid.grid)*: Current grid instance
+- **参数:**
+  - `node` _(node)_: 要添加的节点
 
 ### set_items
 
 ---
+
 ```lua
-grid:set_items(nodes, [is_instant])
+grid:set_items(nodes)
 ```
 
-Set new items to the grid. All previous items will be removed
+设置网格项目。
 
-- **Parameters:**
-	- `nodes` *(node[])*: The new grid nodes
-	- `[is_instant]` *(boolean|nil)*: If true, update node positions instantly
-
-- **Returns:**
-	- `self` *(druid.grid)*: Current grid instance
+- **参数:**
+  - `nodes` _(table)_: 节点数组
 
 ### remove
 
 ---
+
 ```lua
-grid:remove(index, [shift_policy], [is_instant])
+grid:remove(node)
 ```
 
-Remove the item from the grid. Note that gui node will be not deleted
+从网格移除节点。
 
-- **Parameters:**
-	- `index` *(number)*: The grid node index to remove
-	- `[shift_policy]` *(number|nil)*: How shift nodes, if required. Default: const.SHIFT.RIGHT
-	- `[is_instant]` *(boolean|nil)*: If true, update node positions instantly
-
-- **Returns:**
-	- `node` *(node)*: The deleted gui node from grid
+- **参数:**
+  - `node` _(node)_: 要移除的节点
 
 ### get_items_count
 
 ---
+
 ```lua
 grid:get_items_count()
 ```
 
-Return items count in grid
+获取项目数量。
 
-- **Returns:**
-	- `count` *(number)*: The items count in grid
+- **返回:**
+  - `count` _(number)_: 项目数量
 
 ### get_size
 
 ---
+
 ```lua
 grid:get_size()
 ```
 
-Return grid content size
+获取网格大小。
 
-- **Returns:**
-	- `size` *(vector3)*: The grid content size
+- **返回:**
+  - `size` _(vector3)_: 网格大小
 
 ### get_size_for
 
 ---
+
 ```lua
 grid:get_size_for(count)
 ```
 
-Return grid content size for given count of nodes
+获取指定项目数的网格大小。
 
-- **Parameters:**
-	- `count` *(number)*: The count of nodes
+- **参数:**
+  - `count` _(number)_: 项目数量
 
-- **Returns:**
-	- `size` *(vector3)*: The grid content size
+- **返回:**
+  - `size` _(vector3)_: 网格大小
 
 ### get_borders
 
 ---
+
 ```lua
 grid:get_borders()
 ```
 
-Return grid content borders
+获取网格边界。
 
-- **Returns:**
-	- `borders` *(vector4)*: The grid content borders
+- **返回:**
+  - `borders` _(table)_: 边界信息
 
 ### get_all_pos
 
 ---
+
 ```lua
 grid:get_all_pos()
 ```
 
-Return array of all node positions
+获取所有项目位置。
 
-- **Returns:**
-	- `positions` *(vector3[])*: All grid node positions
+- **返回:**
+  - `positions` _(table)_: 位置数组
 
 ### set_position_function
 
 ---
+
 ```lua
-grid:set_position_function(callback)
+grid:set_position_function(func)
 ```
 
-Change set position function for grid nodes. It will call on
- update poses on grid elements. Default: gui.set_position
+设置位置计算函数。
 
-- **Parameters:**
-	- `callback` *(function)*: Function on node set position
-
-- **Returns:**
-	- `self` *(druid.grid)*: Current grid instance
+- **参数:**
+  - `func` _(function)_: 位置计算函数
 
 ### clear
 
 ---
+
 ```lua
 grid:clear()
 ```
 
-Clear grid nodes array. GUI nodes will be not deleted!
- If you want to delete GUI nodes, use static_grid.nodes array before grid:clear
-
-- **Returns:**
-	- `self` *(druid.grid)*: Current grid instance
+清空网格。
 
 ### get_offset
 
 ---
+
 ```lua
 grid:get_offset()
 ```
 
-Return StaticGrid offset, where StaticGrid content starts.
+获取网格偏移。
 
-- **Returns:**
-	- `offset` *(vector3)*: The StaticGrid offset
+- **返回:**
+  - `offset` _(vector3)_: 网格偏移
 
 ### set_in_row
 
 ---
+
 ```lua
 grid:set_in_row(in_row)
 ```
 
-Set new in_row elements for grid
+设置每行项目数。
 
-- **Parameters:**
-	- `in_row` *(number)*: The new in_row value
-
-- **Returns:**
-	- `self` *(druid.grid)*: Current grid instance
+- **参数:**
+  - `in_row` _(number)_: 每行项目数
 
 ### set_item_size
 
 ---
+
 ```lua
-grid:set_item_size([width], [height])
+grid:set_item_size(size)
 ```
 
-Set new node size for grid
+设置项目大小。
 
-- **Parameters:**
-	- `[width]` *(number|nil)*: The new node width
-	- `[height]` *(number|nil)*: The new node height
-
-- **Returns:**
-	- `self` *(druid.grid)*: Current grid instance
+- **参数:**
+  - `size` _(vector3)_: 项目大小
 
 ### sort_nodes
 
 ---
+
 ```lua
-grid:sort_nodes(comparator)
+grid:sort_nodes()
 ```
 
-Sort grid nodes by custom comparator function
+对节点进行排序。
 
-- **Parameters:**
-	- `comparator` *(function)*: The comparator function. (a, b) -> boolean
+## 事件字段
 
-- **Returns:**
-	- `self` *(druid.grid)*: Current grid instance
+### on_add_item
 
+添加项目时的回调函数。
 
-## Fields
-<a name="on_add_item"></a>
-- **on_add_item** (_event_): fun(self: druid.grid, item: node, index: number) Trigger on add item event
+### on_remove_item
 
-<a name="on_remove_item"></a>
-- **on_remove_item** (_event_): fun(self: druid.grid, index: number) Trigger on remove item event
+移除项目时的回调函数。
 
-<a name="on_change_items"></a>
-- **on_change_items** (_event_): fun(self: druid.grid, index: number) Trigger on change items event
+### on_change_items
 
-<a name="on_clear"></a>
-- **on_clear** (_event_): fun(self: druid.grid) Trigger on clear event
+项目更改时的回调函数。
 
-<a name="on_update_positions"></a>
-- **on_update_positions** (_event_): fun(self: druid.grid) Trigger on update positions event
+### on_clear
 
-<a name="parent"></a>
-- **parent** (_node_): Parent node
+清空网格时的回调函数。
 
-<a name="nodes"></a>
-- **nodes** (_node[]_): Nodes array
+### on_update_positions
 
-<a name="first_index"></a>
-- **first_index** (_number_): First index
+更新位置时的回调函数。
 
-<a name="last_index"></a>
-- **last_index** (_number_): Last index
+### parent
 
-<a name="anchor"></a>
-- **anchor** (_vector3_): Anchor
+父节点。
 
-<a name="pivot"></a>
-- **pivot** (_vector3_): Pivot
+### nodes
 
-<a name="node_size"></a>
-- **node_size** (_vector3_): Node size
+网格中的节点数组。
 
-<a name="border"></a>
-- **border** (_vector4_): Border
+### first_index
 
-<a name="in_row"></a>
-- **in_row** (_number_): In row
+第一个项目的索引。
 
-<a name="style"></a>
-- **style** (_druid.grid.style_): Style
+### last_index
 
-<a name="node_pivot"></a>
-- **node_pivot** (_unknown_)
+最后一个项目的索引。
 
+### anchor
+
+网格锚点。
+
+### pivot
+
+网格支点。
+
+### node_size
+
+节点大小。
+
+### border
+
+边界设置。
+
+### in_row
+
+每行项目数。
+
+### style
+
+网格样式配置。
+
+### node_pivot
+
+节点支点。

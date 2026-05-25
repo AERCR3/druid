@@ -3,16 +3,16 @@
 ---@field hover_pressed druid.hover
 local M = {}
 
----Color: #E6DF9F
+--- 颜色：#E6DF9F
 local HOVERED_COLOR = vmath.vector4(230/255, 223/255, 159/255, 1.0)
 
 function M:init()
-	-- Default hover callback is `on_hover`, designed for mobile devices
-	-- It's only hover if touch action is above the node
+	-- 默认 hover 回调是 `on_hover`，主要面向移动端
+	-- 只有触摸点位于节点上方时才会触发 hover
 	self.hover_default = self.druid:new_hover("button_mobile_hover/root", self.on_hover)
 
-	-- If you wan't to use mouse hover, you can use `on_mouse_hover` callback
-	-- It's checks the `action_id` == nil (mouse events)
+	-- 如果想使用鼠标悬停，可以使用 `on_mouse_hover` 回调
+	-- 通过 `action_id == nil` 来区分鼠标事件
 	self.hover = self.druid:new_hover("button_mouse_hover/root", nil, self.on_hover)
 
 	self.default_color = gui.get_color(self.hover.node)

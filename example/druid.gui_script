@@ -45,7 +45,7 @@ local function setup_saver(self)
 end
 
 
---- Generic setup that should be done once per application
+--- 应用级的一次性通用初始化
 ---@param self druid.example
 local function setup_druid(self)
 	lang.init({
@@ -71,8 +71,8 @@ local function setup_druid(self)
 end
 
 
---- Containers is a layout of the GUI scene. Inside this containers I will place a logic components
---- This allow easily move components in the GUI scene and change the size of each section
+--- Container 用于描述 GUI 场景的布局；逻辑组件会挂载到这些容器中
+--- 这样可以在 GUI 场景里更方便地移动组件，并独立调整每个区域的尺寸
 ---@param self druid.example
 local function setup_layout(self)
 	self.container_root = self.druid:new_container("root") --[[@as druid.container]]
@@ -97,7 +97,7 @@ local function on_next_example(self)
 	local current_index = 1
 	local examples = self.examples_list_view.examples
 
-	-- Find current example index
+	-- 找到当前示例的索引
 	for i, example in ipairs(examples) do
 		if example.data.name_id == self.examples_list_view.selected_example.data.name_id then
 			current_index = i
@@ -105,13 +105,13 @@ local function on_next_example(self)
 		end
 	end
 
-	-- Get next example index (wrap around to first if at end)
+	-- 获取下一个示例索引（到末尾则回到第一个）
 	local next_index = current_index + 1
 	if next_index > #examples then
 		next_index = 1
 	end
 
-	-- Select the next example
+	-- 选择下一个示例
 	self.examples_list_view:select_example_by_name_id(examples[next_index].data.name_id)
 end
 
@@ -121,7 +121,7 @@ local function on_previous_example(self)
 	local current_index = 1
 	local examples = self.examples_list_view.examples
 
-	-- Find current example index
+	-- 找到当前示例的索引
 	for i, example in ipairs(examples) do
 		if example.data.name_id == self.examples_list_view.selected_example.data.name_id then
 			current_index = i
@@ -129,13 +129,13 @@ local function on_previous_example(self)
 		end
 	end
 
-	-- Get previous example index (wrap around to last if at start)
+	-- 获取上一个示例索引（在开头则回到最后一个）
 	local prev_index = current_index - 1
 	if prev_index < 1 then
 		prev_index = #examples
 	end
 
-	-- Select the previous example
+	-- 选择上一个示例
 	self.examples_list_view:select_example_by_name_id(examples[prev_index].data.name_id)
 end
 
@@ -168,7 +168,7 @@ local function setup_components(self)
 	self.previous_example = self.druid:new_hotkey("key_up", on_previous_example, self)
 		:add_hotkey("key_w")
 
-	do -- Component bindings
+	do -- 组件间事件绑定
 		self.examples_list_view.on_debug_info:subscribe(function(info)
 			self.example_scene:set_debug_info(info)
 		end)
@@ -200,7 +200,7 @@ end
 ---@param self druid.example
 local function select_start_example(self)
 	if html5 then
-		-- Try load example from URL
+		-- 尝试从 URL 参数中读取要打开的示例
 		local example_name = html5.run("new URLSearchParams(window.location.search).get('example')")
 		if example_name then
 			local is_selected = self.examples_list_view:select_example_by_name_id(example_name)
@@ -210,7 +210,7 @@ local function select_start_example(self)
 		end
 	end
 
-	-- If we have last selected example in cache, select it again
+	-- 如果缓存里有上次选择的示例，则恢复；否则选默认示例
 	local last_selected_example_name = storage.get_string("last_selected_example", "")
 	if last_selected_example_name ~= "" then
 		self.examples_list_view:select_example_by_name_id(last_selected_example_name)
@@ -224,7 +224,7 @@ end
 local function setup_examples(self)
 	local examples = druid_examples.get_examples()
 
-	do -- Disable all examples by default
+	do -- 默认先禁用所有示例节点（由列表选择后再启用）
 		for index = 1, #examples do
 			local example = examples[index]
 			local examples_list = example.examples_list
@@ -257,12 +257,12 @@ local function setup_defos(self)
 			saver.save_game_state()
 		end)
 
-		-- Restore window size and position
+		-- 恢复窗口大小与位置
 		local prev_settings = saver.get_value("window.last_state")
 		if prev_settings then
 			---@cast prev_settings number[]
 			local x, y, w, h = unpack(prev_settings)
-			-- Limit size to 300x200
+			-- 最小尺寸限制为 300x200（避免窗口过小导致 UI 不可用）
 			x = vmath.clamp(x, 0, 4000)
 			y = vmath.clamp(y, 0, 4000)
 			w = vmath.clamp(w, 300, 4000)

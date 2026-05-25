@@ -61,7 +61,7 @@ function M:on_input(action_id, action)
 		self.trigger_r2:set_to(action.value)
 	end
 
-	-- Left Stick
+	-- 左摇杆
 	if action_id == hash("gamepad_lstick_left") then
 		gui.set(self.stick_left, "position.x", -action.value * STICK_DISTANCE)
 	end
@@ -75,7 +75,7 @@ function M:on_input(action_id, action)
 		gui.set(self.stick_left, "position.y", -action.value * STICK_DISTANCE)
 	end
 
-	-- Right Stick
+	-- 右摇杆
 	if action_id == hash("gamepad_rstick_left") then
 		gui.set(self.stick_right, "position.x", -action.value * STICK_DISTANCE)
 	end

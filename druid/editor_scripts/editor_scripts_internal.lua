@@ -1,8 +1,9 @@
 local M = {}
 
 
----Read editor port from .internal/editor.port file
----@return number|nil port Editor port number or nil if not found
+--- 从.internal/editor.port文件读取编辑器端口
+--- 此函数读取Defold编辑器的HTTP API端口以便进行通信
+---@return number|nil port 编辑器端口号，如果未找到则为nil
 local function get_editor_port()
 	local port_file_path = ".internal/editor.port"
 	local port_file = io.open(port_file_path, "r")
@@ -24,9 +25,10 @@ local function get_editor_port()
 end
 
 
----Call editor HTTP API command
----@param command string Command name (e.g., "fetch-libraries")
----@return boolean success True if request was sent successfully
+--- 调用编辑器HTTP API命令
+--- 此函数向Defold编辑器发送HTTP请求以执行特定命令
+---@param command string 命令名称（例如："fetch-libraries"）
+---@return boolean success 如果请求成功发送则为True
 function M.call_editor_command(command)
 	if not command or command == "" then
 		return false
@@ -50,6 +52,5 @@ function M.call_editor_command(command)
 
 	return true
 end
-
 
 return M

@@ -40,12 +40,12 @@ function M:on_input(action_id, action)
 		local root_screen_pos = gui.get_screen_position(self.root)
 		local koef_x, koef_y = helper.get_screen_aspect_koef()
 
-		local dx = (action.screen_x - root_screen_pos.x) * koef_x -- -root_size.x / 2 .. root_size.x / 2
-		local animation_progress_x = (dx + self.root_size.x / 2) / self.root_size.x -- 0 .. 1
+		local dx = (action.screen_x - root_screen_pos.x) * koef_x -- 范围：-root_size.x/2 .. root_size.x/2
+		local animation_progress_x = (dx + self.root_size.x / 2) / self.root_size.x -- 归一化到 0..1
 		panthera.set_time(self.animation_horizontal, "horizontal", animation_progress_x)
 
-		local dy = (action.screen_y - root_screen_pos.y) * koef_y -- -root_size.y / 2 .. root_size.y / 2
-		local animation_progress_y = (dy + self.root_size.y / 2) / self.root_size.y -- 0 .. 1
+		local dy = (action.screen_y - root_screen_pos.y) * koef_y -- 范围：-root_size.y/2 .. root_size.y/2
+		local animation_progress_y = (dy + self.root_size.y / 2) / self.root_size.y -- 归一化到 0..1
 		panthera.set_time(self.animation_vertical, "vertical", animation_progress_y)
 	end
 end

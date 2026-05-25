@@ -1,6 +1,7 @@
--- Source: https://github.com/britzl/defold-richtext version 5.19.0
--- Author: Britzl
--- Modified by: Insality
+--- 富文本解析模块
+--- 源码: https://github.com/britzl/defold-richtext 版本 5.19.0
+--- 作者: Britzl
+--- 修改者: Insality
 
 local tags = require("druid.custom.rich_text.module.rt_tags")
 local utf8_lua = require("druid.system.utf8")
@@ -8,6 +9,12 @@ local utf8 = utf8 or utf8_lua
 
 local M = {}
 
+--- 解析标签
+--- 此函数解析富文本标签及其参数，并应用样式设置
+---@param tag string 标签名称
+---@param params string 标签参数
+---@param style table 样式表
+---@return table 解析后的设置
 local function parse_tag(tag, params, style)
 	local settings = { tags = { [tag] = params }, tag = tag }
 	if not tags.apply(tag, params, settings, style) then
@@ -18,13 +25,18 @@ local function parse_tag(tag, params, style)
 end
 
 
--- add a single word to the list of words
+--- 向单词列表中添加单个单词
+--- 此函数将文本添加到单词列表中，并处理HTML实体
+---@param text string 要添加的文本
+---@param settings table 当前设置
+---@param words table 单词列表
+---@return table 添加的单词对象
 local function add_word(text, settings, words)
-	-- handle HTML entities
+	-- 处理HTML实体
 	text = text:gsub("&lt;", "<"):gsub("&gt;", ">"):gsub("&nbsp;", " ")
 
 	local data = { text = text, source_text = text }
-	for k,v in pairs(settings) do
+	for k, v in pairs(settings) do
 		data[k] = v
 	end
 
@@ -33,7 +45,11 @@ local function add_word(text, settings, words)
 end
 
 
--- split a line into words
+--- 将一行文本分割为单词
+--- 此函数将一行文本按空格分割成单词，并处理首尾空白字符
+---@param line string 要分割的行
+---@param settings table 当前设置
+---@param words table 单词列表
 local function split_line(line, settings, words)
 	assert(line)
 	assert(settings)
@@ -66,37 +82,40 @@ local function split_line(line, settings, words)
 end
 
 
--- split text
--- split by lines first
+--- 分割文本
+--- 首先按行分割文本
+---@param text string 要分割的文本
+---@param settings table 当前设置
+---@param words table 单词列表
 local function split_text(text, settings, words)
 	assert(text)
 	assert(settings)
 	assert(words)
-	-- special treatment of empty text with a linebreak <br/>
+	-- 特殊处理带有换行符的空文本 <br/>
 	if text == "" and settings.linebreak then
 		add_word(text, settings, words)
 		return
 	end
 
-	-- we don't want to deal with \r\n, remove all \r
+	-- 我们不想处理 \r\n，移除所有 \r
 	text = text:gsub("\r", "")
 
-	-- the Lua pattern expects the text to have a linebreak at the end
+	-- Lua模式期望文本末尾有一个换行符
 	local added_linebreak = false
-	if text:sub(-1)~="\n" then
+	if text:sub(-1) ~= "\n" then
 		added_linebreak = true
 		text = text .. "\n"
 	end
 
-	-- split into lines
+	-- 分割成行
 	for line in text:gmatch("(.-)\n") do
 		split_line(line, settings, words)
-		-- flag last word of a line as having a linebreak
+		-- 标记行的最后一个单词为有换行符
 		local last = words[#words]
 		last.linebreak = true
 	end
 
-	-- remove the last linebreak if we manually added it above
+	-- 如果上面手动添加了换行符，则移除最后一个换行符
 	if added_linebreak then
 		local last = words[#words]
 		last.linebreak = false
@@ -104,7 +123,10 @@ local function split_text(text, settings, words)
 end
 
 
--- Merge one tag into another
+--- 将一个标签合并到另一个标签
+--- 此函数将源标签的所有属性合并到目标标签中
+---@param dst table 目标标签表
+---@param src table 源标签表
 local function merge_tags(dst, src)
 	for k, v in pairs(src) do
 		if k ~= "tags" then
@@ -176,7 +198,7 @@ function M.parse(text, default_settings, style)
 		else
 			-- end tag - remove it from the list of open tags
 			local found = false
-			for i=#open_tags,1,-1 do
+			for i = #open_tags, 1, -1 do
 				if open_tags[i].tag == name then
 					table.remove(open_tags, i)
 					found = true
@@ -193,13 +215,11 @@ function M.parse(text, default_settings, style)
 	return all_words
 end
 
-
 ---Get the length of a text, excluding any tags (except image and spine tags)
 ---@param text string The text to get the length of
 ---@return number The length of the text
 function M.length(text)
 	return utf8.len(text:gsub("<img.-/>", " "):gsub("<.->", ""))
 end
-
 
 return M

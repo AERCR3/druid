@@ -1,12 +1,13 @@
 local const = require("druid.const")
 
--- Localize functions for better performance
+-- 局部化函数以提高性能
 local gui_get_node = gui.get_node
 local gui_get = gui.get
 local gui_pick_node = gui.pick_node
 
----The helper module contains various functions that are used in the Druid library.
----You can use these functions in your projects as well.
+---辅助模块包含在Druid库中使用的各种函数。
+---您也可以在自己的项目中使用这些函数。
+---该模块提供了一系列实用工具函数，用于简化GUI开发过程
 ---@class druid.helper
 local M = {}
 
@@ -45,39 +46,40 @@ local function get_width(node)
 end
 
 
----Center two nodes.
----Nodes will be center around 0 x position
----text_node will be first (at left side)
----@param text_node node|nil Gui text node
----@param icon_node node|nil Gui box node
----@param margin number Offset between nodes
----@return number width Total width of the centrated elements
+---居中对齐两个节点。
+---节点将在0 x位置周围居中
+---text_node将是第一个（在左侧）
+---此函数用于将文本和图标水平居中排列
+---@param text_node node|nil Gui文本节点
+---@param icon_node node|nil Gui框节点
+---@param margin number 节点之间的偏移量
+---@return number width 居中元素的总宽度
 ---@local
 function M.centrate_text_with_icon(text_node, icon_node, margin)
 	return M.centrate_nodes(margin, text_node, icon_node)
 end
 
-
----Center two nodes.
----Nodes will be center around 0 x position
----icon_node will be first (at left side)
----@param icon_node node|nil Gui box node
----@param text_node node|nil Gui text node
----@param margin number|nil Offset between nodes
----@return number width Total width of the centrated elements
+---居中对齐两个节点。
+---节点将在0 x位置周围居中
+---icon_node将是第一个（在左侧）
+---此函数用于将图标和文本水平居中排列
+---@param icon_node node|nil Gui框节点
+---@param text_node node|nil Gui文本节点
+---@param margin number|nil 节点之间的偏移量
+---@return number width 居中元素的总宽度
 ---@local
 function M.centrate_icon_with_text(icon_node, text_node, margin)
 	return M.centrate_nodes(margin, icon_node, text_node)
 end
 
-
----Centerate nodes by x position with margin.
+---按x位置和边距居中对齐节点。
 ---
----This functions calculate total width of nodes and set position for each node.
----The centrate will be around 0 x position.
----@param margin number|nil Offset between nodes
----@param ... node Nodes to centrate
----@return number width Total width of the centrated elements
+---此函数计算节点的总宽度并为每个节点设置位置。
+---居中将以0 x位置为中心。
+---该函数支持多个节点的水平居中排列，常用于UI布局
+---@param margin number|nil 节点之间的偏移量
+---@param ... node 要居中的节点
+---@return number width 居中元素的总宽度
 function M.centrate_nodes(margin, ...)
 	margin = margin or 0
 
@@ -99,24 +101,24 @@ function M.centrate_nodes(margin, ...)
 		local node = select(i, ...)
 		local node_width = node_widths[i]
 
-		pos_x = pos_x + node_width/2 -- made offset for single item
+		pos_x = pos_x + node_width / 2 -- made offset for single item
 
 		local pivot_offset = M.get_pivot_offset(gui.get_pivot(node))
-		local new_pos_x = pos_x - width/2 + pivot_offset.x * node_width -- centrate node
+		local new_pos_x = pos_x - width / 2 + pivot_offset.x * node_width -- centrate node
 		gui.set(node, POSITION_X, new_pos_x)
 
-		pos_x = pos_x + node_widths[i]/2 + margin -- add second part of offset
+		pos_x = pos_x + node_widths[i] / 2 + margin -- add second part of offset
 	end
 
 	return width
 end
 
-
----Get GUI node from string name, node itself, or template/nodes structure
----@param node_id string|node The node name or node itself
----@param template string|nil Full path to the template
----@param nodes table<hash, node>|nil Nodes created with gui.clone_tree
----@return node The requested node
+---从字符串名称、节点本身或模板/节点结构获取GUI节点
+---此函数提供了灵活的节点获取方式，支持多种输入格式
+---@param node_id string|node 节点名称或节点本身
+---@param template string|nil 模板的完整路径
+---@param nodes table<hash, node>|nil 使用gui.clone_tree创建的节点
+---@return node 请求的节点
 function M.get_node(node_id, template, nodes)
 	if type(node_id) ~= "string" then
 		-- Assume it's already node from gui.get_node
@@ -136,10 +138,10 @@ function M.get_node(node_id, template, nodes)
 	return gui_get_node(node_id)
 end
 
-
----Get current screen stretch multiplier for each side
----@return number stretch_x
----@return number stretch_y
+---获取当前屏幕每侧的拉伸倍数
+---此函数用于计算屏幕适配比例，确保UI在不同分辨率设备上正确显示
+---@return number stretch_x X轴拉伸比例
+---@return number stretch_y Y轴拉伸比例
 function M.get_screen_aspect_koef()
 	local window_x, window_y = window.get_size()
 
@@ -153,14 +155,12 @@ function M.get_screen_aspect_koef()
 	return koef_x, koef_y
 end
 
-
 ---Get current GUI scale
 ---@return number scale
 function M.get_gui_scale()
 	local window_x, window_y = window.get_size()
 	return math.min(window_x / gui.get_width(), window_y / gui.get_height())
 end
-
 
 ---Move value from current to target value with step amount
 ---@param current number Current value
@@ -174,7 +174,6 @@ function M.step(current, target, step)
 		return math.max(target, current - step)
 	end
 end
-
 
 ---Clamp value between min and max. Works with nil values and swap min and max if needed.
 ---@param value number Value
@@ -191,7 +190,6 @@ function M.clamp(value, v1, v2)
 	return math.max(v1, math.min(value, v2))
 end
 
-
 ---Calculate distance between two points
 ---@param x1 number First point x
 ---@param y1 number First point y
@@ -201,7 +199,6 @@ end
 function M.distance(x1, y1, x2, y2)
 	return math.sqrt((x2 - x1) ^ 2 + (y2 - y1) ^ 2)
 end
-
 
 ---Return sign of value
 ---@param val number Value
@@ -214,16 +211,14 @@ function M.sign(val)
 	return (val < 0) and -1 or 1
 end
 
-
 ---Round number to specified decimal places
 ---@param num number Number
 ---@param num_decimal_places number|nil Decimal places
 ---@return number value Rounded number
 function M.round(num, num_decimal_places)
-	local mult = 10^(num_decimal_places or 0)
+	local mult = 10 ^ (num_decimal_places or 0)
 	return math.floor(num * mult + 0.5) / mult
 end
-
 
 ---Lerp between two values
 ---@param a number First value
@@ -233,7 +228,6 @@ end
 function M.lerp(a, b, t)
 	return a + (b - a) * t
 end
-
 
 ---Check if value contains in array
 ---@param array any[] Array to check
@@ -247,7 +241,6 @@ function M.contains(array, value)
 	end
 	return nil
 end
-
 
 ---Make a copy table with all nested tables
 ---@param orig_table table Original table
@@ -265,7 +258,6 @@ function M.deepcopy(orig_table)
 	end
 	return copy
 end
-
 
 ---Add all elements from source array to the target array
 ---@param target any[] Array to put elements from source
@@ -285,7 +277,6 @@ function M.add_array(target, source)
 	return target
 end
 
-
 ---Make a check with gui.pick_node, but with additional node_click_area check.
 ---@param node node
 ---@param x number
@@ -302,14 +293,12 @@ function M.pick_node(node, x, y, node_click_area)
 	return is_pick
 end
 
-
 ---Get size of node with scale multiplier
 ---@param node node GUI node
 ---@return vector3 scaled_size
 function M.get_scaled_size(node)
 	return vmath.mul_per_elem(gui.get_size(node), gui.get_scale(node)) --[[@as vector3]]
 end
-
 
 ---Get cumulative parent's node scale
 ---@param node node Gui node
@@ -325,7 +314,6 @@ function M.get_scene_scale(node, include_passed_node_scale)
 
 	return scale
 end
-
 
 ---Return closest non inverted clipping parent node for given node
 ---@param node node GUI node
@@ -350,7 +338,6 @@ function M.get_closest_stencil_node(node)
 	return nil
 end
 
-
 ---Get pivot offset for given pivot or node
 ---Offset shown in [-0.5 .. 0.5] range, where -0.5 is left or bottom, 0.5 is right or top.
 ---@param pivot_or_node number|node GUI pivot or node
@@ -362,15 +349,12 @@ function M.get_pivot_offset(pivot_or_node)
 	return const.PIVOTS[gui.get_pivot(pivot_or_node)]
 end
 
-
 ---Check if device is desktop
 ---@return boolean
 function M.is_desktop()
 	local name = const.CURRENT_SYSTEM_NAME
 	return name == const.OS.WINDOWS or name == const.OS.MAC or name == const.OS.LINUX
 end
-
-
 
 ---Check if device is native mobile (Android or iOS)
 ---@return boolean Is mobile
@@ -379,30 +363,27 @@ function M.is_mobile()
 	return sys_name == const.OS.IOS or sys_name == const.OS.ANDROID
 end
 
-
 ---Check if device is HTML5
 ---@return boolean
 function M.is_web()
 	return const.CURRENT_SYSTEM_NAME == const.OS.BROWSER
 end
 
-
 ---Check if device is HTML5 mobile
 ---@return boolean
 function M.is_web_mobile()
 	if html5 then
-		return html5.run("(typeof window.orientation !== 'undefined') || (navigator.userAgent.indexOf('IEMobile') !== -1);") == "true"
+		return html5.run("(typeof window.orientation !== 'undefined') || (navigator.userAgent.indexOf('IEMobile') !== -1);") ==
+				"true"
 	end
 	return false
 end
-
 
 ---Check if device is mobile and can support multitouch
 ---@return boolean is_multitouch Is multitouch supported
 function M.is_multitouch_supported()
 	return M.is_mobile() or M.is_web_mobile()
 end
-
 
 ---Converts table to one-line string
 ---@param t table
@@ -444,7 +425,6 @@ function M.table_to_string(t, depth, result)
 	return result .. "}", false
 end
 
-
 ---Distance from node position to his borders
 ---@param node node GUI node
 ---@param offset vector3|nil Offset from node position. Pass current node position to get non relative border values
@@ -469,7 +449,6 @@ function M.get_border(node, offset)
 
 	return border
 end
-
 
 local TEXT_METRICS_OPTIONS = {
 	line_break = false,
@@ -498,7 +477,6 @@ function M.get_text_metrics_from_node(text_node)
 	local font_resource = gui.get_font_resource(gui.get_font(text_node))
 	return resource.get_text_metrics(font_resource, gui.get_text(text_node), options)
 end
-
 
 ---Add value to array with shift policy
 ---Shift policy can be: left, right, no_shift
@@ -529,7 +507,6 @@ function M.insert_with_shift(array, item, index, shift_policy)
 	return item
 end
 
-
 ---Remove value from array with shift policy
 -- Shift policy can be: left, right, no_shift
 ---@param array any[] Array
@@ -559,7 +536,6 @@ function M.remove_with_shift(array, index, shift_policy)
 	return item
 end
 
-
 ---Get full position of node in the GUI tree
 ---@param node node GUI node
 ---@param root node|nil GUI root node to stop search
@@ -575,7 +551,6 @@ function M.get_full_position(node, root)
 
 	return position
 end
-
 
 ---@class druid.system.animation_data
 ---@field frames table<number, table<string, number>> List of frames with uv coordinates and size
@@ -686,15 +661,14 @@ function M.get_animation_data_from_node(node, atlas_path)
 	end
 
 	return {
-		frames 	= frames,
-		width   = animation_data.width,
-		height 	= animation_data.height,
-		fps     = animation_data.fps,
-		v       = vmath.vector4(1, 1, animation_data.width, animation_data.height),
+		frames        = frames,
+		width         = animation_data.width,
+		height        = animation_data.height,
+		fps           = animation_data.fps,
+		v             = vmath.vector4(1, 1, animation_data.width, animation_data.height),
 		current_frame = 1,
-		node    = node,
+		node          = node,
 	}
 end
-
 
 return M

@@ -16,7 +16,7 @@ function M:init()
 			is_skip_init = true
 		})
 	end)
-	self.button:set_style(nil) -- Reset all button style animations
+	self.button:set_style(nil) -- 清除按钮默认样式动画（避免与 panthera 动画叠加）
 
 	self.button.hover.on_mouse_hover:subscribe(function(_, is_hover)
 		if is_hover then

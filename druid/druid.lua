@@ -7,16 +7,18 @@ local logger = require("druid.system.druid_logger")
 local default_style = require("druid.styles.default.style")
 
 
----Entry point for Druid UI Framework.
----Create a new Druid instance and adjust the Druid settings here.
+---Druid UI框架的入口点。
+---在此创建新的Druid实例并调整Druid设置。
+---Druid是一个用于Defold引擎的UI系统，提供了各种GUI组件
 ---@class druid
 local M = {}
 
 
----Create a new Druid instance for creating GUI components.
----@param context table The Druid context. Usually, this is the self of the gui_script. It is passed into all Druid callbacks.
----@param style table|nil The Druid style table to override style parameters for this Druid instance.
----@return druid.instance druid_instance The new Druid instance
+---创建一个新的Druid实例用于创建GUI组件。
+---此函数是使用Druid UI系统的主要入口点
+---@param context table Druid上下文。通常这是gui_script的self。它会被传递到所有Druid回调中。
+---@param style table|nil Druid样式表，用于覆盖此Druid实例的样式参数。
+---@return druid.instance druid_instance 新的Druid实例
 function M.new(context, style)
 	if settings.default_style == nil then
 		M.set_default_style(default_style)
@@ -24,7 +26,6 @@ function M.new(context, style)
 
 	return druid_instance.create_druid_instance(context, style)
 end
-
 
 ---Register a new external Druid component.
 ---Register component just makes the druid:new_{name} function.
@@ -47,66 +48,66 @@ function M.register(name, module)
 	end
 end
 
-
----Set the default style for all Druid instances.
----@param style table Default style
+---为所有Druid实例设置默认样式。
+---样式控制UI组件的外观和行为，包括颜色、尺寸、动画等
+---@param style table 默认样式
 function M.set_default_style(style)
 	settings.default_style = style or {}
 end
 
-
----Set the text function for the LangText component.
----@param callback fun(text_id: string): string Get localized text function
+---为LangText组件设置文本函数。
+---此函数用于国际化和本地化支持，根据文本ID返回对应的语言文本
+---@param callback fun(text_id: string): string 获取本地化文本的函数
 function M.set_text_function(callback)
 	settings.get_text = callback or function() end
 	M.on_language_change()
 end
 
-
----Set the sound function to able components to play sounds.
----@param callback fun(sound_id: string) Sound play callback
+---设置声音函数，使组件能够播放声音。
+---此函数提供了一个统一的声音播放接口，便于管理UI音效
+---@param callback fun(sound_id: string) 声音播放回调
 function M.set_sound_function(callback)
 	settings.play_sound = callback or function() end
 end
 
-
----Subscribe Druid to the window listener. It will override your previous
----window listener, so if you have one, you should call M.on_window_callback manually.
+---将Druid订阅到窗口监听器。这将覆盖之前的
+---窗口监听器，因此如果已有监听器，请手动调用M.on_window_callback。
+---此功能用于处理应用级别的事件，如失去焦点或返回前台
 function M.init_window_listener()
 	window.set_listener(function(_, window_event)
 		events.trigger("druid.window_event", window_event)
 	end)
 end
 
-
----Set the window callback to enable Druid window events.
----@param window_event constant Event param from window listener
+---设置窗口回调以启用Druid窗口事件。
+---此函数允许手动触发窗口事件，当有其他窗口监听器时特别有用
+---@param window_event constant 来自窗口监听器的事件参数
 function M.on_window_callback(window_event)
 	events.trigger("druid.window_event", window_event)
 end
 
-
----Call this function when the game language changes.
----It will notify all Druid instances to update the lang text components.
+---当游戏语言更改时调用此函数。
+---它将通知所有Druid实例更新lang text组件。
+---此函数对于实现动态语言切换功能非常重要
 function M.on_language_change()
 	events.trigger("druid.language_change")
 end
 
-
 ---@type table<userdata, {path: string, fragment: string, new_widget: event}[]>
 local REGISTERED_GUI_WIDGETS = {}
 
----Set a widget to the current game object. The game object can acquire the widget by calling `bindings.get_widget`
----It wraps with events only top level functions cross-context, so you will have no access to nested widgets functions
+---设置一个widget到当前游戏对象。游戏对象可以通过调用`bindings.get_widget`获取widget
+---它仅将顶层函数包装为跨上下文事件，因此无法访问嵌套widget函数
+---此函数实现了GUI脚本与游戏对象之间的安全通信机制
 ---@param widget druid.widget
 ---@return druid.widget
 local function wrap_widget(widget)
-	-- Make a copy of the widget with all functions wrapped in events
-	-- It makes available to call gui functions from game objects
+	-- 创建widget的副本，其中所有函数都被包装在事件中
+	-- 这使得可以从游戏对象调用GUI函数
 	local wrapped_widget = setmetatable({}, { __index = widget })
 	local parent_table = getmetatable(widget).__index
 
-	-- Go through all functions and wrap them in events
+	-- 遍历所有函数并将它们包装在事件中
 	for key, value in pairs(parent_table) do
 		if type(value) == "function" then
 			wrapped_widget[key] = event.create(function(_, ...)
@@ -125,17 +126,18 @@ local function wrap_widget(widget)
 end
 
 
----Create a widget from the bound Druid GUI instance.
----The widget will be created and all widget functions can be called from Game Object contexts.
----This allows using only `druid_widget.gui_script` for GUI files and call this widget functions from Game Object script file.
----Widget class here is your lua file for the GUI scene (widgets in Druid)
----		msg.url(nil, nil, "gui_widget") -- current game object
----		msg.url(nil, object_url, "gui_widget") -- other game object
+---从绑定的Druid GUI实例创建一个widget。
+---widget将被创建，所有widget函数都可以从Game Object上下文中调用。
+---这允许仅为GUI文件使用`druid_widget.gui_script`，并从Game Object脚本文件调用此widget函数。
+---这里的Widget类是GUI场景的lua文件（Druid中的widgets）
+---		msg.url(nil, nil, "gui_widget") -- 当前游戏对象
+---		msg.url(nil, object_url, "gui_widget") -- 其他游戏对象
+---此函数实现了跨脚本的widget通信机制，是Druid架构的重要组成部分
 ---@generic T: druid.widget
----@param widget_class T The class of the widget to return
----@param gui_url url|string GUI url or string of component name near current script
----@param params any|nil Additional parameters to pass to the widget's init function
----@return T widget The new created widget,
+---@param widget_class T 要返回的widget类
+---@param gui_url url|string GUI url或靠近当前脚本的组件名称字符串
+---@param params any|nil 要传递给widget的init函数的附加参数
+---@return T widget 新创建的widget，
 function M.get_widget(widget_class, gui_url, params)
 	if type(gui_url) == "string" then
 		gui_url = msg.url(nil, nil, gui_url)
@@ -155,11 +157,11 @@ function M.get_widget(widget_class, gui_url, params)
 	error("Druid widget not found for this game object: " .. gui_url)
 end
 
-
----Bind a Druid GUI instance to the current game object.
----This instance now can produce widgets from `druid.get_widget()` function.
----Only one widget can be set per game object.
----@param druid druid.instance The druid instance to register
+---将Druid GUI实例绑定到当前游戏对象。
+---此实例现在可以从`druid.get_widget()`函数生成widgets。
+---每个游戏对象只能设置一个小部件。
+---此函数建立了GUI脚本和游戏对象之间的关联，是实现双向通信的基础
+---@param druid druid.instance 要注册的druid实例
 function M.register_druid_as_widget(druid)
 	local gui_url = msg.url()
 	REGISTERED_GUI_WIDGETS[gui_url.socket] = REGISTERED_GUI_WIDGETS[gui_url.socket] or {}
@@ -172,8 +174,8 @@ function M.register_druid_as_widget(druid)
 	})
 end
 
-
----Should be called on final, where druid instance is destroyed.
+---应在最终销毁druid实例时调用。
+---此函数用于清理注册的widget引用，防止内存泄漏
 function M.unregister_druid_as_widget()
 	local gui_url = msg.url()
 	local socket = gui_url.socket
@@ -193,12 +195,10 @@ function M.unregister_druid_as_widget()
 	end
 end
 
-
 ---@param logger_instance druid.logger|table|nil
 function M.set_logger(logger_instance)
 	logger.set_logger(logger_instance)
 end
-
 
 ---@param name string?
 ---@param level string|nil
@@ -213,6 +213,5 @@ function M.get_logger(name, level)
 
 	return setmetatable({ name = name, level = level }, { __index = logger })
 end
-
 
 return M

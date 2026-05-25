@@ -1,24 +1,27 @@
 # druid.timer API
 
-> at /druid/extended/timer.lua
+> 位于 /druid/extended/timer.lua
 
-Druid component to handle timer work on gui text node. Displays time in a formatted way.
+Druid 组件，用于处理 GUI 文本节点上的定时器工作。以格式化的方式显示时间。
 
-### Setup
-Create timer component with druid: `timer = druid:new_timer(text_node, from_seconds, to_seconds, callback)`
+### 设置
 
-### Notes
-- Timer fires callback when timer value equals to _to_seconds_
-- Timer will set text node with current timer value
-- Timer uses update function to handle time
+使用 druid 创建定时器组件：`timer = druid:new_timer(text_node, from_seconds, to_seconds, callback)`
 
-## Functions
+### 注意事项
+
+- 当定时器值等于 _to_seconds_ 时，定时器触发回调
+- 定时器将用当前定时器值设置文本节点
+- 定时器使用更新函数来处理时间
+
+## 函数
 
 - [init](#init)
 - [set_to](#set_to)
 - [set_state](#set_state)
 - [set_interval](#set_interval)
-## Fields
+
+## 字段
 
 - [on_tick](#on_tick)
 - [on_set_enabled](#on_set_enabled)
@@ -31,99 +34,102 @@ Create timer component with druid: `timer = druid:new_timer(text_node, from_seco
 - [temp](#temp)
 - [last_value](#last_value)
 
-
-
 ### init
 
 ---
+
 ```lua
 timer:init(node, [seconds_from], [seconds_to], [callback])
 ```
 
-- **Parameters:**
-	- `node` *(node)*: Gui text node
-	- `[seconds_from]` *(number|nil)*: Start timer value in seconds
-	- `[seconds_to]` *(number|nil)*: End timer value in seconds
-	- `[callback]` *(function|nil)*: Function that triggers when timer value equals to seconds_to
+- **参数:**
+  - `node` _(node)_: GUI 文本节点
+  - `[seconds_from]` _(number|nil)_: 开始定时器值（秒）
+  - `[seconds_to]` _(number|nil)_: 结束定时器值（秒）
+  - `[callback]` _(function|nil)_: 当定时器值等于 seconds_to 时触发的函数
 
-- **Returns:**
-	- `` *(druid.timer)*:
+- **返回:**
+  - `` _(druid.timer)_:
 
 ### set_to
 
 ---
+
 ```lua
-timer:set_to(set_to)
+timer:set_to(from, to, [callback])
 ```
 
-Set the timer to a specific value
+设置定时器的起始和结束值。
 
-- **Parameters:**
-	- `set_to` *(number)*: Value in seconds
-
-- **Returns:**
-	- `self` *(druid.timer)*: Current timer instance
+- **参数:**
+  - `from` _(number)_: 起始值
+  - `to` _(number)_: 结束值
+  - `[callback]` _(function)_: 定时器结束时的回调函数
 
 ### set_state
 
 ---
+
 ```lua
-timer:set_state([is_on])
+timer:set_state(is_enabled)
 ```
 
-Set the timer to a specific value
+设置定时器状态。
 
-- **Parameters:**
-	- `[is_on]` *(boolean|nil)*: Timer enable state
-
-- **Returns:**
-	- `self` *(druid.timer)*: Current timer instance
+- **参数:**
+  - `is_enabled` _(boolean)_: 是否启用定时器
 
 ### set_interval
 
 ---
+
 ```lua
-timer:set_interval(from, to)
+timer:set_interval(interval)
 ```
 
-Set the timer interval
+设置定时器间隔。
 
-- **Parameters:**
-	- `from` *(number)*: Start time in seconds
-	- `to` *(number)*: Target time in seconds
+- **参数:**
+  - `interval` _(number)_: 定时器间隔
 
-- **Returns:**
-	- `self` *(druid.timer)*: Current timer instance
+## 事件字段
 
+### on_tick
 
-## Fields
-<a name="on_tick"></a>
-- **on_tick** (_event_): fun(context, value) The event triggered when the timer ticks
+定时器滴答时的回调函数。
 
-<a name="on_set_enabled"></a>
-- **on_set_enabled** (_event_): fun(context, is_on) The event triggered when the timer is enabled
+### on_set_enabled
 
-<a name="on_timer_end"></a>
-- **on_timer_end** (_event_): fun(context) The event triggered when the timer ends
+设置启用状态时的回调函数。
 
-<a name="node"></a>
-- **node** (_node_): The node to display the timer
+### on_timer_end
 
-<a name="from"></a>
-- **from** (_number_): The start time of the timer
+定时器结束时的回调函数。
 
-<a name="target"></a>
-- **target** (_number_): The target time of the timer
+### node
 
-<a name="value"></a>
-- **value** (_number_): The current value of the timer
+定时器组件关联的节点。
 
-<a name="is_on"></a>
-- **is_on** (_boolean_): True if the timer is on
+### from
 
-<a name="temp"></a>
-- **temp** (_unknown_)
+定时器起始值。
 
-<a name="last_value"></a>
-- **last_value** (_number_)
+### target
 
+定时器目标值。
+
+### value
+
+当前定时器值。
+
+### is_on
+
+定时器是否正在运行。
+
+### temp
+
+临时存储值。
+
+### last_value
+
+上次定时器值。

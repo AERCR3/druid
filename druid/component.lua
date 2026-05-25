@@ -2,40 +2,41 @@ local const = require("druid.const")
 local helper = require("druid.helper")
 
 ---@class druid.component.meta
----@field template string
----@field context table
----@field nodes table<hash, node>|nil
----@field style table|nil
----@field druid druid.instance
----@field input_enabled boolean
----@field children table
----@field parent druid.component|nil
----@field instance_class table
+---@field template string 模板名称
+---@field context table 上下文
+---@field nodes table<hash, node>|nil 节点表
+---@field style table|nil 样式表
+---@field druid druid.instance Druid实例
+---@field input_enabled boolean 输入是否启用
+---@field children table 子组件
+---@field parent druid.component|nil 父组件
+---@field instance_class table 实例类
 
 ---@class druid.component.component
----@field name string
----@field input_priority number
----@field default_input_priority number
----@field _is_input_priority_changed boolean
----@field _uid number
+---@field name string 组件名称
+---@field input_priority number 输入优先级
+---@field default_input_priority number 默认输入优先级
+---@field _is_input_priority_changed boolean 输入优先级是否已更改
+---@field _uid number 唯一标识符
 
 ---@class druid.component
----@field protected druid druid.instance Druid instance to create inner components
----@field protected init fun(self:druid.component, ...)|nil Called when component is created
----@field protected update fun(self:druid.component, dt:number)|nil Called every frame
----@field protected on_remove fun(self:druid.component)|nil Called when component is removed
----@field protected on_input fun(self:druid.component, action_id:hash, action:table)|nil Called when input event is triggered
----@field protected on_input_interrupt fun(self:druid.component, action_id:hash, action:table)|nil Called when input event is consumed before
----@field protected on_message fun(self:druid.component, message_id:hash, message:table, sender:url)|nil Called when message is received
----@field protected on_late_init fun(self:druid.component)|nil Called before update once time after GUI init
----@field protected on_focus_lost fun(self:druid.component)|nil Called when app lost focus
----@field protected on_focus_gained fun(self:druid.component)|nil Called when app gained focus
----@field protected on_style_change fun(self:druid.component, style: table)|nil Called when style is changed
----@field protected on_layout_change fun(self:druid.component)|nil Called when GUI layout is changed
----@field protected on_window_resized fun(self:druid.component)|nil Called when window is resized
----@field protected on_language_change fun(self:druid.component)|nil Called when language is changed
----@field private _component druid.component.component
----@field private _meta druid.component.meta
+---组件是Druid系统的基本构建块，所有UI元素都是基于此基类构建的
+---@field protected druid druid.instance Druid实例，用于创建内部组件
+---@field protected init fun(self:druid.component, ...)|nil 组件创建时调用
+---@field protected update fun(self:druid.component, dt:number)|nil 每帧调用
+---@field protected on_remove fun(self:druid.component)|nil 组件移除时调用
+---@field protected on_input fun(self:druid.component, action_id:hash, action:table)|nil 输入事件触发时调用
+---@field protected on_input_interrupt fun(self:druid.component, action_id:hash, action:table)|nil 输入事件在之前被消耗时调用
+---@field protected on_message fun(self:druid.component, message_id:hash, message:table, sender:url)|nil 接收到消息时调用
+---@field protected on_late_init fun(self:druid.component)|nil GUI初始化后一次性在更新前调用
+---@field protected on_focus_lost fun(self:druid.component)|nil 应用失去焦点时调用
+---@field protected on_focus_gained fun(self:druid.component)|nil 应用获得焦点时调用
+---@field protected on_style_change fun(self:druid.component, style: table)|nil 样式更改时调用
+---@field protected on_layout_change fun(self:druid.component)|nil GUI布局更改时调用
+---@field protected on_window_resized fun(self:druid.component)|nil 窗口调整大小时调用
+---@field protected on_language_change fun(self:druid.component)|nil 语言更改时调用
+---@field private _component druid.component.component 组件
+---@field private _meta druid.component.meta 元数据
 local M = {}
 
 
@@ -46,12 +47,12 @@ function M.create_uid()
 	return uid
 end
 
-
----Set component style. Pass nil to clear style
+---设置组件样式。传入nil以清除样式
+---此函数允许动态更改组件的外观和行为，是实现主题切换的关键方法
 ---@generic T
 ---@param self T
----@param druid_style table|nil
----@return T self The component itself for chaining
+---@param druid_style table|nil Druid样式表
+---@return T self 组件本身，用于链式调用
 function M:set_style(druid_style)
 	---@cast self druid.component
 
@@ -65,14 +66,14 @@ function M:set_style(druid_style)
 	return self
 end
 
-
----Set component template name. Pass nil to clear template.
----This template id used to access nodes inside the template on GUI scene.
----Parent template will be added automatically if exist.
+---设置组件模板名称。传入nil以清除模板。
+---此模板ID用于访问GUI场景中模板内的节点。
+---如果存在父模板，将自动添加。
+---模板系统支持组件的嵌套和复用，是构建复杂UI的关键特性
 ---@generic T
 ---@param self T
----@param template string|nil
----@return T self The component itself for chaining
+---@param template string|nil 模板名称
+---@return T self 组件本身，用于链式调用
 function M:set_template(template)
 	---@cast self druid.component
 
@@ -98,13 +99,11 @@ function M:set_template(template)
 	return self
 end
 
-
 ---Get full template name.
 ---@return string
 function M:get_template()
 	return self._meta.template
 end
-
 
 ---Set current component nodes, returned from `gui.clone_tree` function.
 ---@param nodes table<hash, node>|node|string|nil The nodes table from gui.clone_tree or prefab node to use for clone or node id to clone
@@ -131,7 +130,6 @@ function M:set_nodes(nodes)
 	return self
 end
 
-
 ---Return current component context
 ---@protected
 ---@return any context Usually it's self of script but can be any other Druid component
@@ -139,14 +137,12 @@ function M:get_context()
 	return self._meta.context
 end
 
-
 ---Get component node by node_id. Respect to current template and nodes.
 ---@param node_id string|node
 ---@return node
 function M:get_node(node_id)
 	return helper.get_node(node_id, self:get_template(), self:get_nodes())
 end
-
 
 ---Get Druid instance for inner component creation.
 ---@protected
@@ -169,13 +165,11 @@ function M:get_druid(template, nodes)
 	return druid_instance
 end
 
-
 ---Get component name
 ---@return string name The component name + uid
 function M:get_name()
 	return self._component.name .. self._component._uid
 end
-
 
 ---Get parent component name
 ---@protected
@@ -185,13 +179,11 @@ function M:get_parent_name()
 	return parent and parent:get_name()
 end
 
-
 ---Get component input priority, the bigger number processed first. Default value: 10
 ---@return number
 function M:get_input_priority()
 	return self._component.input_priority
 end
-
 
 ---Set component input priority, the bigger number processed first. Default value: 10
 ---@param value number
@@ -221,7 +213,6 @@ function M:set_input_priority(value, is_temporary)
 	return self
 end
 
-
 ---Reset component input priority to it's default value, that was set in `create` function or `set_input_priority`
 ---@return druid.component self The component itself for chaining
 function M:reset_input_priority()
@@ -229,14 +220,12 @@ function M:reset_input_priority()
 	return self
 end
 
-
 ---Get component UID, unique identifier created in component creation order.
 ---@protected
 ---@return number uid The component uid
 function M:get_uid()
 	return self._component._uid
 end
-
 
 ---Set component input state. By default it's enabled.
 ---If input is disabled, the component will not receive input events.
@@ -253,20 +242,17 @@ function M:set_input_enabled(state)
 	return self
 end
 
-
 ---Get component input state. By default it's enabled. Can be disabled by `set_input_enabled` function.
 ---@return boolean
 function M:get_input_enabled()
 	return self._meta.input_enabled
 end
 
-
 ---Get parent component
 ---@return druid.component|nil parent_component The parent component if exist or nil
 function M:get_parent_component()
 	return self._meta.parent
 end
-
 
 ---Setup component context and his style table
 ---@param druid_instance druid.instance The parent druid instance
@@ -298,20 +284,17 @@ function M:setup_component(druid_instance, context, style, instance_class)
 	return self
 end
 
-
 ---Return true, if input priority was changed
 ---@private
 function M:_is_input_priority_changed()
 	return self._component._is_input_priority_changed
 end
 
-
 ---Reset is_input_priority_changed field
 ---@private
 function M:_reset_input_priority_changed()
 	self._component._is_input_priority_changed = false
 end
-
 
 ---Get current component nodes
 ---@protected
@@ -326,7 +309,6 @@ function M:get_nodes()
 	return nodes
 end
 
-
 ---Add child to component children list
 ---@generic T: druid.component
 ---@param child T The druid component instance
@@ -337,7 +319,6 @@ function M:__add_child(child)
 
 	return self
 end
-
 
 ---Remove child from component children list
 ---@generic T: druid.component
@@ -355,7 +336,6 @@ function M:__remove_child(child)
 	return false
 end
 
-
 ---Return all children components, recursive
 ---@protected
 ---@return table Array of childrens if the Druid component instance
@@ -371,7 +351,6 @@ function M:get_childrens()
 
 	return childrens
 end
-
 
 ---Сreate a new component class, which will inherit from the base Druid component.
 ---@param name string|nil The name of the component
@@ -399,7 +378,6 @@ function M.create(name, input_priority)
 	return new_class
 end
 
-
 local WIDGET_METATABLE = { __index = M }
 
 ---Create the Druid component instance
@@ -423,17 +401,19 @@ function M.create_widget(self, widget_class, context)
 	-- I'll hide a meta fields under metatable to hide this tables from pprint output
 	-- cause it's leads to recursive pprint's from (druid = self)
 	-- Wish this to be better, since it can reduce a memory usage
-	instance._meta = setmetatable({}, { __index = {
-		druid = self,
-		template = "",
-		nodes = nil,
-		context = context,
-		style = nil,
-		input_enabled = true,
-		children = {},
-		parent = type(context) ~= "userdata" and context or nil,
-		instance_class = widget_class
-	}})
+	instance._meta = setmetatable({}, {
+		__index = {
+			druid = self,
+			template = "",
+			nodes = nil,
+			context = context,
+			style = nil,
+			input_enabled = true,
+			children = {},
+			parent = type(context) ~= "userdata" and context or nil,
+			instance_class = widget_class
+		}
+	})
 
 	-- Register
 	if instance._meta.parent then
@@ -442,6 +422,5 @@ function M.create_widget(self, widget_class, context)
 
 	return instance
 end
-
 
 return M

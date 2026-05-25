@@ -1,23 +1,31 @@
+--- Druid默认样式定义文件
+--- 此文件定义了Druid UI框架的各种组件的默认视觉样式和行为
 local settings = require("druid.system.settings")
 
 local M = {}
 
 
+--- 按钮组件样式定义
 M["button"] = {
-	HOVER_SCALE = vmath.vector3(0.08, 0.08, 1),
-	HOVER_MOUSE_SCALE = vmath.vector3(0.04, 0.04, 1),
-	HOVER_TIME = 0.05,
-	SCALE_CHANGE = vmath.vector3(0.12, 0.12, 1),
-	BTN_SOUND = "click",
-	BTN_SOUND_DISABLED = "click",
-	DISABLED_COLOR = vmath.vector4(0, 0, 0, 1),
-	ENABLED_COLOR = vmath.vector4(1),
-	LONGTAP_TIME = 0.4,
-	AUTOHOLD_TRIGGER = 0.8,
-	DOUBLETAP_TIME = 0.4,
+	HOVER_SCALE = vmath.vector3(0.08, 0.08, 1),      -- 悬停时的缩放增量
+	HOVER_MOUSE_SCALE = vmath.vector3(0.04, 0.04, 1), -- 鼠标悬停时的缩放增量
+	HOVER_TIME = 0.05,                               -- 悬停动画持续时间
+	SCALE_CHANGE = vmath.vector3(0.12, 0.12, 1),     -- 点击时的缩放变化
+	BTN_SOUND = "click",                             -- 按钮点击音效
+	BTN_SOUND_DISABLED = "click",                    -- 禁用按钮点击音效
+	DISABLED_COLOR = vmath.vector4(0, 0, 0, 1),      -- 禁用状态颜色
+	ENABLED_COLOR = vmath.vector4(1),                -- 启用状态颜色
+	LONGTAP_TIME = 0.4,                              -- 长按触发时间
+	AUTOHOLD_TRIGGER = 0.8,                          -- 自动按住触发阈值
+	DOUBLETAP_TIME = 0.4,                            -- 双击时间间隔
 
+	--- 初始化回调
 	on_init = function(self) end,
 
+	--- 悬停状态回调
+	--- @param self 按钮组件实例
+	--- @param node GUI节点
+	--- @param state 是否悬停状态
 	on_hover = function(self, node, state)
 		local scale_to = self.start_scale + M.button.HOVER_SCALE
 
@@ -25,6 +33,10 @@ M["button"] = {
 		gui.animate(node, "scale", target_scale, gui.EASING_OUTSINE, M.button.HOVER_TIME)
 	end,
 
+	--- 鼠标悬停状态回调
+	--- @param self 按钮组件实例
+	--- @param node GUI节点
+	--- @param state 是否悬停状态
 	on_mouse_hover = function(self, node, state)
 		local scale_to = self.start_scale + M.button.HOVER_MOUSE_SCALE
 
@@ -32,6 +44,9 @@ M["button"] = {
 		gui.animate(node, "scale", target_scale, gui.EASING_OUTSINE, M.button.HOVER_TIME)
 	end,
 
+	--- 点击回调
+	--- @param self 按钮组件实例
+	--- @param node GUI节点
 	on_click = function(self, node)
 		local scale_to = self.start_scale + M.button.SCALE_CHANGE
 		gui.set_scale(node, scale_to)
@@ -43,6 +58,9 @@ M["button"] = {
 		settings.play_sound(M.button.BTN_SOUND)
 	end,
 
+	--- 禁用状态点击回调
+	--- @param self 按钮组件实例
+	--- @param node GUI节点
 	on_click_disabled = function(self, node)
 		local start_pos = self.start_pos
 		gui.animate(node, "position.x", start_pos.x - 3, gui.EASING_OUTSINE, 0.05, 0, function()
@@ -52,51 +70,61 @@ M["button"] = {
 		end)
 	end,
 
+	--- 设置启用状态回调
+	--- @param self 按钮组件实例
+	--- @param node GUI节点
+	--- @param state 是否启用
 	on_set_enabled = function(self, node, state)
 	end,
 }
 
+--- 悬停组件样式定义
 M["hover"] = {
-	ON_HOVER_CURSOR = nil,
-	ON_MOUSE_HOVER_CURSOR = nil,
+	ON_HOVER_CURSOR = nil,      -- 悬停时光标的样式
+	ON_MOUSE_HOVER_CURSOR = nil, -- 鼠标悬停时光标的样式
 }
 
+--- 拖动组件样式定义
 M["drag"] = {
-	DRAG_DEADZONE = 4, -- Size in pixels of drag deadzone
-	NO_USE_SCREEN_KOEF = false,
+	DRAG_DEADZONE = 4,         -- 拖动死区的像素大小
+	NO_USE_SCREEN_KOEF = false, -- 是否不使用屏幕系数
 }
 
 
+--- 网格组件样式定义
 M["grid"] = {
-	IS_DYNAMIC_NODE_POSES = false, -- Always align by content size with node anchor
-	IS_ALIGN_LAST_ROW = true, -- Align the last row of grid
+	IS_DYNAMIC_NODE_POSES = false, -- 总是根据内容大小与节点锚点对齐
+	IS_ALIGN_LAST_ROW = true,     -- 对齐网格的最后一行
 }
 
 
+--- 滚动组件样式定义
 M["scroll"] = {
-	ANIM_SPEED = 0.2, -- gui.animation speed to point
-	BACK_SPEED = 0.1, -- Lerp speed of return to soft position
-	FRICT = 0.93, -- mult for free inert
-	FRICT_HOLD = 0.79, -- mult. for inert, while touching
-	INERT_THRESHOLD = 2.5, -- speed to stop inertion
-	INERT_SPEED = 30, -- koef. of inert speed
-	EXTRA_STRETCH_SIZE = 100, -- extra size in pixels outside of scroll (stretch effect)
-	POINTS_DEADZONE = 20, -- Speed to check points of interests in no_inertion mode
-	WHEEL_SCROLL_SPEED = 20, -- Amount of pixels to scroll by one wheel event (0 to disable)
-	WHEEL_SCROLL_INVERTED = true, -- Boolean to invert wheel scroll side
-	WHEEL_SCROLL_BY_INERTION = false, -- If true, wheel will add inertion to scroll. Direct set position otherwise.
-	SMALL_CONTENT_SCROLL = false, -- If true, content node with size less than view node size can be scrolled
+	ANIM_SPEED = 0.2,                -- 滚动到目标点的动画速度
+	BACK_SPEED = 0.1,                -- 返回软位置的插值速度
+	FRICT = 0.93,                    -- 自由惯性的乘数
+	FRICT_HOLD = 0.79,               -- 触摸时惯性的乘数
+	INERT_THRESHOLD = 2.5,           -- 停止惯性的速度阈值
+	INERT_SPEED = 30,                -- 惯性速度系数
+	EXTRA_STRETCH_SIZE = 100,        -- 滚动区域外的额外像素大小（拉伸效果）
+	POINTS_DEADZONE = 20,            -- 无惯性模式下检查兴趣点的速度
+	WHEEL_SCROLL_SPEED = 20,         -- 单次滚轮事件滚动的像素量（0为禁用）
+	WHEEL_SCROLL_INVERTED = true,    -- 是否反转滚轮滚动方向
+	WHEEL_SCROLL_BY_INERTION = false, -- 如果为真，滚轮将为滚动添加惯性；否则直接设置位置
+	SMALL_CONTENT_SCROLL = false,    -- 如果为真，内容节点小于视图节点大小时也可以滚动
 }
 
 
+--- 进度条组件样式定义
 M["progress"] = {
-	SPEED = 5, -- progress bar fill rate, more faster
-	MIN_DELTA = 0.005
+	SPEED = 5,       -- 进度条填充速率，越大越快
+	MIN_DELTA = 0.005 -- 最小步长
 }
 
 
+--- 滑块组件样式定义
 M["slider"] = {
-	DEFAULT_STEPS = {}, -- e.g. {0, 0.25, 0.5, 0.75, 1} for notched slider; empty = continuous
+	DEFAULT_STEPS = {}, -- 默认步骤，例如{0, 0.25, 0.5, 0.75, 1}表示带刻度的滑块；空表示连续
 }
 
 

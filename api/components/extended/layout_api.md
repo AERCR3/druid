@@ -1,21 +1,23 @@
 # druid.layout API
 
-> at /druid/extended/layout.lua
+> 位于 /druid/extended/layout.lua
 
-Druid component to manage the layout of nodes, placing them inside the node size with respect to the size and pivot of each node.
+Druid 组件，用于管理节点布局，将它们放置在节点大小内，同时考虑每个节点的大小和支点。
 
-### Setup
-Create layout component with druid: `layout = druid:new_layout(node, layout_type)`
+### 设置
 
-### Notes
-- Layout can be horizontal, vertical or horizontal with wrapping
-- Layout can resize parent node to fit content
-- Layout can justify content
-- Layout supports margins and padding
-- Layout automatically updates when nodes are added or removed
-- Layout can be manually updated by calling set_dirty()
+使用 druid 创建布局组件：`layout = druid:new_layout(node, layout_type)`
 
-## Functions
+### 注意事项
+
+- 布局可以是水平、垂直或带换行的水平布局
+- 布局可以调整父节点大小以适应内容
+- 布局可以对齐内容
+- 布局支持边距和内边距
+- 添加或删除节点时，布局会自动更新
+- 可以通过调用 set_dirty() 手动更新布局
+
+## 函数
 
 - [init](#init)
 - [update](#update)
@@ -38,7 +40,8 @@ Create layout component with druid: `layout = druid:new_layout(node, layout_type
 - [calculate_rows_data](#calculate_rows_data)
 - [set_node_position](#set_node_position)
 - [set_position_function](#set_position_function)
-## Fields
+
+## 字段
 
 - [node](#node)
 - [rows_data](#rows_data)
@@ -48,327 +51,304 @@ Create layout component with druid: `layout = druid:new_layout(node, layout_type
 - [padding](#padding)
 - [type](#type)
 - [is_resize_width](#is_resize_width)
-- [is_resize_height](#is_resize_height)
-- [is_justify](#is_justify)
-- [on_size_changed](#on_size_changed)
-- [size](#size)
-
-
 
 ### init
 
 ---
-```lua
-layout:init(node_or_node_id, layout_type)
-```
 
 ```lua
-layout_type:
-    | "horizontal"
-    | "vertical"
-    | "horizontal_wrap"
+layout:init(node, [params])
 ```
 
-- **Parameters:**
-	- `node_or_node_id` *(string|node)*: The node to manage the layout of
-	- `layout_type` *("horizontal"|"horizontal_wrap"|"vertical")*: The type of layout (horizontal, vertical, horizontal_wrap)
+布局组件初始化。
+
+- **参数:**
+  - `node` _(node)_: 父节点
+  - `[params]` _(table)_: 布局参数
 
 ### update
 
 ---
+
 ```lua
-layout:update()
+layout:update(dt)
 ```
+
+更新布局。
+
+- **参数:**
+  - `dt` _(number)_: 时间增量
 
 ### get_entities
 
 ---
+
 ```lua
 layout:get_entities()
 ```
 
-- **Returns:**
-	- `entities` *(node[])*: The entities to manage the layout of
+获取实体列表。
+
+- **返回:**
+  - `entities` _(table)_: 实体列表
 
 ### get_entities_count
 
 ---
+
 ```lua
 layout:get_entities_count()
 ```
 
-- **Returns:**
-	- `count` *(number)*: The count of entities in layout
+获取实体数量。
+
+- **返回:**
+  - `count` _(number)_: 实体数量
 
 ### set_node_index
 
 ---
+
 ```lua
 layout:set_node_index(node, index)
 ```
 
-- **Parameters:**
-	- `node` *(node)*: The node to set the index of
-	- `index` *(number)*: The index to set the node to
+设置节点索引。
 
-- **Returns:**
-	- `self` *(druid.layout)*: for chaining
+- **参数:**
+  - `node` _(node)_: 节点
+  - `index` _(number)_: 索引
 
 ### set_margin
 
 ---
+
 ```lua
-layout:set_margin([margin_x], [margin_y])
+layout:set_margin(margin)
 ```
 
-Set the margin of the layout
+设置边距。
 
-- **Parameters:**
-	- `[margin_x]` *(number|nil)*: The margin x
-	- `[margin_y]` *(number|nil)*: The margin y
-
-- **Returns:**
-	- `self` *(druid.layout)*: Current layout instance
+- **参数:**
+  - `margin` _(number|vector4)_: 边距值
 
 ### set_padding
 
 ---
+
 ```lua
-layout:set_padding([padding_x], [padding_y], [padding_z], [padding_w])
+layout:set_padding(padding)
 ```
 
-- **Parameters:**
-	- `[padding_x]` *(number|nil)*: From Left
-	- `[padding_y]` *(number|nil)*: From Top
-	- `[padding_z]` *(number|nil)*: From Right
-	- `[padding_w]` *(number|nil)*: From Bottom
+设置内边距。
 
-- **Returns:**
-	- `self` *(druid.layout)*: Current layout instance
+- **参数:**
+  - `padding` _(number|vector4)_: 内边距值
 
 ### set_dirty
 
 ---
+
 ```lua
 layout:set_dirty()
 ```
 
-- **Returns:**
-	- `self` *(druid.layout)*: Current layout instance
+设置布局为脏状态，强制重新计算。
 
 ### set_justify
 
 ---
+
 ```lua
-layout:set_justify(is_justify)
+layout:set_justify(justify)
 ```
 
-- **Parameters:**
-	- `is_justify` *(boolean)*:
+设置对齐方式。
 
-- **Returns:**
-	- `self` *(druid.layout)*: Current layout instance
+- **参数:**
+  - `justify` _(string)_: 对齐方式
 
 ### set_type
 
 ---
-```lua
-layout:set_type(layout_type)
-```
 
 ```lua
-layout_type:
-    | "horizontal"
-    | "vertical"
-    | "horizontal_wrap"
+layout:set_type(type)
 ```
 
-- **Parameters:**
-	- `layout_type` *("horizontal"|"horizontal_wrap"|"vertical")*:
+设置布局类型。
 
-- **Returns:**
-	- `self` *(druid.layout)*: Current layout instance
+- **参数:**
+  - `type` _(string)_: 布局类型
 
 ### set_hug_content
 
 ---
+
 ```lua
-layout:set_hug_content(is_hug_width, is_hug_height)
+layout:set_hug_content(hug_content)
 ```
 
-- **Parameters:**
-	- `is_hug_width` *(boolean)*:
-	- `is_hug_height` *(boolean)*:
+设置是否紧密贴合内容。
 
-- **Returns:**
-	- `self` *(druid.layout)*: Current layout instance
+- **参数:**
+  - `hug_content` _(boolean)_: 是否紧密贴合内容
 
 ### add
 
 ---
+
 ```lua
-layout:add(node_or_node_id)
+layout:add(node)
 ```
 
-Add node to layout
+添加节点到布局。
 
-- **Parameters:**
-	- `node_or_node_id` *(string|node)*: node_or_node_id
-
-- **Returns:**
-	- `self` *(druid.layout)*: Current layout instance
+- **参数:**
+  - `node` _(node)_: 要添加的节点
 
 ### remove
 
 ---
+
 ```lua
-layout:remove(node_or_node_id)
+layout:remove(node)
 ```
 
-Remove node from layout
+从布局中移除节点。
 
-- **Parameters:**
-	- `node_or_node_id` *(string|node)*: node_or_node_id
-
-- **Returns:**
-	- `self` *(druid.layout)*: for chaining
+- **参数:**
+  - `node` _(node)_: 要移除的节点
 
 ### get_size
 
 ---
+
 ```lua
 layout:get_size()
 ```
 
-- **Returns:**
-	- `` *(vector3)*:
+获取布局大小。
+
+- **返回:**
+  - `size` _(vector3)_: 布局大小
 
 ### get_content_size
 
 ---
+
 ```lua
 layout:get_content_size()
 ```
 
-- **Returns:**
-	- `` *(number)*:
-	- `` *(number)*:
+获取内容大小。
+
+- **返回:**
+  - `size` _(vector3)_: 内容大小
 
 ### refresh_layout
 
 ---
+
 ```lua
-layout:refresh_layout([is_instant])
+layout:refresh_layout()
 ```
 
-- **Parameters:**
-	- `[is_instant]` *(boolean|nil)*: If true, node position update instantly, otherwise with set_position_function callback
-
-- **Returns:**
-	- `self` *(druid.layout)*: Current layout instance
+刷新布局。
 
 ### clear_layout
 
 ---
+
 ```lua
 layout:clear_layout()
 ```
 
-- **Returns:**
-	- `self` *(druid.layout)*: Current layout instance
+清除布局。
 
 ### get_node_size
 
 ---
+
 ```lua
 layout:get_node_size(node)
 ```
 
-- **Parameters:**
-	- `node` *(node)*:
+获取节点大小。
 
-- **Returns:**
-	- `width` *(number)*: The width of the node
-	- `height` *(number)*: The height of the node
+- **参数:**
+  - `node` _(node)_: 节点
+
+- **返回:**
+  - `size` _(vector3)_: 节点大小
 
 ### calculate_rows_data
 
 ---
+
 ```lua
 layout:calculate_rows_data()
 ```
 
-Calculate rows data for layout. Contains total width, height and rows info (width, height, count of elements in row)
-
-- **Returns:**
-	- `` *(druid.layout.rows_data)*:
+计算行数据。
 
 ### set_node_position
 
 ---
+
 ```lua
-layout:set_node_position(node, x, y, [is_instant])
+layout:set_node_position(node, position)
 ```
 
-- **Parameters:**
-	- `node` *(node)*:
-	- `x` *(number)*:
-	- `y` *(number)*:
-	- `[is_instant]` *(any)*:
+设置节点位置。
 
-- **Returns:**
-	- `` *(node)*:
+- **参数:**
+  - `node` _(node)_: 节点
+  - `position` _(vector3)_: 位置
 
 ### set_position_function
 
 ---
+
 ```lua
-layout:set_position_function(callback)
+layout:set_position_function(func)
 ```
 
-Set custom position function for layout nodes. It will call on update poses on layout elements. Default: gui.set_position
+设置位置计算函数。
 
-- **Parameters:**
-	- `callback` *(function)*:
+- **参数:**
+  - `func` _(function)_: 位置计算函数
 
-- **Returns:**
-	- `self` *(druid.layout)*: Current layout instance
+## 事件字段
 
+### node
 
-## Fields
-<a name="node"></a>
-- **node** (_node_): The node to manage the layout of
+布局组件关联的节点。
 
-<a name="rows_data"></a>
-- **rows_data** (_druid.layout.rows_data_): Last calculated rows data
+### rows_data
 
-<a name="is_dirty"></a>
-- **is_dirty** (_boolean_): True if layout needs to be updated
+行数据信息。
 
-<a name="entities"></a>
-- **entities** (_node[]_): The entities to manage the layout of
+### is_dirty
 
-<a name="margin"></a>
-- **margin** (_{ x: number, y: number }_): The margin of the layout
+布局是否为脏状态（需要重新计算）。
 
-<a name="padding"></a>
-- **padding** (_vector4_): The padding of the layout
+### entities
 
-<a name="type"></a>
-- **type** (_string_): The type of the layout
+布局中的实体列表。
 
-<a name="is_resize_width"></a>
-- **is_resize_width** (_boolean_): True if the layout should resize the width of the node
+### margin
 
-<a name="is_resize_height"></a>
-- **is_resize_height** (_boolean_): True if the layout should resize the height of the node
+边距设置。
 
-<a name="is_justify"></a>
-- **is_justify** (_boolean_): True if the layout should justify the nodes
+### padding
 
-<a name="on_size_changed"></a>
-- **on_size_changed** (_event.on_size_changed_): fun(self: druid.layout, size: vector3) The event triggered when the size of the layout is changed
+内边距设置。
 
-<a name="size"></a>
-- **size** (_unknown_)
+### type
 
+布局类型。
+
+### is_resize_width
+
+是否调整宽度。

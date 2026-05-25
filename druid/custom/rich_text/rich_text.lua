@@ -86,23 +86,26 @@ function M:init(text_node, value)
 	self.root = self:get_node(text_node)
 	self.text_prefab = self.root
 
-	self._last_value = value or gui.get_text(self.text_prefab) or ""
+	self._last_value = value or gui.get_text(self.text_prefab)
 	self._settings = self:_create_settings()
 	self._split_to_characters = false
 
 	gui.set_text(self.root, "")
 
-	self:set_text(self._last_value)
+	if value then
+		self:set_text(value)
+	end
 end
-
 
 ---@private
 function M:on_layout_change()
 	gui.set_text(self.root, "")
 	self._settings = self:_create_settings()
-	self:set_text(self._last_value)
-end
 
+	if self._last_value then
+		self:set_text(self._last_value)
+	end
+end
 
 ---@private
 ---@param style druid.rich_text.style
@@ -112,7 +115,6 @@ function M:on_style_change(style)
 		ADJUST_SCALE_DELTA = style.ADJUST_SCALE_DELTA or 0.02,
 	}
 end
-
 
 ---Set text for Rich Text
 ---		-- Color
@@ -175,13 +177,11 @@ function M:set_text(text)
 	return words, line_metrics
 end
 
-
 ---Get the current text of the rich text
 ---@return string text The current text of the rich text
 function M:get_text()
 	return self._last_value
 end
-
 
 ---Set pivot and keep the content in place (anchor). After this, resizing the root will keep the anchor fixed.
 ---@param pivot number GUI pivot constant
@@ -206,14 +206,12 @@ function M:set_pivot(pivot)
 	return self
 end
 
-
 ---@private
 function M:on_remove()
 	gui.set_scale(self.root, self._default_scale)
 	gui.set_size(self.root, self._default_size)
 	self:clear()
 end
-
 
 ---Clear all created words.
 function M:clear()
@@ -222,10 +220,7 @@ function M:clear()
 		self._words = nil
 	end
 	self._last_value = nil
-
-	return self
 end
-
 
 ---Get all words, which has a passed tag.
 ---@param tag string The tag to get the words for
@@ -238,7 +233,6 @@ function M:tagged(tag)
 	return rich_text.tagged(self._words, tag)
 end
 
-
 ---Set if the rich text should split to characters, not words
 ---@param value boolean
 ---@return druid.rich_text self
@@ -247,20 +241,17 @@ function M:set_split_to_characters(value)
 	return self
 end
 
-
 ---Get all current created words, each word is a table that contains the information about the word
 ---@return druid.rich_text.word[]
 function M:get_words()
 	return self._words
 end
 
-
 ---Get the current line metrics
 ---@return druid.rich_text.lines_metrics lines_metrics The line metrics of the rich text
 function M:get_line_metric()
 	return self._line_metrics
 end
-
 
 ---@private
 ---@return table settings The settings of the rich text, they are created based on the root node on the GUI scene
@@ -300,7 +291,6 @@ function M:_create_settings()
 	}
 end
 
-
 ---Set the width of the rich text, not affects the size of current spawned words
 ---@param width number
 ---@return druid.rich_text self
@@ -310,7 +300,6 @@ function M:set_width(width)
 	return self
 end
 
-
 ---Set the height of the rich text, not affects the size of current spawned words
 ---@param height number
 ---@return druid.rich_text self
@@ -319,6 +308,5 @@ function M:set_height(height)
 	self._settings.height = height
 	return self
 end
-
 
 return M

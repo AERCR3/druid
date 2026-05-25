@@ -19,9 +19,7 @@ function M:init(template, nodes)
 	self.root = self.druid:new_container("root") --[[@as druid.container]]
 	self.root:add_container("text_header")
 	self.root:add_container("separator")
-	--self.root:add_container("scroll_view", nil, function()
-	--	self.scroll:update_view_size()
-	--end)
+	-- 如需在滚动视图尺寸变化时自动刷新滚动区域，可在这里为容器添加尺寸变化回调
 
 	self.properties = {}
 

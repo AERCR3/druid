@@ -2,8 +2,9 @@ local logger = require("druid.system.druid_logger")
 
 ---@alias color vector4|vector3|string
 
----Color palette and utility functions for working with colors.
----Supports palette management, hex conversion, RGB/HSB conversion, and color interpolation.
+---颜色调色板和用于处理颜色的实用函数。
+---支持调色板管理、十六进制转换、RGB/HSB转换和颜色插值。
+---该模块提供了一整套颜色处理功能，方便开发者管理UI中的颜色
 ---@class druid.color
 local M = {}
 
@@ -14,9 +15,10 @@ local COLOR_Y = hash("color.y")
 local COLOR_Z = hash("color.z")
 
 
----Get color by ID from palette, hex string, or return vector as-is.
----If color_id is not found in palette and not a hex string, returns white.
----@param color_id string|vector4|vector3 Color id from palette, hex color string, or vector
+---从调色板按ID获取颜色、十六进制字符串，或直接返回向量。
+---如果在调色板中找不到color_id且不是十六进制字符串，则返回白色。
+---此函数提供了统一的颜色获取接口，支持多种颜色表示方式
+---@param color_id string|vector4|vector3 来自调色板的颜色ID、十六进制颜色字符串或向量
 ---@return vector4
 function M.get_color(color_id)
 	if type(color_id) ~= "string" then
@@ -40,9 +42,9 @@ function M.get_color(color_id)
 	return COLOR_WHITE
 end
 
-
----Add colors to palette. Colors can be hex strings or vector4 values.
----@param palette_data table<string, vector4|string> Table with color IDs as keys
+---向调色板添加颜色。颜色可以是十六进制字符串或vector4值。
+---此函数用于扩展默认调色板，便于在项目中复用常用颜色
+---@param palette_data table<string, vector4|string> 以颜色ID为键的表格
 function M.add_palette(palette_data)
 	for color_id, color in pairs(palette_data) do
 		if type(color) == "string" then
@@ -53,17 +55,17 @@ function M.add_palette(palette_data)
 	end
 end
 
-
----Get all palette colors.
+---获取所有调色板颜色。
+---此函数返回当前已定义的所有颜色，可用于调试或动态选择颜色
 ---@return table<string, vector4>
 function M.get_palette()
 	return PALETTE_DATA
 end
 
-
----Set GUI node color. Does not change alpha.
----@param gui_node node
----@param color vector4|vector3|string
+---设置GUI节点颜色。不改变透明度。
+---此函数专门用于设置GUI节点的颜色属性，但不影响透明度通道
+---@param gui_node node GUI节点
+---@param color vector4|vector3|string 颜色值
 function M.set_color(gui_node, color)
 	if type(color) == "string" then
 		color = M.get_color(color)
@@ -74,12 +76,12 @@ function M.set_color(gui_node, color)
 	gui.set(gui_node, COLOR_Z, color.z)
 end
 
-
----Interpolate between two colors using HSB space (better visual results than RGB).
----@param t number Lerp value (0 = color1, 1 = color2)
----@param color1 vector4
----@param color2 vector4
----@return vector4
+---在两种颜色之间使用HSB空间进行插值（比RGB产生更好的视觉效果）。
+---HSB色彩空间的插值能产生更自然的颜色过渡效果
+---@param t number 插值系数（0 = color1, 1 = color2）
+---@param color1 vector4 第一种颜色
+---@param color2 vector4 第二种颜色
+---@return vector4 插值后的颜色
 function M.lerp(t, color1, color2)
 	local h1, s1, v1 = M.rgb2hsb(color1.x, color1.y, color1.z)
 	local h2, s2, v2 = M.rgb2hsb(color2.x, color2.y, color2.z)
@@ -105,10 +107,10 @@ function M.lerp(t, color1, color2)
 	return vmath.vector4(r, g, b, a)
 end
 
-
----Convert hex string to RGB values (0-1 range). Supports #RGB and #RRGGBB formats.
----@param hex string
----@return number, number, number
+---将十六进制字符串转换为RGB值（0-1范围）。支持#RGB和#RRGGBB格式。
+---此函数处理常见的十六进制颜色格式转换，便于设计师和开发者协作
+---@param hex string 十六进制颜色字符串
+---@return number, number, number R、G、B分量值
 function M.hex2rgb(hex)
 	if not hex or #hex < 3 then
 		return 0, 0, 0
@@ -118,28 +120,28 @@ function M.hex2rgb(hex)
 	if #hex == 3 then
 		hex = hex:gsub("(.)", "%1%1")
 	end
-	return tonumber("0x" .. hex:sub(1,2)) / 255,
-		   tonumber("0x" .. hex:sub(3,4)) / 255,
-		   tonumber("0x" .. hex:sub(5,6)) / 255
+	return tonumber("0x" .. hex:sub(1, 2)) / 255,
+			tonumber("0x" .. hex:sub(3, 4)) / 255,
+			tonumber("0x" .. hex:sub(5, 6)) / 255
 end
 
-
----Convert hex string to vector4.
----@param hex string
----@param alpha number|nil Default is 1
----@return vector4
+---将十六进制字符串转换为vector4。
+---此函数将标准的十六进制颜色值转换为Defold引擎使用的vector4格式
+---@param hex string 十六进制颜色字符串
+---@param alpha number|nil 透明度，默认为1
+---@return vector4 vector4格式的颜色值
 function M.hex2vector4(hex, alpha)
 	local r, g, b = M.hex2rgb(hex)
 	return vmath.vector4(r, g, b, alpha or 1)
 end
 
-
----Convert RGB to HSB.
----@param r number
----@param g number
----@param b number
----@param alpha number|nil
----@return number, number, number, number
+---将RGB转换为HSB。
+---HSB（色相、饱和度、亮度）色彩模型更适合人类直观理解颜色
+---@param r number 红色分量
+---@param g number 绿色分量
+---@param b number 蓝色分量
+---@param alpha number|nil 透明度
+---@return number, number, number, number 色相、饱和度、亮度、透明度
 function M.rgb2hsb(r, g, b, alpha)
 	alpha = alpha or 1
 	local min, max = math.min(r, g, b), math.max(r, g, b)
@@ -162,7 +164,6 @@ function M.rgb2hsb(r, g, b, alpha)
 	return h, s, v, alpha
 end
 
-
 ---Convert HSB to RGB.
 ---@param h number
 ---@param s number
@@ -179,17 +180,22 @@ function M.hsb2rgb(h, s, v, alpha)
 
 	i = i % 6
 
-	if i == 0 then r, g, b = v, t, p
-	elseif i == 1 then r, g, b = q, v, p
-	elseif i == 2 then r, g, b = p, v, t
-	elseif i == 3 then r, g, b = p, q, v
-	elseif i == 4 then r, g, b = t, p, v
-	elseif i == 5 then r, g, b = v, p, q
+	if i == 0 then
+		r, g, b = v, t, p
+	elseif i == 1 then
+		r, g, b = q, v, p
+	elseif i == 2 then
+		r, g, b = p, v, t
+	elseif i == 3 then
+		r, g, b = p, q, v
+	elseif i == 4 then
+		r, g, b = t, p, v
+	elseif i == 5 then
+		r, g, b = v, p, q
 	end
 
 	return r, g, b, alpha
 end
-
 
 ---Convert RGB to hex string (uppercase, without #).
 ---@param red number
@@ -202,7 +208,6 @@ function M.rgb2hex(red, green, blue)
 	local b = string.format("%x", math.floor(blue * 255))
 	return string.upper((#r == 1 and "0" or "") .. r .. (#g == 1 and "0" or "") .. g .. (#b == 1 and "0" or "") .. b)
 end
-
 
 -- Auto-load palette from config if druid.palette_path is set in game.project
 local DEFAULT_PALETTE_PATH = sys.get_config_string("druid.palette_path")

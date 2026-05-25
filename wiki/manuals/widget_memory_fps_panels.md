@@ -1,33 +1,33 @@
-# Memory and FPS Panel Widgets
+# 内存和帧率面板组件
 
-The `Druid 1.1` comes with two included widgets: `Memory Panel` and `FPS Panel`, which allow you to monitor memory and FPS in your game.
+`Druid 1.1` 包含了两个内置组件：`内存面板` 和 `帧率面板`，它们允许您监控游戏中的内存和帧率(FPS)。
 
-Widgets in Druid usually consist of two files: GUI, which is used to place as a template on your GUI scene and Lua script, which is used to be create with Druid.
+Druid 中的组件通常由两个文件组成：GUI文件，用作GUI场景中的模板；以及Lua脚本，用于与Druid一起创建组件。
 
-<!-- Video -->
+<!-- 视频 -->
 
-## Memory Panel
+## 内存面板
 
-The `Memory Panel` is a widget which allows you to monitor memory of your game. It displays the last 3 seconds of memory allocations in graph, largest memory allocation step, total Lua memory and memory per second.
+`内存面板` 是一个允许您监控游戏内存的组件。它以图表形式显示最近3秒内的内存分配情况、最大的内存分配步骤、总Lua内存和每秒内存使用量。
 
-When you see an empty space in graphs - it means the garbage collector is working at this moment.
+当您在图表中看到空白区域时，这意味着垃圾回收器正在此时工作。
 
-### How to add:
+### 如何添加：
 
-- Add `/druid/widget/memory_panel/memory_panel.gui` to your `*.gui` scene
+- 将 `/druid/widget/memory_panel/memory_panel.gui` 添加到您的 `*.gui` 场景中
 
 ![](/wiki/manuals/media/memory_fps_panel_add.png)
 ![](/wiki/manuals/media/memory_fps_panel_select.png)
 
-- You can adjust a scale of the template if required
-- Add Druid and widget setup to your `*.gui_script`
+- 如有需要，您可以调整模板的比例
+- 在 `*.gui_script` 中添加Druid和组件设置
 ```lua
 local druid = require("druid.druid")
 local memory_panel = require("druid.widget.memory_panel.memory_panel")
 
 function init(self)
 	self.druid = druid.new(self)
-	-- "memory_panel" is a name of the template in the GUI scene, often it matches the name of the template file
+	-- "memory_panel" 是GUI场景中模板的名称，通常与模板文件名匹配
 	self.memory_panel = self.druid:new_widget(memory_panel, "memory_panel")
 end
 
@@ -48,27 +48,27 @@ function on_input(self, action_id, action)
 end
 ```
 
-And make sure of:
-- The `*.gui_script` is attached to your `*.gui` scene
-- The GUI component is added to your game scene
+并确保：
+- `*.gui_script` 已附加到您的 `*.gui` 场景
+- GUI组件已添加到您的游戏场景中
 
 
-## FPS Panel
+## 帧率面板
 
-The `FPS Panel` is a widget which allows you to monitor FPS of your game. It displays the last 3 seconds of FPS graph, lowest and current FPS values
+`帧率面板` 是一个允许您监控游戏帧率(FPS)的组件。它显示最近3秒内的帧率图、最低和当前帧率值
 
-### How to add:
+### 如何添加：
 
-- Add `/druid/widget/fps_panel/fps_panel.gui` to your `*.gui` scene
-- You can adjust a scale of the template if required
-- Add Druid and widget setup to your `*.gui_script`
+- 将 `/druid/widget/fps_panel/fps_panel.gui` 添加到您的 `*.gui` 场景中
+- 如有需要，您可以调整模板的比例
+- 在 `*.gui_script` 中添加Druid和组件设置
 ```lua
 local druid = require("druid.druid")
 local fps_panel = require("druid.widget.fps_panel.fps_panel")
 
 function init(self)
 	self.druid = druid.new(self)
-	-- "fps_panel" is a name of the template in the GUI scene, often it matches the name of the template file
+	-- "fps_panel" 是GUI场景中模板的名称，通常与模板文件名匹配
 	self.fps_panel = self.druid:new_widget(fps_panel, "fps_panel")
 end
 
@@ -89,10 +89,10 @@ function on_input(self, action_id, action)
 end
 ```
 
-And make sure of:
-- The `*.gui_script` is attached to your `*.gui` scene
-- The GUI component is added to your game scene
+并确保：
+- `*.gui_script` 已附加到您的 `*.gui` 场景
+- GUI组件已添加到您的游戏场景中
 
-These widgets not only can be useful for development and profiling your game, but also as an example of how to create custom widgets with Druid and use them in your game.
+这些组件不仅可以用于开发和分析游戏性能，还可以作为如何使用Druid创建自定义组件并在游戏中使用它们的示例。
 
-Thanks for reading!
+感谢阅读！

@@ -1,17 +1,18 @@
-local component = require("druid.component")
-local helper = require("druid.helper")
-local const  = require("druid.const")
-local utf8_lua = require("druid.system.utf8")
-local utf8 = utf8 or utf8_lua
+local component         = require("druid.component")
+local helper            = require("druid.helper")
+local const             = require("druid.const")
+local utf8_lua          = require("druid.system.utf8")
+local utf8              = utf8 or utf8_lua
 
----The component that handles a rich text input field, it's a wrapper around the druid.input component
+---处理富文本输入字段的组件，它是druid.input组件的包装器
+---富文本输入组件提供了增强的文本输入功能，支持更复杂的文本编辑操作
 ---@class druid.rich_input: druid.component
----@field root node The root node of the rich input
----@field input druid.input The input component
----@field cursor node The cursor node
----@field cursor_text node The cursor text node
----@field cursor_position vector3 The position of the cursor
-local M = component.create("druid.rich_input")
+---@field root node 富输入的根节点
+---@field input druid.input 输入组件
+---@field cursor node 光标节点
+---@field cursor_text node 光标文本节点
+---@field cursor_position vector3 光标的位置
+local M                 = component.create("druid.rich_input")
 
 local DOUBLE_CLICK_TIME = 0.35
 
@@ -34,7 +35,9 @@ local function set_selection_width(self, selection_width)
 end
 
 
----@param self druid.rich_input
+---更新文本显示和光标位置
+---此函数根据当前输入内容更新文本显示和光标位置
+---@param self druid.rich_input 富输入组件实例
 local function update_text(self)
 	local full_text = self.input:get_text()
 	local visible_text = self.input.text:get_text()
@@ -45,7 +48,6 @@ local function update_text(self)
 		-- If text is truncated, we need to adjust the cursor index
 		-- to the last visible character
 		cursor_index = utf8.len(visible_text)
-
 	end
 
 	local left_text_part = utf8.sub(self.input:get_text(), 0, cursor_index)
@@ -93,7 +95,8 @@ local function on_unselect(self)
 end
 
 
----Update selection
+---更新选择
+---此函数更新当前文本选择状态
 local function update_selection(self)
 	update_text(self)
 end
@@ -210,7 +213,6 @@ function M:init(template, nodes)
 	update_text(self)
 end
 
-
 ---@private
 ---@param action_id hash Action id from on_input
 ---@param action table Action table from on_input
@@ -247,7 +249,6 @@ function M:on_input(action_id, action)
 	return false
 end
 
-
 ---Set placeholder text
 ---@param placeholder_text string The placeholder text
 ---@return druid.rich_input self Current instance
@@ -256,14 +257,12 @@ function M:set_placeholder(placeholder_text)
 	return self
 end
 
-
 ---Select input field
 ---@return druid.rich_input self Current instance
 function M:select()
 	self.input:select()
 	return self
 end
-
 
 ---Set input field text
 ---@param text string The input text
@@ -275,7 +274,6 @@ function M:set_text(text)
 	return self
 end
 
-
 ---Set input field font
 ---@param font hash The font hash
 ---@return druid.rich_input self Current instance
@@ -286,12 +284,10 @@ function M:set_font(font)
 	return self
 end
 
-
 ---Set input field text
 function M:get_text()
 	return self.input:get_text()
 end
-
 
 ---Set allowed charaters for input field.
 -- See: https://defold.com/ref/stable/string/
@@ -303,6 +299,5 @@ function M:set_allowed_characters(characters)
 
 	return self
 end
-
 
 return M

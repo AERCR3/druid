@@ -1,5 +1,11 @@
+--- 创建Druid组件的模块
+--- 此模块用于从GUI文件自动生成对应的Lua组件文件
 local M = {}
 
+--- 将蛇形命名转换为驼峰命名
+--- 此函数将下划线分隔的字符串转换为驼峰命名格式
+---@param snake_str string - 蛇形命名的字符串
+---@return string - 驼峰命名的字符串
 local function to_camel_case(snake_str)
 	local components = {}
 	for component in snake_str:gmatch("[^_]+") do
@@ -9,6 +15,9 @@ local function to_camel_case(snake_str)
 end
 
 
+--- 创建Druid组件
+--- 此函数根据GUI文件创建对应的Lua组件文件
+---@param selection table - 选择的资源
 function M.create_druid_widget(selection)
 	local gui_filepath = editor.get(selection, "path")
 	local filename = gui_filepath:match("([^/]+)%.gui$")
@@ -56,6 +65,5 @@ function M.create_druid_widget(selection)
 
 	print("Widget created at " .. widget_resource_path)
 end
-
 
 return M

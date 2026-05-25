@@ -1,15 +1,15 @@
----Container component
----Experimental, not tested well, main idea is working
--- Container setup in GUI
--- parent container - container that contains this container. If not, then it's a window default container or parent node
--- container pivot - the point of the parent container that will be used as a pivot point for positioning
--- node_offset - position offset from parent container pivot point (vector4 - offset in pixels from each side)
--- adjust mode FIT - container will keep it's size and will be positioned inside parent container
--- adjust mode STRETCH - container will have percentage of parent container size
--- adjust mode STRETCH_X - container will have percentage of parent container size (only x side)
--- adjust mode STRETCH_Y - container will have percentage of parent container size (only y side)
--- Adjust Stretch and x_anchor == None: container will be positioned by pivot point with one side fixed margin, stretched to pivot side by percentage
--- Adjust stretch and x_anchor ~= None: container will be positioned by pivot point, stretched to pivot side by percentage, but with fixed margins
+---容器组件
+---实验性功能，尚未充分测试，主要思路可行
+-- GUI中的容器设置
+-- 父容器 - 包含此容器的容器。如果没有，则是窗口默认容器或父节点
+-- 容器枢轴点 - 父容器中用作定位枢轴点的点
+-- 节点偏移 - 从父容器枢轴点的位置偏移（vector4 - 每边的像素偏移）
+-- 调整模式FIT - 容器将保持其大小并定位在父容器内
+-- 调整模式STRETCH - 容器将具有父容器大小的百分比
+-- 调整模式STRETCH_X - 容器将具有父容器大小的百分比（仅X边）
+-- 调整模式STRETCH_Y - 容器将具有父容器大小的百分比（仅Y边）
+-- 调整拉伸且x_anchor == None：容器将通过枢轴点定位，一边固定边距，另一边按百分比拉伸
+-- 调整拉伸且x_anchor ~= None：容器将通过枢轴点定位，按百分比拉伸到枢轴边，但有固定边距
 
 local const = require("druid.const")
 local helper = require("druid.helper")
@@ -47,32 +47,33 @@ local CORNER_PIVOTS = {
 ---- Container supports minimum size constraints
 ---- Container can be fitted into window or custom size
 ---@class druid.container: druid.component
----@field node node The gui node
----@field druid druid.instance The druid instance
----@field node_offset vector4 The node offset
----@field origin_size vector3 The origin size
----@field size vector3 The current size
----@field origin_position vector3 The origin position
----@field position vector3 The current position
----@field pivot_offset vector3 The pivot offset
----@field center_offset vector3 The center offset
----@field mode druid.container.mode The layout mode
----@field fit_size vector3 The fit size
----@field min_size_x number|nil The minimum size x
----@field min_size_y number|nil The minimum size y
----@field max_size_x number|nil The maximum size x
----@field max_size_y number|nil The maximum size y
----@field on_size_changed event fun(self: druid.container, size: vector3) The event triggered when the size changes
----@field _parent_container druid.container The parent container
----@field _containers table The containers
----@field _draggable_corners table The draggable corners
+---@field node node GUI节点
+---@field druid druid.instance Druid实例
+---@field node_offset vector4 节点偏移
+---@field origin_size vector3 原始大小
+---@field size vector3 当前大小
+---@field origin_position vector3 原始位置
+---@field position vector3 当前位置
+---@field pivot_offset vector3 枢轴偏移
+---@field center_offset vector3 中心偏移
+---@field mode druid.container.mode 布局模式
+---@field fit_size vector3 适合大小
+---@field min_size_x number|nil 最小X尺寸
+---@field min_size_y number|nil 最小Y尺寸
+---@field max_size_x number|nil 最大X尺寸
+---@field max_size_y number|nil 最大Y尺寸
+---@field on_size_changed event fun(self: druid.container, size: vector3) 尺寸改变时触发的事件
+---@field _parent_container druid.container 父容器
+---@field _containers table 容器列表
+---@field _draggable_corners table 可拖拽角
 local M = component.create("container")
 
 
----The Container constructor
----@param node node Gui node
----@param mode string Layout mode
----@param callback fun(self: druid.container, size: vector3)|nil Callback on size changed
+---容器构造函数
+---初始化容器组件，设置GUI节点、布局模式和尺寸改变回调
+---@param node node GUI节点
+---@param mode string 布局模式
+---@param callback fun(self: druid.container, size: vector3)|nil 尺寸改变时的回调
 function M:init(node, mode, callback)
 	self.node = self:get_node(node)
 	self.druid = self:get_druid()
@@ -101,7 +102,8 @@ function M:init(node, mode, callback)
 	self.origin_position = gui.get_position(self.node)
 
 	self._initial_adjust_mode = gui.get_adjust_mode(self.node)
-	self.mode = mode or (self._initial_adjust_mode == gui.ADJUST_FIT) and const.LAYOUT_MODE.FIT or const.LAYOUT_MODE.STRETCH
+	self.mode = mode or (self._initial_adjust_mode == gui.ADJUST_FIT) and const.LAYOUT_MODE.FIT or
+			const.LAYOUT_MODE.STRETCH
 
 	gui.set_size_mode(self.node, gui.SIZE_MODE_MANUAL)
 	gui.set_adjust_mode(self.node, gui.ADJUST_FIT)
@@ -113,7 +115,6 @@ function M:init(node, mode, callback)
 	self:set_size(self.size.x, self.size.y)
 end
 
-
 ---@private
 function M:on_late_init()
 	if not gui.get_parent(self.node) then
@@ -122,13 +123,11 @@ function M:on_late_init()
 	end
 end
 
-
 ---@private
 function M:on_remove()
 	self:clear_draggable_corners()
 	gui.set_adjust_mode(self.node, self._initial_adjust_mode)
 end
-
 
 ---Refresh the origins of the container, origins is the size and position of the container when it was created
 function M:refresh_origins()
@@ -136,7 +135,6 @@ function M:refresh_origins()
 	self.origin_position = gui.get_position(self.node)
 	self:set_pivot(gui.get_pivot(self.node))
 end
-
 
 ---Set the pivot of the container
 ---@param pivot constant The pivot to set
@@ -146,7 +144,6 @@ function M:set_pivot(pivot)
 	self.center_offset = -vmath.vector3(self.size.x * self.pivot_offset.x, self.size.y * self.pivot_offset.y, 0)
 end
 
-
 ---@private
 ---@param style druid.container.style
 function M:on_style_change(style)
@@ -155,7 +152,6 @@ function M:on_style_change(style)
 		DRAGGABLE_CORNER_COLOR = style.DRAGGABLE_CORNER_COLOR or vmath.vector4(10)
 	}
 end
-
 
 ---Set new size of layout node
 ---@param width number|nil The width to set
@@ -206,13 +202,11 @@ function M:set_size(width, height, anchor_pivot)
 	return self
 end
 
-
 ---Get the position of the container
 ---@return vector3 position The position of the container
 function M:get_position()
 	return self._position
 end
-
 
 ---Set the position of the container
 ---@param pos_x number The x position to set
@@ -227,20 +221,17 @@ function M:set_position(pos_x, pos_y)
 	gui.set_position(self.node, self._position)
 end
 
-
 ---Get the current size of the layout node
 ---@return vector3 size The current size of the layout node
 function M:get_size()
 	return vmath.vector3(self.size)
 end
 
-
 ---Get the current scale of the layout node
 ---@return vector3 scale The current scale of the layout node
 function M:get_scale()
 	return helper.get_scene_scale(self.node, true) --[[@as vector3]]
 end
-
 
 ---Set size for layout node to fit inside it
 ---@param target_size vector3 The target size to fit into
@@ -252,13 +243,11 @@ function M:fit_into_size(target_size)
 	return self
 end
 
-
 ---Set current size for layout node to fit inside it
 ---@return druid.container self Current container instance
 function M:fit_into_window()
 	return self:fit_into_size(vmath.vector3(gui.get_width(), gui.get_height(), 0))
 end
-
 
 ---@private
 function M:on_window_resized()
@@ -270,7 +259,6 @@ function M:on_window_resized()
 		self:refresh()
 	end
 end
-
 
 ---@param node_or_container node|string|druid.container|table The node or container to add
 ---@param mode druid.container.mode|nil stretch, fit, stretch_x, stretch_y. Default: Pick from node, "fit" or "stretch"
@@ -301,7 +289,6 @@ function M:add_container(node_or_container, mode, on_resize_callback)
 	return container
 end
 
-
 ---@return druid.container|nil
 function M:remove_container_by_node(node)
 	for index = 1, #self._containers do
@@ -315,7 +302,6 @@ function M:remove_container_by_node(node)
 
 	return nil
 end
-
 
 ---@param parent_container druid.container|nil
 function M:set_parent_container(parent_container)
@@ -346,8 +332,8 @@ function M:set_parent_container(parent_container)
 	self.node_offset.w = node_bottom - parent_bottom
 	self._parent_container = parent_container
 
-	local offset_x = (self.node_offset.x + self.node_offset.z)/2
-	local offset_y = (self.node_offset.y + self.node_offset.w)/2
+	local offset_x = (self.node_offset.x + self.node_offset.z) / 2
+	local offset_y = (self.node_offset.y + self.node_offset.w) / 2
 
 	if self.pivot_offset.x < 0 then
 		offset_x = self.node_offset.x
@@ -378,7 +364,6 @@ function M:set_parent_container(parent_container)
 
 	self:refresh()
 end
-
 
 -- Glossary
 -- Center Offset - vector from node position to visual center of node
@@ -454,7 +439,6 @@ function M:refresh()
 	self:update_child_containers()
 end
 
-
 function M:refresh_scale()
 	if self._fit_node then
 		local fit_node_size = gui.get_size(self._fit_node)
@@ -470,13 +454,11 @@ function M:refresh_scale()
 	end
 end
 
-
 function M:update_child_containers()
 	for index = 1, #self._containers do
 		self._containers[index]:refresh()
 	end
 end
-
 
 ---@return druid.container self Current container instance
 function M:create_draggable_corners()
@@ -507,7 +489,6 @@ function M:create_draggable_corners()
 	return self
 end
 
-
 ---@return druid.container self Current container instance
 function M:clear_draggable_corners()
 	for index = 1, #self._draggable_corners do
@@ -521,7 +502,6 @@ function M:clear_draggable_corners()
 
 	return self
 end
-
 
 function M:_on_corner_drag(x, y, corner_offset)
 	x = corner_offset.x >= 0 and x or -x
@@ -564,7 +544,6 @@ function M:_on_corner_drag(x, y, corner_offset)
 	self:set_size(size.x + x, size.y + y)
 end
 
-
 ---Set node for layout node to fit inside it. Pass nil to reset
 ---@param node string|node The node_id or gui.get_node(node_id)
 ---@return druid.container self Current container instance
@@ -573,7 +552,6 @@ function M:fit_into_node(node)
 	self:refresh_scale()
 	return self
 end
-
 
 ---Set the minimum size of the container
 ---@param min_size_x number|nil The minimum size x
@@ -587,7 +565,6 @@ function M:set_min_size(min_size_x, min_size_y)
 	return self
 end
 
-
 ---Set the maximum size of the container
 ---@param max_size_x number|nil The maximum size x
 ---@param max_size_y number|nil The maximum size y
@@ -599,6 +576,5 @@ function M:set_max_size(max_size_x, max_size_y)
 
 	return self
 end
-
 
 return M

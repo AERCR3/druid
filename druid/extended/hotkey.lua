@@ -3,34 +3,36 @@ local helper = require("druid.helper")
 local component = require("druid.component")
 
 ---@class druid.hotkey.style
----@field MODIFICATORS string[]|hash[] The list of action_id as hotkey modificators
+---@field MODIFICATORS string[]|hash[] 作为热键修饰符的action_id列表
 
----Druid component to manage hotkeys and trigger callbacks when hotkeys are pressed.
+---Druid组件，用于管理热键并在按下热键时触发回调。
 ---
----### Setup
----Create hotkey component with druid: `hotkey = druid:new_hotkey(keys, callback, callback_argument)`
+---### 设置
+---使用druid创建热键组件: `hotkey = druid:new_hotkey(keys, callback, callback_argument)`
 ---
----### Notes
----- Hotkey can be triggered by pressing a single key or a combination of keys
----- Hotkey supports modificator keys (e.g. Ctrl, Shift, Alt)
----- Hotkey can be triggered on key press, release or repeat
----- Hotkey can be added or removed at runtime
----- Hotkey can be enabled or disabled
----- Hotkey can be set to repeat on key hold
+---### 注意事项
+---- 热键可以通过单个按键或组合键触发
+---- 热键支持修饰键（例如Ctrl、Shift、Alt）
+---- 热键可以在按键按下、释放或重复时触发
+---- 热键可以在运行时添加或删除
+---- 热键可以启用或禁用
+---- 热键可以设置为按键持续时重复触发
+---热键组件用于处理键盘快捷键，支持修饰键组合
 ---@class druid.hotkey: druid.component
----@field on_hotkey_pressed event fun(self, context, callback_argument) The event triggered when a hotkey is pressed
----@field on_hotkey_released event fun(self, context, callback_argument) The event triggered when a hotkey is released
----@field style druid.hotkey.style The style of the hotkey component
----@field private _hotkeys table The list of hotkeys
----@field private _modificators table The list of modificators
----@field private _node node|nil The node to bind the hotkey to
+---@field on_hotkey_pressed event fun(self, context, callback_argument) 按下热键时触发的事件
+---@field on_hotkey_released event fun(self, context, callback_argument) 释放热键时触发的事件
+---@field style druid.hotkey.style 热键组件的样式
+---@field private _hotkeys table 热键列表
+---@field private _modificators table 修饰符列表
+---@field private _node node|nil 绑定热键的节点
 local M = component.create("hotkey")
 
 
----The Hotkey constructor
----@param keys string[]|string The keys to be pressed for trigger callback. Should contains one key and any modificator keys
----@param callback function The callback function
----@param callback_argument any|nil The argument to pass into the callback function
+---热键构造函数
+---初始化热键组件，设置要按下的键和回调函数
+---@param keys string[]|string 触发回调要按下的键。应包含一个主键和任意修饰键
+---@param callback function 回调函数
+---@param callback_argument any|nil 传递给回调函数的参数
 function M:init(keys, callback, callback_argument)
 	self.druid = self:get_druid()
 
@@ -45,9 +47,10 @@ function M:init(keys, callback, callback_argument)
 	end
 end
 
-
+---内部方法：处理样式变化
+---当热键组件样式发生变化时调用此私有方法
 ---@private
----@param style druid.hotkey.style
+---@param style druid.hotkey.style 热键样式
 function M:on_style_change(style)
 	self.style = {
 		MODIFICATORS = style.MODIFICATORS or {},
@@ -61,11 +64,11 @@ function M:on_style_change(style)
 	end
 end
 
-
----Add hotkey for component callback
----@param keys string[]|hash[]|string|hash that have to be pressed before key pressed to activate
----@param callback_argument any|nil The argument to pass into the callback function
----@return druid.hotkey self Current instance
+---为组件回调添加热键
+---此函数允许在运行时动态添加新的热键绑定
+---@param keys string[]|hash[]|string|hash 激活前必须按下的键
+---@param callback_argument any|nil 传递给回调函数的参数
+---@return druid.hotkey self 当前实例
 function M:add_hotkey(keys, callback_argument)
 	keys = keys or {}
 	if type(keys) == "string" then
@@ -106,7 +109,6 @@ function M:add_hotkey(keys, callback_argument)
 	return self
 end
 
-
 function M:is_processing()
 	for index = 1, #self._hotkeys do
 		if self._hotkeys[index].is_processing then
@@ -117,14 +119,12 @@ function M:is_processing()
 	return false
 end
 
-
 ---@private
 function M:on_focus_gained()
 	for k, v in pairs(self._modificators) do
 		self._modificators[k] = false
 	end
 end
-
 
 ---@private
 ---@param action_id hash|nil The action id
@@ -151,17 +151,14 @@ function M:on_input(action_id, action)
 			local is_modificator_ok = true
 			local is_consume = not not (hotkey.key)
 
-			if hotkey.key then
+			-- Check only required modificators pressed
+			if hotkey.key and #hotkey.modificators > 0 then
 				for i = 1, #self.style.MODIFICATORS do
 					local mod = self.style.MODIFICATORS[i]
-					if #hotkey.modificators > 0 then
-						if helper.contains(hotkey.modificators, mod) and self._modificators[mod] == false then
-							is_modificator_ok = false
-						end
-						if not helper.contains(hotkey.modificators, mod) and self._modificators[mod] == true then
-							is_modificator_ok = false
-						end
-					elseif self._modificators[mod] == true then
+					if helper.contains(hotkey.modificators, mod) and self._modificators[mod] == false then
+						is_modificator_ok = false
+					end
+					if not helper.contains(hotkey.modificators, mod) and self._modificators[mod] == true then
 						is_modificator_ok = false
 					end
 				end
@@ -190,7 +187,6 @@ function M:on_input(action_id, action)
 	return false
 end
 
-
 ---If true, the callback will be triggered on action.repeated
 ---@param is_enabled_repeated boolean The flag value
 ---@return druid.hotkey self Current instance
@@ -198,7 +194,6 @@ function M:set_repeat(is_enabled_repeated)
 	self._is_process_repeated = is_enabled_repeated
 	return self
 end
-
 
 ---If node is provided, the hotkey can be disabled, if the node is disabled
 ---@param node node|nil The node to bind the hotkey to. Nil to unbind the node
@@ -208,6 +203,5 @@ function M:bind_node(node)
 
 	return self
 end
-
 
 return M

@@ -1,6 +1,6 @@
 #version 140
 
-// positions are in world space
+// position 坐标处于世界空间
 in highp vec4 position;
 in mediump vec2 texcoord0;
 in mediump vec4 sdf_params;

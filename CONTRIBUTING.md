@@ -1,116 +1,122 @@
-# Contributing to Druid
+# 为Druid做贡献
 
-Thank you for your interest in contributing to **Druid**! We welcome contributions of all sizes - even small fixes make a big difference.
+感谢您有兴趣为 **Druid** 做出贡献！我们欢迎各种规模的贡献 - 即使是小的修复也能带来很大差异。
 
-## Table of Contents
-- [How to Report Issues](#how-to-report-issues)
-- [Small Fixes](#small-fixes)
-- [Larger Contributions](#larger-contributions)
-- [Documentation Updates](#documentation-updates)
-- [Adding or Updating Examples](#adding-or-updating-examples)
-- [Unit Tests](#unit-tests)
+## 目录
 
-## How to Report Issues
+- [如何报告问题](#how-to-report-issues)
+- [小修复](#small-fixes)
+- [更大贡献](#larger-contributions)
+- [文档更新](#documentation-updates)
+- [添加或更新示例](#adding-or-updating-examples)
+- [单元测试](#unit-tests)
 
-Found a bug? Please report it to our [issue tracker](https://github.com/druid-js/druid/issues) with:
-- A clear description of the problem
-- Steps to reproduce the issue
-- Expected vs. actual behavior
-- Your environment (Defold version, OS, etc.)
+## 如何报告问题
 
-## Small Fixes
+发现了一个bug？请通过以下信息向我们的 [问题跟踪器](https://github.com/druid-js/druid/issues) 报告：
 
-**We highly encourage small improvements!** For bug fixes, typo corrections, or minor improvements, you can create a pull request directly to the `master` or `develop` branch.
+- 问题的清晰描述
+- 重现问题的步骤
+- 期望行为与实际行为
+- 您的环境（Defold版本、操作系统等）
 
-When making these contributions, you **must**:
+## 小修复
 
-1. Update the patch version number in both:
-   - `README.md` file (in the dependency section)
-   - `game.project` file (in the project section)
-2. Add your changes to `wiki/changelog.md`
-3. These steps are required to properly tag a new release
+**我们强烈鼓励小的改进！** 对于错误修复、拼写更正或小的改进，您可以直接向 `master` 或 `develop` 分支提交拉取请求。
 
-**Example of version updates:**
+进行这些贡献时，您**必须**：
 
-For README.md:
+1. 更新补丁版本号：
+   - `README.md` 文件（在依赖项部分）
+   - `game.project` 文件（在项目部分）
+2. 将您的更改添加到 `wiki/changelog.md`
+3. 这些步骤对于正确标记新版本是必需的
+
+**版本更新示例：**
+
+对于README.md：
+
 ```
-# Before
+# 之前
 https://github.com/Insality/druid/archive/refs/tags/1.1.0.zip
 
-# After (patch version increased)
+# 之后（补丁版本增加）
 https://github.com/Insality/druid/archive/refs/tags/1.1.1.zip
 ```
 
-For game.project:
+对于game.project：
+
 ```
-# Before
+# 之前
 [project]
 title = Druid
 version = 1.1.0
 
-# After (patch version increased)
+# 之后（补丁版本增加）
 [project]
 title = Druid
 version = 1.1.1
 ```
 
-## Larger Contributions
+## 更大贡献
 
-For new features, major improvements, or complex fixes:
+对于新功能、重大改进或复杂修复：
 
-1. Fork the repository
-2. Create a branch from `develop`
-3. Make your changes
-4. Ensure code follows project style guidelines
-5. Test your changes thoroughly
-6. Submit a pull request to the `develop` branch
-7. Include references to any related issues (e.g., "Fixes #123")
+1. Fork仓库
+2. 从 `develop` 创建分支
+3. 进行您的更改
+4. 确保代码遵循项目风格指南
+5. 彻底测试您的更改
+6. 向 `develop` 分支提交拉取请求
+7. 包含任何相关问题的引用（例如，"Fixes #123"）
 
-Please keep changes focused on addressing specific issues or features, and maintain the existing code style.
+请保持更改专注于解决特定问题或功能，并保持现有代码风格。
 
-## Documentation Updates
+## 文档更新
 
-To improve documentation:
+要改进文档：
 
-1. Fork the repository
-2. Create a branch for your changes
-3. Update the relevant documentation files
-4. Submit a pull request to the `master` or `develop` branch
+1. Fork仓库
+2. 为您的更改创建分支
+3. 更新相关的文档文件
+4. 向 `master` 或 `develop` 分支提交拉取请求
 
-Clear, accurate documentation helps everyone, so documentation improvements are always appreciated!
+清晰、准确的文档对每个人都有帮助，所以文档改进总是受到赞赏！
 
-## Adding or Updating Examples
+## 添加或更新示例
 
-Examples are vital for helping users understand how to use Druid. Each example should include:
+示例对于帮助用户了解如何使用Druid至关重要。每个示例应包括：
 
-1. A GUI scene with a Druid widget
-2. Information about the example in `examples_list.lua`
+1. 带有Druid小部件的GUI场景
+2. `examples_list.lua` 中的示例信息
 
-To add a new example:
+要添加新示例：
 
-1. Create a new GUI file in the `/example/examples` directory
-2. Add the example information to `examples_list.lua`
-3. Include your GUI template in `/example/druid.gui`
-   - Place it inside the proper hierarchy: `root -> container_center -> examples -> widgets`
-4. Test your example by running the game
-5. Submit a pull request to the `develop` branch
+1. 在 `/example/examples` 目录中创建新的GUI文件
+2. 将示例信息添加到 `examples_list.lua`
+3. 在 `/example/druid.gui` 中包含您的GUI模板
+   - 将其放置在适当的层次结构中：`root -> container_center -> examples -> widgets`
+4. 通过运行游戏测试您的示例
+5. 向 `develop` 分支提交拉取请求
 
-## Unit Tests
+## 单元测试
 
-Unit tests help ensure Druid works correctly. If you're facing an issue, unit tests can be a good starting point to understand or reproduce it.
+单元测试有助于确保Druid正常工作。如果您遇到问题，单元测试可以是一个很好的起点来理解或重现它。
 
-All tests are located in the `/test/tests` directory.
+所有测试都位于 `/test/tests` 目录中。
 
-To run tests:
-1. Set the bootstrap collection to `/test/test.collection`
-2. Run the project
+运行测试：
 
-To submit new or updated tests:
-1. Create a branch for your changes
-2. Add or modify tests
-3. Verify your tests pass
-4. Submit a pull request to the `develop` branch
+1. 将引导集合设置为 `/test/test.collection`
+2. 运行项目
+
+提交新测试或更新测试：
+
+1. 为您的更改创建分支
+2. 添加或修改测试
+3. 验证您的测试通过
+4. 向 `develop` 分支提交拉取请求
 
 ---
 
-Thank you for contributing to making Druid better for everyone! ❤️
+感谢您为让Druid变得更好而做出贡献！❤️

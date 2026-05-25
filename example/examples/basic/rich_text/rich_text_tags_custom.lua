@@ -11,7 +11,7 @@ local M = {}
 
 
 function M:init()
-	do -- Init rich text with links example
+	do -- 初始化富文本链接示例：把自定义标签包裹的单词节点转换成可点击按钮
 		self.rich_text_link = self.druid:new_rich_text("rich_text_link") --[[@as druid.rich_text]]
 		self.rich_text_link:set_text("Hello, I'm a <custom_link><color=A1D7F5>Custom Link</color></custom_link>")
 

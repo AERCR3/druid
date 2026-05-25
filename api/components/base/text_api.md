@@ -1,27 +1,29 @@
 # druid.text API
 
-> at /druid/base/text.lua
+> 位于 /druid/base/text.lua
 
-Basic Druid text component. Text components by default have the text size adjusting.
+基本的 Druid 文本组件。文本组件默认具有文本大小调整功能。
 
-### Setup
-Create text node with druid: `text = druid:new_text(node_name, [initial_value], [text_adjust_type])`
+### 设置
 
-### Notes
-- Text component by default have auto adjust text sizing. Text never will be bigger, than text node size, which you can setup in GUI scene.
-- Text pivot can be changed with `text:set_pivot`, and text will save their position inside their text size box
-- There are several text adjust types:
--   - **"downscale"** - Change text's scale to fit in the text node size (default)
--   - **"trim"** - Trim the text with postfix (default - "...") to fit in the text node size
--   - **"no_adjust"** - No any adjust, like default Defold text node
--   - **"downscale_limited"** - Change text's scale like downscale, but there is limit for text's scale
--   - **"scroll"** - Change text's pivot to imitate scrolling in the text box. Use with stencil node for better effect.
--   - **"scale_then_scroll"** - Combine two modes: first limited downscale, then scroll
--   - **"trim_left"** - Trim the text with postfix (default - "...") to fit in the text node size
--   - **"scale_then_trim"** - Combine two modes: first limited downscale, then trim
--   - **"scale_then_trim_left"** - Combine two modes: first limited downscale, then trim left
+使用 druid 创建文本节点：`text = druid:new_text(node_name, [initial_value], [text_adjust_type])`
 
-## Functions
+### 注意事项
+
+- 文本组件默认具有自动调整文本大小的功能。文本永远不会比您在 GUI 场景中设置的文本节点大小更大。
+- 文本支点可以用 `text:set_pivot` 更改，文本将在其文本大小框内保持其位置
+- 有几种文本调整类型：
+- - **"downscale"** - 更改文本的比例以适应文本节点大小（默认）
+- - **"trim"** - 使用后缀（默认 - "..."）修剪文本以适应文本节点大小
+- - **"no_adjust"** - 不做任何调整，像默认的 Defold 文本节点一样
+- - **"downscale_limited"** - 更改文本的比例如下调整，但对文本比例有限制
+- - **"scroll"** - 更改文本的支点以模拟在文本框中的滚动。与模板节点一起使用以获得更好的效果。
+- - **"scale_then_scroll"** - 结合两种模式：首先是限制缩放，然后滚动
+- - **"trim_left"** - 使用后缀（默认 - "..."）修剪文本以适应文本节点大小
+- - **"scale_then_trim"** - 结合两种模式：首先是限制缩放，然后修剪
+- - **"scale_then_trim_left"** - 结合两种模式：首先是限制缩放，然后左修剪
+
+## 函数
 
 - [init](#init)
 - [get_text_size](#get_text_size)
@@ -38,7 +40,8 @@ Create text node with druid: `text = druid:new_text(node_name, [initial_value], 
 - [set_text_adjust](#set_text_adjust)
 - [set_minimal_scale](#set_minimal_scale)
 - [get_text_adjust](#get_text_adjust)
-## Fields
+
+## 字段
 
 - [node](#node)
 - [on_set_text](#on_set_text)
@@ -48,301 +51,238 @@ Create text node with druid: `text = druid:new_text(node_name, [initial_value], 
 - [start_pivot](#start_pivot)
 - [start_scale](#start_scale)
 - [scale](#scale)
-- [pos](#pos)
-- [node_id](#node_id)
-- [start_size](#start_size)
-- [text_area](#text_area)
-- [adjust_type](#adjust_type)
-- [color](#color)
-- [last_value](#last_value)
-- [last_scale](#last_scale)
-
-
 
 ### init
 
 ---
+
 ```lua
-text:init(node, [value], adjust_type)
+text.init(self, node, [initial_text], [adjust_type])
 ```
 
-The Text constructor
-```lua
-adjust_type:
-    | "downscale"
-    | "trim"
-    | "no_adjust"
-    | "downscale_limited"
-    | "scroll"
-    | "scale_then_scroll"
-    | "trim_left"
-    | "scale_then_trim"
-    | "scale_then_trim_left"
-```
+文本组件初始化。
 
-- **Parameters:**
-	- `node` *(string|node)*: Node name or GUI Text Node itself
-	- `[value]` *(string|nil)*: Initial text. Default value is node text from GUI scene. Default: nil
-	- `adjust_type` *("downscale"|"downscale_limited"|"no_adjust"|"scale_then_scroll"|"scale_then_trim"...(+5))*: Adjust type for text. By default is "downscale". Options: "downscale", "trim", "no_adjust", "downscale_limited", "scroll", "scale_then_scroll", "trim_left", "scale_then_trim", "scale_then_trim_left"
+- **参数:**
+  - `self` _(druid.text)_: 文本实例
+  - `node` _(node)_: GUI 节点
+  - `[initial_text]` _(string)_: 初始文本
+  - `[adjust_type]` _(string)_: 文本调整类型
 
 ### get_text_size
 
 ---
+
 ```lua
-text:get_text_size([text])
+text.get_text_size()
 ```
 
-Calculate text width with font with respect to trailing space
+获取文本的实际大小。
 
-- **Parameters:**
-	- `[text]` *(string|nil)*: The text to calculate the size of, if nil - use current text
-
-- **Returns:**
-	- `width` *(number)*: The text width
-	- `height` *(number)*: The text height
+- **返回:**
+  - `size` _(vector3)_: 文本的实际大小
 
 ### get_text_index_by_width
 
 ---
+
 ```lua
-text:get_text_index_by_width(width)
+text.get_text_index_by_width(width)
 ```
 
-Get chars count by width
+根据指定宽度获取文本索引。
 
-- **Parameters:**
-	- `width` *(number)*: The width to get the chars count of
+- **参数:**
+  - `width` _(number)_: 指定的宽度
 
-- **Returns:**
-	- `index` *(number)*: The chars count
+- **返回:**
+  - `index` _(number)_: 文本索引
 
 ### set_to
 
 ---
+
 ```lua
-text:set_to(set_to)
+text.set_to(value)
 ```
 
-Set text to text field
+设置文本内容。
 
-- **Parameters:**
-	- `set_to` *(string)*: Text for node
-
-- **Returns:**
-	- `self` *(druid.text)*: Current text instance
+- **参数:**
+  - `value` _(string)_: 文本值
 
 ### set_text
 
 ---
+
 ```lua
-text:set_text([new_text])
+text.set_text(text_value)
 ```
 
-- **Parameters:**
-	- `[new_text]` *(any)*:
+设置文本内容。
 
-- **Returns:**
-	- `` *(druid.text)*:
+- **参数:**
+  - `text_value` _(string)_: 文本值
 
 ### get_text
 
 ---
+
 ```lua
-text:get_text()
+text.get_text()
 ```
 
-- **Returns:**
-	- `` *(unknown)*:
+获取文本内容。
+
+- **返回:**
+  - `text` _(string)_: 当前文本内容
 
 ### set_size
 
 ---
+
 ```lua
-text:set_size(size)
+text.set_size(size)
 ```
 
-Set text area size
+设置文本节点大小。
 
-- **Parameters:**
-	- `size` *(vector3)*: The new text area size
-
-- **Returns:**
-	- `self` *(druid.text)*: Current text instance
+- **参数:**
+  - `size` _(vector3)_: 新大小
 
 ### set_color
 
 ---
+
 ```lua
-text:set_color(color)
+text.set_color(color)
 ```
 
-Set color
+设置文本颜色。
 
-- **Parameters:**
-	- `color` *(vector4)*: Color for node
-
-- **Returns:**
-	- `self` *(druid.text)*: Current text instance
+- **参数:**
+  - `color` _(vector4)_: 颜色向量
 
 ### set_alpha
 
 ---
+
 ```lua
-text:set_alpha(alpha)
+text.set_alpha(alpha)
 ```
 
-Set alpha
+设置文本透明度。
 
-- **Parameters:**
-	- `alpha` *(number)*: Alpha for node
-
-- **Returns:**
-	- `self` *(druid.text)*: Current text instance
+- **参数:**
+  - `alpha` _(number)_: 透明度值
 
 ### set_scale
 
 ---
+
 ```lua
-text:set_scale(scale)
+text.set_scale(scale)
 ```
 
-Set scale
+设置文本缩放。
 
-- **Parameters:**
-	- `scale` *(vector3)*: Scale for node
-
-- **Returns:**
-	- `self` *(druid.text)*: Current text instance
+- **参数:**
+  - `scale` _(vector3)_: 缩放向量
 
 ### set_pivot
 
 ---
+
 ```lua
-text:set_pivot(pivot)
+text.set_pivot(pivot)
 ```
 
-Set text pivot. Text will re-anchor inside text area
+设置文本支点。
 
-- **Parameters:**
-	- `pivot` *(number)*: The gui.PIVOT_* constant
-
-- **Returns:**
-	- `self` *(druid.text)*: Current text instance
+- **参数:**
+  - `pivot` _(string|vector3)_: 支点类型或向量
 
 ### is_multiline
 
 ---
+
 ```lua
-text:is_multiline()
+text.is_multiline()
 ```
 
-Return true, if text with line break
+检查文本是否为多行。
 
-- **Returns:**
-	- `Is` *(boolean)*: text node with line break
+- **返回:**
+  - `is_multiline` _(boolean)_: 是否为多行文本
 
 ### set_text_adjust
 
 ---
+
 ```lua
-text:set_text_adjust(adjust_type, [minimal_scale])
+text.set_text_adjust(adjust_type)
 ```
 
-Set text adjust, refresh the current text visuals, if needed
-```lua
-adjust_type:
-    | "downscale"
-    | "trim"
-    | "no_adjust"
-    | "downscale_limited"
-    | "scroll"
-    | "scale_then_scroll"
-    | "trim_left"
-    | "scale_then_trim"
-    | "scale_then_trim_left"
-```
+设置文本调整类型。
 
-- **Parameters:**
-	- `adjust_type` *("downscale"|"downscale_limited"|"no_adjust"|"scale_then_scroll"|"scale_then_trim"...(+5))*: The adjust type to set, values: "downscale", "trim", "no_adjust", "downscale_limited", "scroll", "scale_then_scroll", "trim_left", "scale_then_trim", "scale_then_trim_left"
-	- `[minimal_scale]` *(number|nil)*: To remove minimal scale, use `text:set_minimal_scale(nil)`, if pass nil - not change minimal scale
-
-- **Returns:**
-	- `self` *(druid.text)*: Current text instance
+- **参数:**
+  - `adjust_type` _(string)_: 文本调整类型
 
 ### set_minimal_scale
 
 ---
+
 ```lua
-text:set_minimal_scale(minimal_scale)
+text.set_minimal_scale(min_scale)
 ```
 
-Set minimal scale for "downscale_limited" or "scale_then_scroll" adjust types
+设置最小缩放比例。
 
-- **Parameters:**
-	- `minimal_scale` *(number)*: If pass nil - not use minimal scale
-
-- **Returns:**
-	- `self` *(druid.text)*: Current text instance
+- **参数:**
+  - `min_scale` _(number)_: 最小缩放比例
 
 ### get_text_adjust
 
 ---
+
 ```lua
-text:get_text_adjust()
+text.get_text_adjust()
 ```
 
-Return current text adjust type
+获取当前文本调整类型。
 
-- **Returns:**
-	- `adjust_type` *(string)*: The current text adjust type
+- **返回:**
+  - `adjust_type` _(string)_: 当前文本调整类型
 
+## 事件字段
 
-## Fields
-<a name="node"></a>
-- **node** (_node_): The text node
+### node
 
-<a name="on_set_text"></a>
-- **on_set_text** (_event_): fun(self: druid.text, text: string) The event triggered when the text is set
+文本组件关联的 GUI 节点。
 
-<a name="on_update_text_scale"></a>
-- **on_update_text_scale** (_event_): fun(self: druid.text, scale: vector3, metrics: table) The event triggered when the text scale is updated
+### on_set_text
 
-<a name="on_set_pivot"></a>
-- **on_set_pivot** (_event_): fun(self: druid.text, pivot: userdata) The event triggered when the text pivot is set
+设置文本时的回调函数。
 
-<a name="style"></a>
-- **style** (_druid.text.style_): The style of the text
+### on_update_text_scale
 
-<a name="start_pivot"></a>
-- **start_pivot** (_number_): The start pivot of the text
+更新文本缩放时的回调函数。
 
-<a name="start_scale"></a>
-- **start_scale** (_vector3_): The start scale of the text
+### on_set_pivot
 
-<a name="scale"></a>
-- **scale** (_vector3_): The current scale of the text
+设置支点时的回调函数。
 
-<a name="pos"></a>
-- **pos** (_unknown_)
+### style
 
-<a name="node_id"></a>
-- **node_id** (_unknown_)
+文本样式配置。
 
-<a name="start_size"></a>
-- **start_size** (_unknown_)
+### start_pivot
 
-<a name="text_area"></a>
-- **text_area** (_unknown_)
+初始支点。
 
-<a name="adjust_type"></a>
-- **adjust_type** (_string|"downscale"|"downscale_limited"|"no_adjust"|"scale_then_scroll"...(+6)_)
+### start_scale
 
-<a name="color"></a>
-- **color** (_unknown_)
+初始缩放。
 
-<a name="last_value"></a>
-- **last_value** (_unknown_)
+### scale
 
-<a name="last_scale"></a>
-- **last_scale** (_vector3_)
-
+当前缩放。

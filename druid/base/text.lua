@@ -6,47 +6,49 @@ local component = require("druid.component")
 local utf8 = utf8 or utf8_lua --[[@as utf8]]
 
 ---@class druid.text.style
----@field TRIM_POSTFIX string|nil The postfix for TRIM adjust type. Default: ...
----@field DEFAULT_ADJUST string|nil The default adjust type for any text component. Default: DOWNSCALE
----@field ADJUST_STEPS number|nil Amount of iterations for text adjust by height. Default: 20
----@field ADJUST_SCALE_DELTA number|nil Scale step on each height adjust step. Default: 0.02
+---@field TRIM_POSTFIX string|nil TRIM调整类型的后缀。默认值: ...
+---@field DEFAULT_ADJUST string|nil 任何文本组件的默认调整类型。默认值: DOWNSCALE
+---@field ADJUST_STEPS number|nil 按高度调整文本的迭代次数。默认值: 20
+---@field ADJUST_SCALE_DELTA number|nil 每个高度调整步骤的缩放步长。默认值: 0.02
 
 ---@alias druid.text.adjust_type "downscale"|"trim"|"no_adjust"|"downscale_limited"|"scroll"|"scale_then_scroll"|"trim_left"|"scale_then_trim"|"scale_then_trim_left"
 
----Basic Druid text component. Text components by default have the text size adjusting.
+---基本的Druid文本组件。文本组件默认具有文本大小调整功能。
 ---
----### Setup
----Create text node with druid: `text = druid:new_text(node_name, [initial_value], [text_adjust_type])`
+---### 设置
+---使用druid创建文本节点: `text = druid:new_text(node_name, [initial_value], [text_adjust_type])`
 ---
----### Notes
----- Text component by default have auto adjust text sizing. Text never will be bigger, than text node size, which you can setup in GUI scene.
----- Text pivot can be changed with `text:set_pivot`, and text will save their position inside their text size box
----- There are several text adjust types:
-----   - **"downscale"** - Change text's scale to fit in the text node size (default)
-----   - **"trim"** - Trim the text with postfix (default - "...") to fit in the text node size
-----   - **"no_adjust"** - No any adjust, like default Defold text node
-----   - **"downscale_limited"** - Change text's scale like downscale, but there is limit for text's scale
-----   - **"scroll"** - Change text's pivot to imitate scrolling in the text box. Use with stencil node for better effect.
-----   - **"scale_then_scroll"** - Combine two modes: first limited downscale, then scroll
-----   - **"trim_left"** - Trim the text with postfix (default - "...") to fit in the text node size
-----   - **"scale_then_trim"** - Combine two modes: first limited downscale, then trim
-----   - **"scale_then_trim_left"** - Combine two modes: first limited downscale, then trim left
+---### 注意事项
+---- 文本组件默认具有自动调整文本大小功能。文本永远不会大于您在GUI场景中设置的文本节点大小。
+---- 文本枢轴点可以用`text:set_pivot`更改，文本将在其文本大小框内保持其位置
+---- 有几种文本调整类型:
+----   - **"downscale"** - 更改文本的缩放以适应文本节点大小（默认）
+----   - **"trim"** - 用后缀（默认 - "..."）修剪文本以适应文本节点大小
+----   - **"no_adjust"** - 不做任何调整，像默认Defold文本节点一样
+----   - **"downscale_limited"** - 更改文本的缩放像缩小一样，但对文本缩放有限制
+----   - **"scroll"** - 更改文本的枢轴点以模拟文本框中的滚动。与遮罩节点一起使用效果更好。
+----   - **"scale_then_scroll"** - 结合两种模式：首先有限缩小，然后滚动
+----   - **"trim_left"** - 用后缀（默认 - "..."）修剪文本以适应文本节点大小
+----   - **"scale_then_trim"** - 结合两种模式：首先有限缩小，然后修剪
+----   - **"scale_then_trim_left"** - 结合两种模式：首先有限缩小，然后从左边修剪
+---文本组件是UI中最常用的组件之一，提供了丰富的文本显示和调整功能
 ---@class druid.text: druid.component
----@field node node The text node
----@field on_set_text event fun(self: druid.text, text: string) The event triggered when the text is set
----@field on_update_text_scale event fun(self: druid.text, scale: vector3, metrics: table) The event triggered when the text scale is updated
----@field on_set_pivot event fun(self: druid.text, pivot: userdata) The event triggered when the text pivot is set
----@field style druid.text.style The style of the text
----@field start_pivot number The start pivot of the text
----@field start_scale vector3 The start scale of the text
----@field scale vector3 The current scale of the text
+---@field node node 文本节点
+---@field on_set_text event fun(self: druid.text, text: string) 设置文本时触发的事件
+---@field on_update_text_scale event fun(self: druid.text, scale: vector3, metrics: table) 更新文本缩放时触发的事件
+---@field on_set_pivot event fun(self: druid.text, pivot: userdata) 设置文本枢轴点时触发的事件
+---@field style druid.text.style 文本的样式
+---@field start_pivot number 文本的起始枢轴点
+---@field start_scale vector3 文本的起始缩放
+---@field scale vector3 文本的当前缩放
 local M = component.create("text")
 
 
----The Text constructor
----@param node string|node Node name or GUI Text Node itself
----@param value string|nil Initial text. Default value is node text from GUI scene. Default: nil
----@param adjust_type druid.text.adjust_type|nil Adjust type for text. By default is "downscale". Options: "downscale", "trim", "no_adjust", "downscale_limited", "scroll", "scale_then_scroll", "trim_left", "scale_then_trim", "scale_then_trim_left"
+---文本构造函数
+---初始化文本组件，设置节点、初始文本值和调整类型
+---@param node string|node 节点名称或GUI文本节点本身
+---@param value string|nil 初始文本。默认值是从GUI场景获取的节点文本。默认值: nil
+---@param adjust_type druid.text.adjust_type|nil 文本的调整类型。默认是"downscale"。选项: "downscale", "trim", "no_adjust", "downscale_limited", "scroll", "scale_then_scroll", "trim_left", "scale_then_trim", "scale_then_trim_left"
 function M:init(node, value, adjust_type)
 	self.node = self:get_node(node)
 	self.pos = gui.get_position(self.node)
@@ -71,9 +73,10 @@ function M:init(node, value, adjust_type)
 	self:set_text(value or gui.get_text(self.node))
 end
 
-
+---内部方法：处理样式变化
+---当文本组件样式发生变化时调用此私有方法
 ---@private
----@param style druid.text.style
+---@param style druid.text.style 样式配置
 function M:on_style_change(style)
 	self.style = {
 		TRIM_POSTFIX = style.TRIM_POSTFIX or "...",
@@ -83,17 +86,16 @@ function M:on_style_change(style)
 	}
 end
 
-
 ---@private
 function M:on_layout_change()
 	self:set_text(self.last_value)
 end
 
-
----Calculate text width with font with respect to trailing space
----@param text string|nil The text to calculate the size of, if nil - use current text
----@return number width The text width
----@return number height The text height
+---根据字体计算文本宽度，考虑尾随空格
+---此函数用于精确测量文本的渲染尺寸，对布局计算很重要
+---@param text string|nil 要计算大小的文本，如果为nil - 使用当前文本
+---@return number width 文本宽度
+---@return number height 文本高度
 function M:get_text_size(text)
 	text = text or self.last_value
 	local font_name = gui.get_font(self.node)
@@ -112,7 +114,6 @@ function M:get_text_size(text)
 	local width = metrics.width - dot_width
 	return width * scale.x, metrics.height * scale.y
 end
-
 
 ---Get chars count by width
 ---@param width number The width to get the chars count of
@@ -136,7 +137,7 @@ function M:get_text_index_by_width(width)
 		local width_delta = text_width - previous_width
 		previous_width = text_width
 
-		if (text_width - width_delta/2) < width then
+		if (text_width - width_delta / 2) < width then
 			text_index = i
 		else
 			break
@@ -145,7 +146,6 @@ function M:get_text_index_by_width(width)
 
 	return text_index
 end
-
 
 ---Set text to text field
 ---@deprecated
@@ -164,17 +164,14 @@ function M:set_to(set_to)
 	return self
 end
 
-
 function M:set_text(new_text)
----@diagnostic disable-next-line: deprecated
+	---@diagnostic disable-next-line: deprecated
 	return self:set_to(new_text)
 end
-
 
 function M:get_text()
 	return self.last_value
 end
-
 
 ---Set text area size
 ---@param size vector3 The new text area size
@@ -189,7 +186,6 @@ function M:set_size(size)
 	return self
 end
 
-
 ---Set color
 ---@param color vector4 Color for node
 ---@return druid.text self Current text instance
@@ -199,7 +195,6 @@ function M:set_color(color)
 
 	return self
 end
-
 
 ---Set alpha
 ---@param alpha number Alpha for node
@@ -211,7 +206,6 @@ function M:set_alpha(alpha)
 	return self
 end
 
-
 ---Set scale
 ---@param scale vector3 Scale for node
 ---@return druid.text self Current text instance
@@ -221,7 +215,6 @@ function M:set_scale(scale)
 
 	return self
 end
-
 
 ---Set text pivot. Text will re-anchor inside text area
 ---@param pivot number The gui.PIVOT_* constant
@@ -247,13 +240,11 @@ function M:set_pivot(pivot)
 	return self
 end
 
-
 ---Return true, if text with line break
 ---@return boolean Is text node with line break
 function M:is_multiline()
 	return gui.get_line_break(self.node)
 end
-
 
 ---Set text adjust, refresh the current text visuals, if needed
 ---@param adjust_type druid.text.adjust_type|nil The adjust type to set, values: "downscale", "trim", "no_adjust", "downscale_limited", "scroll", "scale_then_scroll", "trim_left", "scale_then_trim", "scale_then_trim_left"
@@ -267,7 +258,6 @@ function M:set_text_adjust(adjust_type, minimal_scale)
 	return self
 end
 
-
 ---Set minimal scale for "downscale_limited" or "scale_then_scroll" adjust types
 ---@param minimal_scale number If pass nil - not use minimal scale
 ---@return druid.text self Current text instance
@@ -277,13 +267,11 @@ function M:set_minimal_scale(minimal_scale)
 	return self
 end
 
-
 ---Return current text adjust type
 ---@return string adjust_type The current text adjust type
 function M:get_text_adjust()
 	return self.adjust_type
 end
-
 
 ---@private
 function M:_update_text_size()
@@ -302,7 +290,6 @@ function M:_update_text_size()
 	gui.set_size(self.node, size)
 end
 
-
 ---Reset initial scale for text
 ---@private
 function M:_reset_default_scale()
@@ -313,15 +300,13 @@ function M:_reset_default_scale()
 	gui.set_size(self.node, self.start_size)
 end
 
-
 ---@private
 ---@param metrics table
 ---@return boolean
 function M:_is_fit_info_area(metrics)
 	return metrics.width * self.scale.x <= self.text_area.x and
-		   metrics.height * self.scale.y <= self.text_area.y
+			metrics.height * self.scale.y <= self.text_area.y
 end
-
 
 ---Setup scale x, but can only be smaller, than start text scale
 ---@private
@@ -405,7 +390,6 @@ function M:_update_text_area_size()
 	self.on_update_text_scale:trigger(self:get_context(), self.scale, metrics)
 end
 
-
 ---@private
 ---@param trim_postfix string
 function M:_update_text_with_trim(trim_postfix)
@@ -430,7 +414,6 @@ function M:_update_text_with_trim(trim_postfix)
 	end
 end
 
-
 ---@private
 ---@param trim_postfix string
 function M:_update_text_with_trim_left(trim_postfix)
@@ -451,7 +434,6 @@ function M:_update_text_with_trim_left(trim_postfix)
 	end
 end
 
-
 ---@private
 function M:_update_text_with_anchor_shift()
 	if self:get_text_size() >= self.text_area.x then
@@ -460,7 +442,6 @@ function M:_update_text_with_anchor_shift()
 		self:set_pivot(self.start_pivot)
 	end
 end
-
 
 ---@private
 function M:_update_adjust()
@@ -504,6 +485,5 @@ function M:_update_adjust()
 		self:_update_text_with_trim_left(self.style.TRIM_POSTFIX)
 	end
 end
-
 
 return M

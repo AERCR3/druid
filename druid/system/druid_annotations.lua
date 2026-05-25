@@ -1,66 +1,71 @@
 ---@class druid.widget: druid.component
----@field protected druid druid.instance Ready to use druid instance
+---@field protected druid druid.instance 准备使用的druid实例
 
+---Druid日志记录器类，提供不同级别的日志输出功能
 ---@class druid.logger
----@field trace fun(message: string, context: any)
----@field debug fun(message: string, context: any)
----@field info fun(message: string, context: any)
----@field warn fun(message: string, context: any)
----@field error fun(message: string, context: any)
+---@field trace fun(message: string, context: any) 跟踪级别日志
+---@field debug fun(message: string, context: any) 调试级别日志
+---@field info fun(message: string, context: any) 信息级别日志
+---@field warn fun(message: string, context: any) 警告级别日志
+---@field error fun(message: string, context: any) 错误级别日志
 
+---GUI文本度量类，包含文本的尺寸和位置信息
 ---@class GUITextMetrics
----@field width number
----@field height number
----@field max_ascent number
----@field max_descent number
----@field offset_x number
----@field offset_y number
+---@field width number 宽度
+---@field height number 高度
+---@field max_ascent number 最大上升值
+---@field max_descent number 最大下降值
+---@field offset_x number X偏移量
+---@field offset_y number Y偏移量
 
+---UTF8字符串处理类，提供对UTF8编码字符串的各种操作方法
 ---@class utf8
----@field len fun(s: string):number
----@field sub fun(s: string, start_index: number, length: number)
----@field reverse fun()
----@field char fun()
----@field unicode fun()
----@field gensub fun()
----@field byte fun()
----@field find fun()
----@field match fun(s: string, m: string)
----@field gmatch fun(s: string, m: string)
----@field gsub fun()
----@field dump fun()
----@field format fun()
----@field lower fun()
----@field upper fun()
----@field rep fun()
+---@field len fun(s: string):number 获取字符串长度
+---@field sub fun(s: string, start_index: number, length: number) 获取子字符串
+---@field reverse fun() 反转字符串
+---@field char fun() 获取字符
+---@field unicode fun() 获取Unicode值
+---@field gensub fun() 生成子串
+---@field byte fun() 获取字节值
+---@field find fun() 查找子串
+---@field match fun(s: string, m: string) 匹配字符串
+---@field gmatch fun(s: string, m: string) 全局匹配
+---@field gsub fun() 全局替换
+---@field dump fun() 转储字符串
+---@field format fun() 格式化字符串
+---@field lower fun() 转换为小写
+---@field upper fun() 转换为大写
+---@field rep fun() 重复字符串
 
--- This one should be a part of Defold annotations
+-- 此应为Defold注解的一部分
+---输入动作类，包含用户输入的各种信息
 ---@class action
----@field value number The amount of input given by the user. This is usually 1 for buttons and 0-1 for analogue inputs. This is not present for mouse movement.
----@field pressed boolean If the input was pressed this frame. This is not present for mouse movement.
----@field released boolean If the input was released this frame. This is not present for mouse movement.
----@field repeated boolean If the input was repeated this frame. This is similar to how a key on a keyboard is repeated when you hold it down. This is not present for mouse movement.
----@field x number The x value of a pointer device, if present.
----@field y number The y value of a pointer device, if present.
----@field screen_x number The screen space x value of a pointer device, if present.
----@field screen_y number The screen space y value of a pointer device, if present.
----@field dx number The change in x value of a pointer device, if present.
----@field dy number The change in y value of a pointer device, if present.
----@field screen_dx number The change in screen space x value of a pointer device, if present.
----@field screen_dy number The change in screen space y value of a pointer device, if present.
----@field gamepad number The index of the gamepad device that provided the input.
----@field touch touch[] List of touch input, one element per finger, if present. See table below about touch input
----@field text string The text input.
+---@field value number 用户提供的输入量。对于按钮通常为1，对于模拟输入为0-1。鼠标移动时不适用。
+---@field pressed boolean 输入是否在此帧按下。鼠标移动时不适用。
+---@field released boolean 输入是否在此帧释放。鼠标移动时不适用。
+---@field repeated boolean 输入是否在此帧重复。类似于在键盘上按住键时的重复效果。鼠标移动时不适用。
+---@field x number 指针设备的x值（如果存在）。
+---@field y number 指针设备的y值（如果存在）。
+---@field screen_x number 指针设备的屏幕空间x值（如果存在）。
+---@field screen_y number 指针设备的屏幕空间y值（如果存在）。
+---@field dx number 指针设备x值的变化（如果存在）。
+---@field dy number 指针设备y值的变化（如果存在）。
+---@field screen_dx number 指针设备屏幕空间x值的变化（如果存在）。
+---@field screen_dy number 指针设备屏幕空间y值的变化（如果存在）。
+---@field gamepad number 提供输入的游戏手柄设备的索引。
+---@field touch touch[] 触摸输入列表，每个手指一个元素（如果存在）。请参见下面关于触摸输入的表格
+---@field text string 文本输入。
 
+---触摸输入类，包含触摸事件的各种信息
 ---@class touch
----@field id number A number identifying the touch input during its duration.
----@field pressed boolean True if the finger was pressed this frame.
----@field released boolean True if the finger was released this frame.
----@field tap_count number Number of taps, one for single, two for double-tap, etc
----@field x number The x touch location.
----@field y number The y touch location.
----@field dx number The change in x value.
----@field dy number The change in y value.
----@field acc_x number|nil Accelerometer x value (if present).
----@field acc_y number|nil Accelerometer y value (if present).
----@field acc_z number|nil Accelerometer z value (if present).
+---@field id number 在持续时间内标识触摸输入的数字。
+---@field pressed boolean 如果手指在此帧按下则为真。
+---@field released boolean 如果手指在此帧释放则为真。
+---@field tap_count number 点击次数，单击为1，双击为2，等等
+---@field x number X触摸位置。
+---@field y number Y触摸位置。
+---@field dx number X值的变化。
+---@field dy number Y值的变化。
+---@field acc_x number|nil 加速度计x值（如果存在）。
+---@field acc_y number|nil 加速度计y值（如果存在）。
+---@field acc_z number|nil 加速度计z值（如果存在）。

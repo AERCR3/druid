@@ -6,35 +6,36 @@ local utf8_lua = require("druid.system.utf8")
 local utf8 = utf8 or utf8_lua
 
 ---@class druid.input.style
----@field MASK_DEFAULT_CHAR string Default character mask for password input
----@field IS_LONGTAP_ERASE boolean Is long tap will erase current input data
----@field IS_UNSELECT_ON_RESELECT boolean If true, call unselect on select selected input
----@field on_init fun(self: druid.input)|nil Callback when input is initialized, use to set custom properties on self
----@field on_select fun(self: druid.input, button_node: node) Callback on input field selecting
----@field on_unselect fun(self: druid.input, button_node: node) Callback on input field unselecting
----@field on_input_wrong fun(self: druid.input, button_node: node) Callback on wrong user input
+---@field MASK_DEFAULT_CHAR string 密码输入的默认字符掩码
+---@field IS_LONGTAP_ERASE boolean 长按是否擦除当前输入数据
+---@field IS_UNSELECT_ON_RESELECT boolean 如果为真，在选择已选中的输入时调用取消选择
+---@field on_init fun(self: druid.input)|nil 输入初始化时的回调，用于在自身上设置自定义属性
+---@field on_select fun(self: druid.input, button_node: node) 选择输入字段时的回调
+---@field on_unselect fun(self: druid.input, button_node: node) 取消选择输入字段时的回调
+---@field on_input_wrong fun(self: druid.input, button_node: node) 用户输入错误时的回调
 
----Basic Druid text input component. Handles user text input via component with button and text.
+---基本的Druid文本输入组件。通过带有按钮和文本的组件处理用户文本输入。
 ---
----### Setup
----Create input component with druid: `input = druid:new_input(button_node_name, text_node_name, keyboard_type)`
+---### 设置
+---使用druid创建输入组件: `input = druid:new_input(button_node_name, text_node_name, keyboard_type)`
 ---
----### Notes
----- Input component handles user text input. Input contains button and text components
----- Button needed for selecting/unselecting input field
----- Click outside of button to unselect input field
----- On focus lost (game minimized) input field will be unselected
----- You can setup max length of the text
----- You can setup allowed characters. On add not allowed characters `on_input_wrong` will be called
+---### 注意事项
+---- 输入组件处理用户文本输入。输入包含按钮和文本组件
+---- 按钮用于选择/取消选择输入字段
+---- 点击按钮外部以取消选择输入字段
+---- 失去焦点（游戏最小化）时输入字段将被取消选择
+---- 您可以设置文本的最大长度
+---- 您可以设置允许的字符。添加不允许的字符时将调用`on_input_wrong`
+---输入组件提供了完整的文本输入功能，包括密码掩码和字符验证
 ---@class druid.input: druid.component
----@field on_input_select event fun(self: druid.input, input: druid.input) The event triggered when the input field is selected
----@field on_input_unselect event fun(self: druid.input, text: string, input: druid.input) The event triggered when the input field is unselected
----@field on_input_text event fun(self: druid.input) The event triggered when the input field is changed
----@field on_input_empty event fun(self: druid.input) The event triggered when the input field is empty
----@field on_input_full event fun(self: druid.input) The event triggered when the input field is full
----@field on_input_wrong event fun(self: druid.input) The event triggered when the input field is wrong
----@field on_select_cursor_change event fun(self: druid.input, cursor_index: number, start_index: number, end_index: number) The event triggered when the cursor index is changed
----@field style druid.input.style The style of the input component
+---@field on_input_select event fun(self: druid.input, input: druid.input) 选择输入字段时触发的事件
+---@field on_input_unselect event fun(self: druid.input, text: string, input: druid.input) 取消选择输入字段时触发的事件
+---@field on_input_text event fun(self: druid.input) 输入字段更改时触发的事件
+---@field on_input_empty event fun(self: druid.input) 输入字段为空时触发的事件
+---@field on_input_full event fun(self: druid.input) 输入字段满时触发的事件
+---@field on_input_wrong event fun(self: druid.input) 输入字段错误时触发的事件
+---@field on_select_cursor_change event fun(self: druid.input, cursor_index: number, start_index: number, end_index: number) 光标索引更改时触发的事件
+---@field style druid.input.style 输入组件的样式
 local M = component.create("input")
 
 ---@private
@@ -47,10 +48,11 @@ M.ALLOWED_ACTIONS = {
 	[const.ACTION_ESC] = true,
 }
 
----Mask text by replacing every character with a mask character
----@param text string
----@param mask string
----@return string Masked text
+---通过用掩码字符替换每个字符来掩码文本
+---此函数用于实现密码输入的星号掩码功能
+---@param text string 要掩码的文本
+---@param mask string 掩码字符
+---@return string 掩码后的文本
 local function mask_text(text, mask)
 	mask = mask or "*"
 	local masked_text = ""
@@ -71,9 +73,11 @@ local function clear_and_select(self)
 end
 
 
----@param click_node node Node to enabled input component
----@param text_node node|druid.text Text node what will be changed on user input. You can pass text component instead of text node name Text
----@param keyboard_type constant|nil Gui keyboard type for input field
+---输入组件构造函数
+---初始化输入组件，设置点击节点、文本节点和键盘类型
+---@param click_node node 启用输入组件的节点
+---@param text_node node|druid.text 用户输入时将更改的文本节点。您可以传递文本组件而不是文本节点名称
+---@param keyboard_type constant|nil 输入字段的GUI键盘类型
 function M:init(click_node, text_node, keyboard_type)
 	self.druid = self:get_druid()
 
@@ -125,7 +129,6 @@ function M:init(click_node, text_node, keyboard_type)
 	self.on_select_cursor_change = event.create()
 end
 
-
 ---@private
 ---@param style druid.input.style
 function M:on_style_change(style)
@@ -142,7 +145,6 @@ function M:on_style_change(style)
 
 	self.style.on_init(self)
 end
-
 
 ---@private
 ---@param action_id hash|nil The action id
@@ -167,7 +169,7 @@ function M:on_input(action_id, action)
 			end
 
 			local hex = string.gsub(action.text, "(.)", function(c)
-				return string.format("%02X%s",string.byte(c), "")
+				return string.format("%02X%s", string.byte(c), "")
 			end)
 
 			-- ignore arrow keys
@@ -247,12 +249,10 @@ function M:on_input(action_id, action)
 	return self.is_selected
 end
 
-
 ---@private
 function M:on_focus_lost()
 	self:unselect()
 end
-
 
 function M:get_text_selected()
 	if self.start_index == self.end_index then
@@ -261,7 +261,6 @@ function M:get_text_selected()
 
 	return utf8.sub(self.value, self.start_index + 1, self.end_index)
 end
-
 
 ---Replace selected text with new text
 ---@param text string The text to replace selected text
@@ -278,7 +277,6 @@ function M:get_text_selected_replaced(text)
 
 	return result
 end
-
 
 ---Set text for input field
 ---@param input_text string? The string to apply for input field, if nil - will be set to empty string
@@ -327,7 +325,6 @@ function M:set_text(input_text)
 	end
 end
 
-
 ---Select input field. It will show the keyboard and trigger on_select events
 function M:select()
 	gui.reset_keyboard()
@@ -352,7 +349,6 @@ function M:select()
 	end
 end
 
-
 ---Remove selection from input. It will hide the keyboard and trigger on_unselect events
 function M:unselect()
 	gui.reset_keyboard()
@@ -371,7 +367,6 @@ function M:unselect()
 	end
 end
 
-
 ---Return current input field text
 ---@return string text The current input field text
 function M:get_text()
@@ -382,7 +377,6 @@ function M:get_text()
 	return self.value
 end
 
-
 ---Set maximum length for input field.
 ---Pass nil to make input field unliminted (by default)
 ---@param max_length number Maximum length for input text field
@@ -391,7 +385,6 @@ function M:set_max_length(max_length)
 	self.max_length = max_length
 	return self
 end
-
 
 ---Set allowed charaters for input field.
 ---See: https://defold.com/ref/stable/string/
@@ -405,7 +398,6 @@ function M:set_allowed_characters(characters)
 	return self
 end
 
-
 ---Reset current input selection and return previous value
 ---@return druid.input self Current input instance
 function M:reset_changes()
@@ -413,7 +405,6 @@ function M:reset_changes()
 	self:unselect()
 	return self
 end
-
 
 ---Set cursor position in input field
 ---@param cursor_index number|nil Cursor index for cursor position, if nil - will be set to the end of the text
@@ -435,7 +426,6 @@ function M:select_cursor(cursor_index, start_index, end_index)
 
 	return self
 end
-
 
 ---Change cursor position by delta
 ---@param delta number side for cursor position, -1 for left, 1 for right
@@ -500,6 +490,5 @@ function M:move_selection(delta, is_add_to_selection, is_move_to_end)
 
 	return self
 end
-
 
 return M

@@ -2,31 +2,34 @@ local event = require("event.event")
 local helper = require("druid.helper")
 local component = require("druid.component")
 
----Druid component to handle timer work on gui text node. Displays time in a formatted way.
+---Druid组件，用于处理GUI文本节点上的计时器工作。以格式化的方式显示时间。
 ---
----### Setup
----Create timer component with druid: `timer = druid:new_timer(text_node, from_seconds, to_seconds, callback)`
+---### 设置
+---使用druid创建计时器组件: `timer = druid:new_timer(text_node, from_seconds, to_seconds, callback)`
 ---
----### Notes
----- Timer fires callback when timer value equals to _to_seconds_
----- Timer will set text node with current timer value
----- Timer uses update function to handle time
+---### 注意事项
+---- 当计时器值等于_to_seconds_时，计时器触发回调
+---- 计时器将使用当前计时器值设置文本节点
+---- 计时器使用更新函数来处理时间
+---计时器组件用于在UI中显示倒计时或正计时，支持格式化显示
 ---@class druid.timer: druid.component
----@field on_tick event fun(context, value) The event triggered when the timer ticks
----@field on_set_enabled event fun(context, is_on) The event triggered when the timer is enabled
----@field on_timer_end event fun(context) The event triggered when the timer ends
----@field node node The node to display the timer
----@field from number The start time of the timer
----@field target number The target time of the timer
----@field value number The current value of the timer
----@field is_on boolean|nil True if the timer is on
+---@field on_tick event fun(context, value) 计时器滴答时触发的事件
+---@field on_set_enabled event fun(context, is_on) 计时器启用时触发的事件
+---@field on_timer_end event fun(context) 计时器结束时触发的事件
+---@field node node 显示计时器的节点
+---@field from number 计时器的开始时间
+---@field target number 计时器的目标时间
+---@field value number 计时器的当前值
+---@field is_on boolean|nil 如果计时器开启则为真
 local M = component.create("timer")
 
 
----@param node node Gui text node
----@param seconds_from number|nil Start timer value in seconds
----@param seconds_to number|nil End timer value in seconds
----@param callback function|nil Function that triggers when timer value equals to seconds_to
+---计时器组件构造函数
+---初始化计时器组件，设置文本节点、开始时间和结束时间
+---@param node node GUI文本节点
+---@param seconds_from number|nil 以秒为单位的计时器开始值
+---@param seconds_to number|nil 以秒为单位的计时器结束值
+---@param callback function|nil 当计时器值等于seconds_to时触发的函数
 function M:init(node, seconds_from, seconds_to, callback)
 	self.node = self:get_node(node)
 	seconds_to = math.max(seconds_to or 0, 0)
@@ -49,7 +52,8 @@ function M:init(node, seconds_from, seconds_to, callback)
 	return self
 end
 
-
+---内部方法：更新计时器
+---此函数处理计时器的更新逻辑，更新计时器值并触发相应事件
 ---@private
 function M:update(dt)
 	if not self.is_on then
@@ -73,16 +77,15 @@ function M:update(dt)
 	end
 end
 
-
 ---@private
 function M:on_layout_change()
 	self:set_to(self.last_value)
 end
 
-
----Set the timer to a specific value
----@param set_to number Value in seconds
----@return druid.timer self Current timer instance
+---将计时器设置为特定值
+---此函数将计时器设置为指定的秒数并更新显示
+---@param set_to number 以秒为单位的值
+---@return druid.timer self 当前计时器实例
 function M:set_to(set_to)
 	self.last_value = set_to
 	gui.set_text(self.node, self:_second_string_min(set_to))
@@ -90,17 +93,16 @@ function M:set_to(set_to)
 	return self
 end
 
-
----Set the timer to a specific value
----@param is_on boolean|nil Timer enable state
----@return druid.timer self Current timer instance
+---设置计时器状态
+---此函数启用或禁用计时器的运行
+---@param is_on boolean|nil 计时器启用状态
+---@return druid.timer self 当前计时器实例
 function M:set_state(is_on)
 	self.is_on = is_on
 	self.on_set_enabled:trigger(self:get_context(), is_on)
 
 	return self
 end
-
 
 ---Set the timer interval
 ---@param from number Start time in seconds
@@ -117,7 +119,6 @@ function M:set_interval(from, to)
 	return self
 end
 
-
 ---@private
 ---@param sec number Seconds to convert
 ---@return string The formatted time string
@@ -126,6 +127,5 @@ function M:_second_string_min(sec)
 	local seconds = math.floor(sec - mins * 60)
 	return string.format("%.2d:%.2d", mins, seconds)
 end
-
 
 return M

@@ -1,4 +1,3 @@
-
 [![](media/druid_logo.png)](https://insality.github.io/druid/)
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/tag/insality/druid?style=for-the-badge&label=Release)](https://github.com/Insality/druid/tags)
@@ -7,37 +6,36 @@
 
 [![Github-sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA)](https://github.com/sponsors/insality) [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/insality) [![BuyMeACoffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/insality)
 
-**Druid** - a powerful, flexible and easy to use **Defold** component UI framework. Contains a wide range of UI components that you can use to create a beautiful, responsive and customizable GUIs. Provides a powerful way to create, compose and manage your custom components and scenes.
+**Druid** - 一个强大、灵活且易于使用的 **Defold** 组件UI框架。包含广泛的UI组件，可用于创建美观、响应式和可自定义的GUI。提供了创建、组合和管理自定义组件和场景的强大方法。
 
-## Druid Example
+## Druid 示例
 
-Check the [**HTML5 version**](https://insality.github.io/druid/) of the **Druid** example app.
+查看 **Druid** 示例应用的 [**HTML5版本**](https://insality.github.io/druid/)。
 
-In this example you can inspect a variety of **Druid** components and see how they work. Each example page provides a direct link to the corresponding example code, making it easier for you to understand how to use **Druid**.
+在此示例中，您可以检查各种 **Druid** 组件并查看它们如何工作。每个示例页面都提供相应示例代码的直接链接，使您更容易理解如何使用 **Druid**。
 
-## Features
+## 特性
 
-- **Components Rich** - Provides a extensive set of components, from basic buttons to infinity data lists and rich texts
-- **Customizable** - You can customize components appearance and behaviour with their API and styles
-- **Widgets** - Powerful way to create your own reusable components
-- **Input Handling** - Handles input in a stack-based manner and manage input priority
-- **Event Based** - Uses [Defold Event](https://github.com/Insality/defold-event) for components callbacks and communication between components
+- **丰富的组件** - 提供大量组件，从基本按钮到无限数据列表和富文本
+- **可定制** - 您可以通过API和样式自定义组件外观和行为
+- **组件化** - 创建自己的可重用组件的强大方式
+- **输入处理** - 以堆栈方式处理输入并管理输入优先级
+- **基于事件** - 使用 [Defold Event](https://github.com/Insality/defold-event) 进行组件回调和组件间通信
 
-## Quick Links
+## 快速链接
 
-- [Basic Usage](wiki/basic_usage.md)
-- [Quick API Reference](api/quick_api_reference.md)
-- [List of Components](#druid-components)
-- [Contributors](#contributors)
+- [基本用法](wiki/basic_usage.md)
+- [快速API参考](api/quick_api_reference.md)
+- [组件列表](#druid-components)
+- [贡献者](#contributors)
 
-## Setup
+## 安装配置
 
-### [Dependency](https://defold.com/manuals/libraries/#setting-up-library-dependencies)
+### [依赖项](https://defold.com/manuals/libraries/#setting-up-library-dependencies)
 
-> Can be installed from the [Asset Store](https://github.com/Insality/asset-store) extension to skip this step.
+> 可以通过 [Asset Store](https://github.com/Insality/asset-store) 扩展安装来跳过此步骤。
 
-Open your `game.project` file and add the following lines to the dependencies field under the project section:
-
+打开您的 `game.project` 文件，并在项目部分的依赖项字段中添加以下行：
 
 **[Defold Event](https://github.com/Insality/defold-event)**
 
@@ -48,34 +46,31 @@ https://github.com/Insality/defold-event/archive/refs/tags/14.zip
 **[Druid](https://github.com/Insality/druid/)**
 
 ```
-https://github.com/Insality/druid/archive/refs/tags/1.2.3.zip
+https://github.com/Insality/druid/archive/refs/tags/1.2.0.zip
 ```
 
-After that, select `Project ▸ Fetch Libraries` to update [library dependencies]((https://defold.com/manuals/libraries/#setting-up-library-dependencies)). This happens automatically whenever you open a project so you will only need to do this if the dependencies change without re-opening the project.
+之后，选择 `Project ▸ Fetch Libraries` 来更新 [库依赖项](<(https://defold.com/manuals/libraries/#setting-up-library-dependencies)>)。每当您打开项目时都会自动执行此操作，因此只有在不重新打开项目的情况下依赖项发生变化时才需要执行此操作。
 
-Here is a list of [all releases](https://github.com/Insality/druid/releases).
+以下是 [所有发布版本](https://github.com/Insality/druid/releases) 的列表。
 
+### 库大小
 
-### Library Size
+> **注意：** 库大小是基于每个平台的构建报告计算的。完整大小包含所有组件，如果不需要它们，可以在构建过程中删除。
 
-> **Note:** The library size is calculated based on the build report per platform. Full size contains all components, they can be stripped out in the build process if you don't need them.
+| 平台            | 完整大小      |
+| --------------- | ------------- |
+| HTML5           | **84.52 KB**  |
+| 桌面端 / 移动端 | **141.03 KB** |
 
-| Platform         | Full Size      |
-| ---------------- | -------------- |
-| HTML5            | **84.52 KB**   |
-| Desktop / Mobile | **141.03 KB**  |
+### 输入绑定
 
+**Druid** 使用 `/builtins/input/all.input_binding` 输入绑定。要么通过将 `game.project` 输入部分中的 `Runtime -> Input -> Game Binding` 字段设置为 `/builtins/input/all.input_binding` 来为此文件用于您的项目，要么将您需要的特定绑定添加到游戏的输入绑定文件中。对于自定义输入绑定，请参阅 [高级设置](https://github.com/Insality/druid/blob/master/wiki/advanced-setup.md#input-bindings) 中的输入绑定部分。
 
-### Input Bindings
+## 使用方法
 
-**Druid** utilizes the `/builtins/input/all.input_binding` input bindings. Either use this file for your project by setting the `Runtime -> Input -> Game Binding` field in the `game.project` input section to `/builtins/input/all.input_binding`, or add the specific bindings you need to your game's input binding file. For custom input bindings, refer to the Input Binding section in the [Advanced Setup](https://github.com/Insality/druid/blob/master/wiki/advanced-setup.md#input-bindings).
+### 基本用法
 
-
-## Usage
-
-### Basic usage
-
-Use this as a starting point for your `gui_script` file:
+使用此代码作为您的 `gui_script` 文件的起点：
 
 ```lua
 local druid = require("druid.druid")
@@ -83,9 +78,9 @@ local druid = require("druid.druid")
 function init(self)
     self.druid = druid.new(self)
 
-    -- Create your components here
+    -- 在此处创建您的组件
     self.button = self.druid:new_button("button_node_id", function(self)
-        print("Button clicked!")
+        print("按钮被点击！")
     end)
 
     self.text = self.druid:new_text("text_node_id", "Hello, Druid!")
@@ -108,143 +103,133 @@ function on_input(self, action_id, action)
 end
 ```
 
-Read the [Basic Usage](wiki/basic_usage.md) to learn how to use **Druid**, how to create your own components and how to use widgets.
+阅读 [基本用法](wiki/basic_usage.md) 以了解如何使用 **Druid**，如何创建自己的组件以及如何使用组件化开发。
 
+### API 文档
 
-### API Documentation
+最佳起点是 [快速API参考](api/quick_api_reference.md)
 
-Best start is from the [Quick API Reference](api/quick_api_reference.md)
+以下是一些快速链接：
 
-With next quick links:
+- [Druid 实例](api/druid_instance_api.md) - 从 `druid.new(self)` 返回的 **Druid** 实例
+- [助手](api/druid_helper_api.md) - 许多有用的函数
+- [Druid 颜色](api/druid_color_api.md) - 颜色实用函数
+- [组件化](wiki/widgets.md) - 关于组件化及如何使用它们
 
-- [Druid Instance](api/druid_instance_api.md) - **Druid** instance returned from `druid.new(self)`
-- [Helper](api/druid_helper_api.md) - A lot of useful functions
-- [Druid Color](api/druid_color_api.md) - A color utility functions
-- [Widgets](wiki/widgets.md) - About widgets and how to use them
+## Druid 组件
 
+这里是完整的 **Druid** 组件列表。
 
-## Druid Components
+### 组件
 
-Here is full **Druid** components list.
+| 名称                                                       | 描述                                                                                    | 示例                                                                                      | <div style="width:200px">预览</div>                                 |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| **[按钮](/api/components/base/button_api.md)**             | GUI节点上的逻辑。处理用户点击交互：点击、长按、双击等。                                 | [按钮示例](https://insality.github.io/druid/?example=ui_example_basic_button)             | <img src="media/preview/button.gif" width="200" height="100">       |
+| **[文本](/api/components/base/text_api.md)**               | GUI文本上的逻辑。默认情况下，文本组件使用不同的调整模式将文本适配到文本节点大小区域内。 | [文本示例](https://insality.github.io/druid/?example=ui_example_basic_text)               | <img src="media/preview/text.gif" width="200" height="100">         |
+| **[滚动](/api/components/base/scroll_api.md)**             | 两个GUI节点上的逻辑：输入和内容。为可滚动内容提供基本行为。                             | [滚动示例](https://insality.github.io/druid/?example=ui_example_basic_scroll)             | <img src="media/preview/scroll.gif" width="200" height="100">       |
+| **[阻挡器](/api/components/base/blocker_api.md)**          | GUI节点上的逻辑。不将任何用户输入传递到节点区域下方。                                   | [阻挡器示例](https://insality.github.io/druid/?example=ui_example_basic_blocker)          | <img src="media/preview/blocker.gif" width="200" height="100">      |
+| **[返回处理器](/api/components/base/back_handler_api.md)** | 在用户"返回"操作上调用回调。它是Android返回按钮或键盘退格键                             | [返回处理器示例](https://insality.github.io/druid/?example=ui_example_basic_back_handler) | <img src="media/preview/back_handler.gif" width="200" height="100"> |
+| **[静态网格](/api/components/base/static_grid_api.md)**    | GUI节点上的逻辑。管理所有节点大小相等的节点位置的组件。                                 | [静态网格示例](https://insality.github.io/druid/?example=ui_example_basic_grid)           | <img src="media/preview/static_grid.gif" width="200" height="100">  |
+| **[悬停](/api/components/base/hover_api.md)**              | GUI节点上的逻辑。处理节点上的悬停操作。适用于移动触摸和鼠标指针。                       | [悬停示例](https://insality.github.io/druid/?example=ui_example_basic_hover)              | <img src="media/preview/hover.gif" width="200" height="100">        |
+| **[滑动](/api/components/extended/swipe_api.md)**          | GUI节点上的逻辑。处理节点上的滑动手势。                                                 | [滑动示例](https://insality.github.io/druid/?example=ui_example_basic_swipe)              | <img src="media/preview/swipe.gif" width="200" height="100">        |
+| **[拖拽](/api/components/base/drag_api.md)**               | GUI节点上的逻辑。处理拖动输入操作。可用于制作屏幕控制。                                 | [拖拽示例](https://insality.github.io/druid/?example=ui_example_basic_drag)               | <img src="media/preview/drag.gif" width="200" height="100">         |
+| **[数据列表](/api/components/extended/data_list_api.md)**  | 滚动和网格组件上的逻辑。仅创建可见的GUI节点或组件以实现"无限"滚动行为                   | [数据列表示例](https://insality.github.io/druid/?example=ui_example_data_list_basic)      | <img src="media/preview/data_list.gif" width="200" height="100">    |
+| **[输入](/api/components/extended/input_api.md)**          | GUI节点和GUI文本（或文本组件）上的逻辑。提供基本的用户文本输入。                        | [输入示例](https://insality.github.io/druid/?example=ui_example_basic_input)              | <img src="media/preview/input.gif" width="200" height="100">        |
+| **[语言文本](/api/components/extended/lang_text_api.md)**  | 文本组件上的逻辑以处理本地化。可以使用 `druid.on_language_change` 实时翻译              | [语言文本示例](https://insality.github.io/druid/?example=ui_example_window_language)      | <img src="media/preview/lang_text.gif" width="200" height="100">    |
+| **[进度条](/api/components/extended/progress_api.md)**     | GUI节点上的逻辑。处理节点大小和比例以处理进度节点大小。                                 | [进度条示例](https://insality.github.io/druid/?example=ui_example_basic_progress_bar)     | <img src="media/preview/progress.gif" width="200" height="100">     |
+| **[滑块](/api/components/extended/slider_api.md)**         | GUI节点上的逻辑。处理带有位置限制的可拖动节点。                                         | [滑块示例](https://insality.github.io/druid/?example=ui_example_basic_slider)             | <img src="media/preview/slider.gif" width="200" height="100">       |
+| **[计时器](/api/components/extended/timer_api.md)**        | GUI文本上的逻辑。处理基本计时器功能。                                                   | [计时器示例](https://insality.github.io/druid/?example=ui_example_basic_timer)            | <img src="media/preview/timer.gif" width="200" height="100">        |
+| **[热键](/api/components/extended/hotkey_api.md)**         | 允许为带按键修饰符的键盘热键设置回调。                                                  | [热键示例](https://insality.github.io/druid/?example=ui_example_basic_hotkey)             | <img src="media/preview/hotkey.gif" width="200" height="100">       |
+| **[布局](/api/components/extended/layout_api.md)**         | GUI节点上的逻辑。使用边距/内边距设置在布局节点内排列节点。                              | [布局示例](https://insality.github.io/druid/?example=ui_example_layout_basic)             | <img src="media/preview/layout.gif" width="200" height="100">       |
+| **[富输入](/api/components/custom/rich_input_api.md)**     | GUI节点和GUI文本（或文本组件）上的逻辑。提供带不同样式和文本格式的富文本输入。          | [富输入示例](https://insality.github.io/druid/?example=ui_example_basic_rich_input)       | <img src="media/preview/rich_input.gif" width="200" height="100">   |
+| **[富文本](/api/components/custom/rich_text_api.md)**      | GUI文本上的逻辑。提供带不同样式和文本格式的富文本格式化。                               | [富文本次示例](https://insality.github.io/druid/?example=ui_example_basic_rich_text)      | <img src="media/preview/rich_text.gif" width="200" height="100">    |
 
-### Components
+## Druid 事件
 
-| Name | Description | Example | <div style="width:200px">Preview</div> |
-|------|-------------|---------|---------|
-| **[Button](/api/components/base/button_api.md)** | Logic over GUI Node. Handle the user click interactions: click, long click, double click, etc. | [Button Example](https://insality.github.io/druid/?example=ui_example_basic_button) | <img src="media/preview/button.gif" width="200" height="100"> |
-| **[Text](/api/components/base/text_api.md)** | Logic over GUI Text. By default Text component fit the text inside text node size area with different adjust modes. | [Text Example](https://insality.github.io/druid/?example=ui_example_basic_text) | <img src="media/preview/text.gif" width="200" height="100"> |
-| **[Scroll](/api/components/base/scroll_api.md)** | Logic over two GUI Nodes: input and content. Provides basic behaviour for scrollable content. | [Scroll Example](https://insality.github.io/druid/?example=ui_example_basic_scroll) | <img src="media/preview/scroll.gif" width="200" height="100"> |
-| **[Blocker](/api/components/base/blocker_api.md)** | Logic over GUI Node. Don't pass any user input below node area size. | [Blocker Example](https://insality.github.io/druid/?example=ui_example_basic_blocker) | <img src="media/preview/blocker.gif" width="200" height="100"> |
-| **[Back Handler](/api/components/base/back_handler_api.md)** | Call callback on user "Back" action. It's a Android back button or keyboard backspace key | [Back Handler Example](https://insality.github.io/druid/?example=ui_example_basic_back_handler) | <img src="media/preview/back_handler.gif" width="200" height="100"> |
-| **[Static Grid](/api/components/base/static_grid_api.md)** | Logic over GUI Node. Component to manage node positions with all equal node sizes. | [Static Gid Example](https://insality.github.io/druid/?example=ui_example_basic_grid) | <img src="media/preview/static_grid.gif" width="200" height="100"> |
-| **[Hover](/api/components/base/hover_api.md)** | Logic over GUI Node. Handle hover action over node. For both: mobile touch and mouse cursor. | [Hover Example](https://insality.github.io/druid/?example=ui_example_basic_hover) | <img src="media/preview/hover.gif" width="200" height="100"> |
-| **[Swipe](/api/components/extended/swipe_api.md)** | Logic over GUI Node. Handle swipe gestures over node. | [Swipe Example](https://insality.github.io/druid/?example=ui_example_basic_swipe) | <img src="media/preview/swipe.gif" width="200" height="100"> |
-| **[Drag](/api/components/base/drag_api.md)** | Logic over GUI Node. Handle drag input actions. Can be useful to make on screen controlls. | [Drag Example](https://insality.github.io/druid/?example=ui_example_basic_drag) | <img src="media/preview/drag.gif" width="200" height="100"> |
-| **[Data List](/api/components/extended/data_list_api.md)** | Logic over Scroll and Grid components. Create only visible GUI nodes or components to make "infinity" scroll befaviour | [Data List Example](https://insality.github.io/druid/?example=ui_example_data_list_basic) | <img src="media/preview/data_list.gif" width="200" height="100"> |
-| **[Input](/api/components/extended/input_api.md)** | Logic over GUI Node and GUI Text (or Text component). Provides basic user text input. | [Input Example](https://insality.github.io/druid/?example=ui_example_basic_input) | <img src="media/preview/input.gif" width="200" height="100"> |
-| **[Lang text](/api/components/extended/lang_text_api.md)** | Logic over Text component to handle localization. Can be translated in real-time with `druid.on_language_change` | [Lang Text Example](https://insality.github.io/druid/?example=ui_example_window_language) | <img src="media/preview/lang_text.gif" width="200" height="100"> |
-| **[Progress](/api/components/extended/progress_api.md)** | Logic over GUI Node. Handle node size and scale to handle progress node size. | [Progress Example](https://insality.github.io/druid/?example=ui_example_basic_progress_bar) | <img src="media/preview/progress.gif" width="200" height="100"> |
-| **[Slider](/api/components/extended/slider_api.md)** | Logic over GUI Node. Handle draggable node with position restrictions. | [Slider Example](https://insality.github.io/druid/?example=ui_example_basic_slider) | <img src="media/preview/slider.gif" width="200" height="100"> |
-| **[Timer](/api/components/extended/timer_api.md)** | Logic over GUI Text. Handle basic timer functions. | [Timer Example](https://insality.github.io/druid/?example=ui_example_basic_timer) | <img src="media/preview/timer.gif" width="200" height="100"> |
-| **[Hotkey](/api/components/extended/hotkey_api.md)** | Allow to set callbacks for keyboard hotkeys with key modificators. | [Hotkey Example](https://insality.github.io/druid/?example=ui_example_basic_hotkey) | <img src="media/preview/hotkey.gif" width="200" height="100"> |
-| **[Layout](/api/components/extended/layout_api.md)** | Logic over GUI Node. Arrange nodes inside layout node with margin/paddings settings. | [Layout Example](https://insality.github.io/druid/?example=ui_example_layout_basic) | <img src="media/preview/layout.gif" width="200" height="100"> |
-| **[Rich Input](/api/components/custom/rich_input_api.md)** | Logic over GUI Node and GUI Text (or Text component). Provides rich text input with different styles and text formatting. | [Rich Input Example](https://insality.github.io/druid/?example=ui_example_basic_rich_input) | <img src="media/preview/rich_input.gif" width="200" height="100"> |
-| **[Rich Text](/api/components/custom/rich_text_api.md)** | Logic over GUI Text. Provides rich text formatting with different styles and text formatting. | [Rich Text Example](https://insality.github.io/druid/?example=ui_example_basic_rich_text) | <img src="media/preview/rich_text.gif" width="200" height="100"> |
+所有 **Druid** 组件使用 [Defold Event](https://github.com/Insality/defold-event) 进行组件回调。在组件API（[按钮示例](/api/components/base/button_api.md#fields)）中列出了组件事件。您可以使用以下API手动订阅这些事件：
 
+- **event:subscribe**(回调函数)
 
-## Druid Events
+- **event:unsubscribe**(回调函数)
 
-All **Druid** components using [Defold Event](https://github.com/Insality/defold-event) for components callbacks. In component API ([button example](/api/components/base/button_api.md#fields)) pointed list of component events. You can manually subscribe to these events with the following API:
+您可以将多个回调函数订阅到单个事件。
 
-- **event:subscribe**(callback)
-
-- **event:unsubscribe**(callback)
-
-You can subscribe several callbacks to a single event.
-
-Examples:
+示例：
 
 ```lua
 button.on_click:subscribe(function(self, args)
-	print("Button clicked!")
+	print("按钮被点击！")
 end)
 
 scroll.on_scroll:subscribe(function(self, position)
-	print("Scroll scrolled!")
+	print("滚动条已滚动！")
 end)
 
 input.on_input_unselect:subscribe(function(self, text)
-	print("User enter input:", text)
+	print("用户输入:", text)
 end)
 ```
 
+## 详细信息
 
-## Details
+- **Druid** 以基于堆栈的方式处理输入。最近创建的按钮将首先被检查。从前到后创建您的输入GUI组件。
+- 记住在 `on_input` 函数中包含 `return`：`return self.druid:on_input()`。如果存在多个输入源（多个Druid实例，其他输入系统等），这是必需的。
+- 如果您有输入组件，Druid会自动调用 `acquire_input_focus`。因此，不需要手动调用 `acquire_input_focus`。
+- 删除 **Druid** 组件节点时，请确保使用 `druid:remove(component)` 移除它。
 
-- **Druid** processes input in a stack-based manner. The most recently created button will be checked first. Create your input GUI components from back to front.
-- Remember to include `return` in the `on_input` function: `return self.druid:on_input()`. This is necessary if you have multiple input sources (multiple Druid instances, other input systems, etc.).
-- Druid automatically calls `acquire_input_focus` if you have input components. Therefore, manual calling of `acquire_input_focus` is not required.
-- When deleting a **Druid** component node, make sure to remove it using `druid:remove(component)`.
+## 示例
 
-## Examples
+尝试 **Druid** 示例应用的 [**HTML5版本**](https://insality.github.io/druid/)。
 
-Try the [**HTML5 version**](https://insality.github.io/druid/) of the **Druid** example app.
+每个示例页面都提供相应示例代码的直接链接，使您更容易理解如何使用 **Druid**。
 
-Each example page provides a direct link to the corresponding example code, making it easier for you to understand how to use **Druid**.
+或者直接参考 [**示例文件夹**](https://github.com/Insality/druid/tree/develop/example) 获取演示如何使用 **Druid** 的代码示例。
 
-Or refer directly to the [**example folder**](https://github.com/Insality/druid/tree/develop/example) for code examples demonstrating how to use **Druid**.
+## 文档
 
+您可以在 [快速API参考](api/quick_api_reference.md) 中找到完整的 **Druid** 函数
 
-## Documentation
+为了更好地理解 **Druid**，请阅读以下文档：
 
-You can find the full **Druid** functions at [Quick API Reference](api/quick_api_reference.md)
+- [Druid 工作坊](https://youtu.be/qF19qpjZe9c) - 一小时的视频来了解 **Druid** 的所有基础知识。包含大量示例和解释。
+- [如何在Defold中制作GUI](https://forum.defold.com/t/how-to-gui-in-defold/73256)
+- [组件化](wiki/widgets.md)
+- [Druid 样式](wiki/styles.md)
+- [高级设置](wiki/advanced-setup.md)
+- [Druid 设置](wiki/druid_settings.md)
+- [优化Druid大小](wiki/optimize_druid_size.md)
+- [变更日志](wiki/changelog.md)
 
-To better understand **Druid**, read the following documentation:
+## 许可证
 
-- [Druid Workshop](https://youtu.be/qF19qpjZe9c) - A one hour video to undertand all the basics of **Druid**. Contains a lot of examples and explanations.
-- [How To GUI in Defold](https://forum.defold.com/t/how-to-gui-in-defold/73256)
-- [Widgets](wiki/widgets.md)
-- [Druid styles](wiki/styles.md)
-- [Advanced Setup](wiki/advanced-setup.md)
-- [Druid Settings](wiki/druid_settings.md)
-- [Optimize Druid Size](wiki/optimize_druid_size.md)
-- [Changelog](wiki/changelog.md)
+该项目根据MIT许可证授权 - 有关详细信息，请参阅 [LICENSE](LICENSE) 文件。
 
+## 问题和建议
 
-## Licenses
+如果您有任何问题、疑问或建议，请 [创建问题](https://github.com/Insality/druid/issues)
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 历史
 
+有关 **Druid** 开发的完整历史，请查看 [变更日志](wiki/changelog.md)。
 
-## Issues and suggestions
+## 贡献者
 
-If you have any issues, questions or suggestions please [create an issue](https://github.com/Insality/druid/issues)
+原始Druid想法来自 [AGulev](https://github.com/AGulev)
 
-
-## History
-
-For a complete history of the development of **Druid**, please check the [changelog](wiki/changelog.md).
-
-
-## Contributors
-
-Original Druid idea by [AGulev](https://github.com/AGulev)
-
-Special thanks to all the contributors who have helped make **Druid** better!
+特别感谢所有帮助使 **Druid** 变得更好的贡献者！
 
 <a href="https://github.com/Insality/druid/graphs/contributors">
   <img src="https://contributors-img.web.app/image?repo=insality/druid"/>
 </a>
 
-Read the [CONTRIBUTING.md](CONTRIBUTING.md) file for more information.
+阅读 [CONTRIBUTING.md](CONTRIBUTING.md) 文件获取更多信息。
 
+## ❤️ 支持项目 ❤️
 
-## ❤️ Support project ❤️
+Druid由一名开发者在业余时间开发和维护。
 
-Druid is developed and maintained by a single developer in his free time.
+如果这个库对您的项目有帮助，请考虑支持我的工作 ❤️
 
-If this library helps your project, consider supporting my work ❤️
-
-It really makes a difference.
+这真的很重要。
 
 [![Github-sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA)](https://github.com/sponsors/insality) [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/insality) [![BuyMeACoffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/insality)

@@ -3,32 +3,35 @@ local helper = require("druid.helper")
 local component = require("druid.component")
 
 ---@class druid.progress.style
----@field SPEED number|nil Progress bar fill rate. Higher value means faster fill. Default: 5
----@field MIN_DELTA number|nil Minimum step to fill progress bar. Default: 0.005
+---@field SPEED number|nil 进度条填充速率。更高的值意味着更快的填充。默认值: 5
+---@field MIN_DELTA number|nil 进度条的最小步长。默认值: 0.005
 
----Basic Druid progress bar component. Changes the size or scale of a node to represent progress.
+---基本的Druid进度条组件。通过更改节点的大小或缩放来表示进度。
 ---
----### Setup
----Create progress bar component with druid: `progress = druid:new_progress(node_name, key, init_value)`
+---### 设置
+---使用druid创建进度条组件: `progress = druid:new_progress(node_name, key, init_value)`
 ---
----### Notes
----- Node should have maximum node size in GUI scene, it represents the progress bar's maximum size
----- Key is value from druid const: "x" or "y"
----- Progress works correctly with 9slice nodes, it tries to set size by _set_size_ first until minimum size is reached, then it continues sizing via _set_scale_
----- Progress bar can fill only by vertical or horizontal size. For diagonal progress bar, just rotate the node in GUI scene
----- If you have glitchy or dark texture bugs with progress bar, try to disable mipmaps in your texture profiles
+---### 注意事项
+---- 节点在GUI场景中应具有最大节点大小，它代表进度条的最大大小
+---- 键是来自druid常量的值："x"或"y"
+---- 进度条与9切片节点配合良好，它首先尝试通过_set_size_设置大小直到达到最小大小，然后通过_set_scale_继续调整大小
+---- 进度条只能按垂直或水平大小填充。对于对角线进度条，只需在GUI场景中旋转节点
+---- 如果进度条出现闪烁或纹理暗斑问题，请尝试在纹理配置文件中禁用mipmaps
+---进度条组件用于可视化显示任务完成进度或资源状态
 ---@class druid.progress: druid.component
----@field node node The progress bar node
----@field on_change event fun(self: druid.progress, value: number) Event triggered when progress value changes
----@field style druid.progress.style Component style parameters
----@field key string Progress bar direction: "x" or "y"
----@field prop hash Property for scaling the progress bar
+---@field node node 进度条节点
+---@field on_change event fun(self: druid.progress, value: number) 进度值改变时触发的事件
+---@field style druid.progress.style 组件样式参数
+---@field key string 进度条方向："x"或"y"
+---@field prop hash 用于缩放进度条的属性
 local M = component.create("progress")
 
 
----@param node string|node Node name or GUI Node itself.
----@param key string Progress bar direction: "x" or "y"
----@param init_value number|nil Initial value of progress bar (0 to 1). Default: 1
+---进度条构造函数
+---初始化进度条组件，设置节点、方向和初始值
+---@param node string|node 节点名称或GUI节点本身
+---@param key string 进度条方向："x"或"y"
+---@param init_value number|nil 进度条的初始值（0到1）。默认值: 1
 function M:init(node, key, init_value)
 	assert(key == "x" or key == "y", "Progress bar key should be 'x' or 'y'")
 
@@ -54,9 +57,10 @@ function M:init(node, key, init_value)
 	self:set_to(self.last_value)
 end
 
-
+---内部方法：处理样式变化
+---当进度条组件样式发生变化时调用此私有方法
 ---@private
----@param style druid.progress.style
+---@param style druid.progress.style 样式配置
 function M:on_style_change(style)
 	self.style = {
 		SPEED = style.SPEED or 5,
@@ -64,18 +68,15 @@ function M:on_style_change(style)
 	}
 end
 
-
 ---@private
 function M:on_layout_change()
 	self:set_to(self.last_value)
 end
 
-
 ---@private
 function M:on_remove()
 	gui.set_size(self.node, self.max_size)
 end
-
 
 ---@param dt number Delta time
 function M:update(dt)
@@ -97,7 +98,6 @@ function M:update(dt)
 	end
 end
 
-
 ---Fill the progress bar
 ---@return druid.progress self Current progress instance
 function M:fill()
@@ -106,7 +106,6 @@ function M:fill()
 	return self
 end
 
-
 ---Empty the progress bar
 ---@return druid.progress self Current progress instance
 function M:empty()
@@ -114,7 +113,6 @@ function M:empty()
 
 	return self
 end
-
 
 ---Instant fill progress bar to value
 ---@param to number Progress bar value, from 0 to 1
@@ -126,13 +124,11 @@ function M:set_to(to)
 	return self
 end
 
-
 ---Return the current value of the progress bar
 ---@return number value The current value of the progress bar
 function M:get()
 	return self.last_value
 end
-
 
 ---Set points on progress bar to fire the callback
 ---@param steps number[] Array of progress bar values
@@ -144,7 +140,6 @@ function M:set_steps(steps, callback)
 
 	return self
 end
-
 
 ---Start animation of a progress bar
 ---@param to number value between 0..1
@@ -166,7 +161,6 @@ function M:to(to, callback)
 	return self
 end
 
-
 ---Set progress bar max node size
 ---@param max_size vector3 The new node maximum (full) size
 ---@return druid.progress self Current progress instance
@@ -176,7 +170,6 @@ function M:set_max_size(max_size)
 
 	return self
 end
-
 
 ---@private
 ---@param from number The start value
@@ -202,7 +195,6 @@ function M:_check_steps(from, to, exactly)
 		end
 	end
 end
-
 
 ---@private
 ---@param set_to number The value to set the progress bar to
@@ -243,6 +235,5 @@ function M:_set_bar_to(set_to, is_silent)
 
 	return self
 end
-
 
 return M

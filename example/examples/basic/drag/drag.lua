@@ -2,7 +2,7 @@
 local M = {}
 
 function M:init()
-	-- Init drag and move the drag node on drag callback
+	-- 初始化拖拽：在拖拽回调中移动节点
 	self.drag = self.druid:new_drag("drag/root", function(_, dx, dy)
 		local position_x = gui.get(self.drag.node, "position.x")
 		local position_y = gui.get(self.drag.node, "position.y")
@@ -10,7 +10,7 @@ function M:init()
 		gui.set(self.drag.node, "position.y", position_y + dy)
 	end)
 
-	-- Save start position for animation
+	-- 保存初始位置，用于拖拽结束时回弹动画
 	self.start_position = gui.get_position(self.drag.node)
 	self.drag.on_drag_end:subscribe(function()
 		gui.animate(self.drag.node, "position", self.start_position, gui.EASING_OUTBACK, 0.3)

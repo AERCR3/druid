@@ -1,4 +1,5 @@
---- Module for assigning layers to GUI nodes based on textures and fonts
+--- 基于纹理和字体为GUI节点分配图层的模块
+--- 此模块用于自动化GUI场景中节点的图层分配
 
 local defold_parser = require("druid.editor_scripts.defold_parser.defold_parser")
 local system = require("druid.editor_scripts.defold_parser.system.parser_internal")
@@ -6,9 +7,10 @@ local system = require("druid.editor_scripts.defold_parser.system.parser_interna
 local M = {}
 
 
----Create a backup of a file
----@param file_path string - The path of the file to backup
----@return string|nil - The backup file path, or nil if backup failed
+---创建文件备份
+---此函数为指定文件创建备份副本以确保数据安全
+---@param file_path string - 要备份的文件路径
+---@return string|nil - 备份文件路径，如果备份失败则为nil
 local function create_backup(file_path)
 	local backup_path = file_path .. ".backup"
 	print("Creating backup at:", backup_path)
@@ -31,10 +33,11 @@ local function create_backup(file_path)
 end
 
 
----Restore from a backup file
----@param backup_path string - The path of the backup file
----@param original_path string - The path to restore to
----@return boolean - True if restore was successful
+---从备份文件恢复
+---此函数将备份文件的内容恢复到原始位置
+---@param backup_path string - 备份文件的路径
+---@param original_path string - 要恢复到的路径
+---@return boolean - 如果恢复成功则为True
 local function restore_from_backup(backup_path, original_path)
 	print("Restoring from backup:", backup_path)
 
@@ -57,8 +60,9 @@ local function restore_from_backup(backup_path, original_path)
 end
 
 
----Remove a backup file
----@param backup_path string - The path of the backup file to remove
+---移除备份文件
+---此函数删除指定的备份文件以清理磁盘空间
+---@param backup_path string - 要删除的备份文件路径
 local function remove_backup(backup_path)
 	-- Check file exists and remove it
 	local file = io.open(backup_path, "r")
@@ -69,9 +73,10 @@ local function remove_backup(backup_path)
 	end
 end
 
----Assign layers to GUI nodes based on textures and fonts
----@param gui_resource string - The GUI resource to process
----@return table - Editor command to reload the resource
+---基于纹理和字体为GUI节点分配图层
+---此函数分析GUI资源并根据纹理和字体为节点分配合适的图层
+---@param gui_resource string - 要处理的GUI资源
+---@return table - 重新加载资源的编辑器命令
 function M.assign_layers(gui_resource)
 	local gui_path = editor.get(gui_resource, "path")
 	print("Setting up layers for", gui_path)
@@ -236,6 +241,5 @@ function M.assign_layers(gui_resource)
 
 	return {}
 end
-
 
 return M

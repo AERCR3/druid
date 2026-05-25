@@ -3,10 +3,11 @@ local parser = require("druid.editor_scripts.defold_parser.system.parser")
 local M = {}
 
 
---- Check if table-array contains element
----@param table table
----@param element any
----@return number|boolean index of element or false
+--- 检查表数组是否包含元素
+--- 此函数检查给定的表中是否包含指定元素，并返回其索引
+---@param table table 要检查的表
+---@param element any 要查找的元素
+---@return number|boolean 元素的索引或false
 function M.contains(table, element)
 	for index, value in pairs(table) do
 		if value == element then
@@ -16,7 +17,6 @@ function M.contains(table, element)
 
 	return false
 end
-
 
 ---@param file_path string
 ---@return string|nil, string|nil @success, reason
@@ -32,10 +32,11 @@ function M.read_file(file_path)
 	return content, nil
 end
 
-
----@param file_path string
----@param content string
----@return boolean, string|nil @success, reason
+--- 写入文件内容
+--- 此函数将内容写入指定路径的文件
+---@param file_path string 文件路径
+---@param content string 要写入的内容
+---@return boolean, string|nil 成功时返回true，失败时返回错误原因
 function M.write_file(file_path, content)
 	local file = io.open(file_path, "w")
 	if file == nil then
@@ -48,8 +49,10 @@ function M.write_file(file_path, content)
 	return true, nil
 end
 
-
----@param line string
+--- 取消转义行内容
+--- 此函数处理行中的转义字符，如引号、换行符等
+---@param line string 要处理的行
+---@return string 处理后的行内容
 function M.unescape_line(line)
 	-- Trim whitespaces
 	line = line:match("^%s*(.-)%s*$")
@@ -64,15 +67,16 @@ function M.unescape_line(line)
 
 	-- Splitting the value by new lines and processing each line
 	line = line:gsub('\\"', '"') -- Unescaping quotes
-	line = line:gsub("\\n", "")  -- Removing newline escapes
-	line = line:gsub("\\", "")   -- Unescaping backslashes
+	line = line:gsub("\\n", "") -- Removing newline escapes
+	line = line:gsub("\\", "")  -- Unescaping backslashes
 
 	return line
 end
 
-
----@param line string
----@return string, string, string, boolean @new_object_name, name, value, end_struct_flag
+--- 分割行内容
+--- 此函数解析行内容并提取对象名称、键名、值以及结构结束标志
+---@param line string 要解析的行
+---@return string, string, string, boolean 新对象名称、键名、值、结构结束标志
 function M.split_line(line)
 	local new_object_name = line:match(parser.REGEX_START_TABLE)
 	local name, value = line:match(parser.REGEX_KEY_COLUM_VALUE)
@@ -86,13 +90,14 @@ function M.split_line(line)
 	return new_object_name, name, value, end_struct_flag
 end
 
-
 -- what a crap...
 local LAST_USED_NAME = nil
 
----@param unescaped_line string @line to parse
----@param stack table @stack of objects
----@return boolean
+--- 解析行内容
+--- 此函数解析未转义的行并将数据插入到对象栈中
+---@param unescaped_line string 要解析的行
+---@param stack table 对象栈
+---@return boolean 解析是否成功
 function M.parse_line(unescaped_line, stack)
 	unescaped_line = unescaped_line:match("^%s*(.-)%s*$")
 
@@ -158,6 +163,5 @@ function M.parse_line(unescaped_line, stack)
 
 	return true
 end
-
 
 return M

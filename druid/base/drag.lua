@@ -4,40 +4,42 @@ local helper = require("druid.helper")
 local component = require("druid.component")
 
 ---@class druid.drag.style
----@field DRAG_DEADZONE number Distance in pixels to start dragging. Default: 10
----@field NO_USE_SCREEN_KOEF boolean If screen aspect ratio affects on drag values. Default: false
+---@field DRAG_DEADZONE number 开始拖动的距离（像素）。默认值: 10
+---@field NO_USE_SCREEN_KOEF boolean 屏幕宽高比是否影响拖动值。默认值: false
 
----A component that allows you to subscribe to drag events over a node
+---允许您订阅节点上的拖动事件的组件
+---拖动组件用于处理UI元素的拖放操作，支持水平和垂直拖动
 ---@class druid.drag: druid.component
----@field node node The node to subscribe to drag events over
----@field on_touch_start event fun(self, touch) The event triggered when a touch starts
----@field on_touch_end event fun(self, touch) The event triggered when a touch ends
----@field on_drag_start event fun(self, touch) The event triggered when a drag starts
----@field on_drag event fun(self, touch) The event triggered when a drag occurs
----@field on_drag_end event fun(self, touch) The event triggered when a drag ends
----@field style druid.drag.style The style of Drag component
----@field click_zone node|nil The click zone of Drag component
----@field is_touch boolean True if a touch is active
----@field is_drag boolean True if a drag is active
----@field can_x boolean True if Drag can move horizontally
----@field can_y boolean True if Drag can move vertically
----@field dx number The horizontal drag distance
----@field dy number The vertical drag distance
----@field touch_id number The touch id
----@field x number The current x position
----@field y number The current y position
----@field screen_x number The current screen x position
----@field screen_y number The current screen y position
----@field touch_start_pos vector3 The touch start position
----@field private _is_enabled boolean True if Drag component is enabled
----@field private _x_koef number The x koef
----@field private _y_koef number The y koef
+---@field node node 订阅拖动事件的节点
+---@field on_touch_start event fun(self, touch) 触摸开始时触发的事件
+---@field on_touch_end event fun(self, touch) 触摸结束时触发的事件
+---@field on_drag_start event fun(self, touch) 拖动开始时触发的事件
+---@field on_drag event fun(self, touch) 拖动发生时触发的事件
+---@field on_drag_end event fun(self, touch) 拖动结束时触发的事件
+---@field style druid.drag.style 拖动组件的样式
+---@field click_zone node|nil 拖动组件的点击区域
+---@field is_touch boolean 如果触摸处于活动状态则为真
+---@field is_drag boolean 如果拖动处于活动状态则为真
+---@field can_x boolean 如果拖动可以在水平方向移动则为真
+---@field can_y boolean 如果拖动可以在垂直方向移动则为真
+---@field dx number 水平拖动距离
+---@field dy number 垂直拖动距离
+---@field touch_id number 触摸ID
+---@field x number 当前x位置
+---@field y number 当前y位置
+---@field screen_x number 当前屏幕x位置
+---@field screen_y number 当前屏幕y位置
+---@field touch_start_pos vector3 触摸开始位置
+---@field private _is_enabled boolean 如果拖动组件已启用则为真
+---@field private _x_koef number x系数
+---@field private _y_koef number y系数
 local M = component.create("drag", const.PRIORITY_INPUT_HIGH)
 
 
----The constructor for Drag component
----@param node_or_node_id node|string The node to subscribe to drag events over
----@param on_drag_callback fun(self, touch) The callback to call when a drag occurs
+---拖动组件的构造函数
+---初始化拖动组件，设置订阅拖动事件的节点和拖动回调函数
+---@param node_or_node_id node|string 订阅拖动事件的节点或节点ID
+---@param on_drag_callback fun(self, touch) 拖动发生时调用的回调函数
 function M:init(node_or_node_id, on_drag_callback)
 	self.druid = self:get_druid()
 	self.node = self:get_node(node_or_node_id)
@@ -71,9 +73,10 @@ function M:init(node_or_node_id, on_drag_callback)
 	self:set_drag_cursors(true)
 end
 
-
+---内部方法：处理样式变化
+---当拖动组件样式发生变化时调用此私有方法
 ---@private
----@param style druid.drag.style The style of Drag component
+---@param style druid.drag.style 拖动组件的样式
 function M:on_style_change(style)
 	self.style = {
 		DRAG_DEADZONE = style.DRAG_DEADZONE or 10,
@@ -81,9 +84,9 @@ function M:on_style_change(style)
 	}
 end
 
-
----Set Drag component enabled state.
----@param is_enabled boolean True if Drag component is enabled
+---设置拖动组件光标状态。
+---此函数根据是否启用拖动来设置鼠标光标样式
+---@param is_enabled boolean 如果拖动组件启用则为真
 function M:set_drag_cursors(is_enabled)
 	if defos and is_enabled then
 		self.hover.style.ON_HOVER_CURSOR = defos.CURSOR_CROSSHAIR
@@ -93,7 +96,6 @@ function M:set_drag_cursors(is_enabled)
 		self.hover.style.ON_MOUSE_HOVER_CURSOR = nil
 	end
 end
-
 
 ---@private
 function M:on_late_init()
@@ -105,7 +107,6 @@ function M:on_late_init()
 	end
 end
 
-
 ---@private
 function M:on_window_resized()
 	local x_koef, y_koef = helper.get_screen_aspect_koef()
@@ -114,14 +115,12 @@ function M:on_window_resized()
 	self._scene_scale = helper.get_scene_scale(self.node)
 end
 
-
 ---@private
 function M:on_input_interrupt()
 	if self.is_drag or self.is_touch then
 		self:_end_touch()
 	end
 end
-
 
 ---@private
 ---@param action_id hash Action id from on_input
@@ -203,7 +202,6 @@ function M:on_input(action_id, action)
 	return self.is_drag
 end
 
-
 ---Set Drag click zone
 ---@param node node|string|nil Node or node id
 ---@return druid.drag self Current instance
@@ -212,7 +210,6 @@ function M:set_click_zone(node)
 
 	return self
 end
-
 
 ---Set Drag component enabled state.
 ---@param is_enabled boolean
@@ -223,13 +220,11 @@ function M:set_enabled(is_enabled)
 	return self
 end
 
-
 ---Check if Drag component is capture input
 ---@return boolean is_enabled True if Drag component is enabled
 function M:is_enabled()
 	return self._is_enabled
 end
-
 
 function M:_start_touch(touch)
 	self.is_touch = true
@@ -248,7 +243,6 @@ function M:_start_touch(touch)
 
 	self.on_touch_start:trigger(self:get_context(), touch)
 end
-
 
 ---@param touch touch|nil
 function M:_end_touch(touch)
@@ -270,7 +264,6 @@ function M:_end_touch(touch)
 	self.touch_id = 0
 end
 
-
 ---@param touch touch Touch action
 function M:_process_touch(touch)
 	if not self.can_x then
@@ -288,7 +281,6 @@ function M:_process_touch(touch)
 		self:set_input_priority(const.PRIORITY_INPUT_MAX, true)
 	end
 end
-
 
 ---Return current touch action from action input data
 ---If touch_id stored - return exact this touch action
@@ -315,7 +307,6 @@ function M:_find_touch(action_id, action, touch_id)
 		return action
 	end
 end
-
 
 ---Process on touch release. We should to find, if any other
 ---touches exists to switch to another touch.
@@ -344,6 +335,5 @@ function M:_on_touch_release(action_id, action, touch)
 		self:_end_touch(touch)
 	end
 end
-
 
 return M

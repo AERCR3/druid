@@ -1,117 +1,120 @@
 # druid.hotkey API
 
-> at /druid/extended/hotkey.lua
+> 位于 /druid/extended/hotkey.lua
 
-Druid component to manage hotkeys and trigger callbacks when hotkeys are pressed.
+Druid 组件，用于管理热键并在按下热键时触发回调。
 
-### Setup
-Create hotkey component with druid: `hotkey = druid:new_hotkey(keys, callback, callback_argument)`
+### 设置
 
-### Notes
-- Hotkey can be triggered by pressing a single key or a combination of keys
-- Hotkey supports modificator keys (e.g. Ctrl, Shift, Alt)
-- Hotkey can be triggered on key press, release or repeat
-- Hotkey can be added or removed at runtime
-- Hotkey can be enabled or disabled
-- Hotkey can be set to repeat on key hold
+使用 druid 创建热键组件：`hotkey = druid:new_hotkey(keys, callback, callback_argument)`
 
-## Functions
+### 注意事项
+
+- 热键可以通过按下单个键或组合键来触发
+- 热键支持修饰键（例如 Ctrl、Shift、Alt）
+- 热键可以在按键按下、释放或重复时触发
+- 热键可以在运行时添加或删除
+- 热键可以启用或禁用
+- 热键可以设置为在按键按住时重复
+
+## 函数
 
 - [init](#init)
 - [add_hotkey](#add_hotkey)
 - [is_processing](#is_processing)
 - [set_repeat](#set_repeat)
 - [bind_node](#bind_node)
-## Fields
+
+## 字段
 
 - [on_hotkey_pressed](#on_hotkey_pressed)
 - [on_hotkey_released](#on_hotkey_released)
 - [style](#style)
 - [druid](#druid)
 
-
-
 ### init
 
 ---
+
 ```lua
 hotkey:init(keys, callback, [callback_argument])
 ```
 
-The Hotkey constructor
+热键构造函数。
 
-- **Parameters:**
-	- `keys` *(string|string[])*: The keys to be pressed for trigger callback. Should contains one key and any modificator keys
-	- `callback` *(function)*: The callback function
-	- `[callback_argument]` *(any)*: The argument to pass into the callback function
+- **参数:**
+  - `keys` _(string|string[])_: 触发回调要按下的键。应该包含一个键和任意修饰键
+  - `callback` _(function)_: 回调函数
+  - `[callback_argument]` _(any)_: 传递给回调函数的参数
 
 ### add_hotkey
 
 ---
+
 ```lua
-hotkey:add_hotkey(keys, [callback_argument])
+hotkey:add_hotkey(keys, callback, [callback_argument])
 ```
 
-Add hotkey for component callback
+添加热键。
 
-- **Parameters:**
-	- `keys` *(string|hash|hash[]|string[])*: that have to be pressed before key pressed to activate
-	- `[callback_argument]` *(any)*: The argument to pass into the callback function
-
-- **Returns:**
-	- `self` *(druid.hotkey)*: Current instance
+- **参数:**
+  - `keys` _(string|string[])_: 要按下的键
+  - `callback` _(function)_: 回调函数
+  - `[callback_argument]` _(any)_: 传递给回调函数的参数
 
 ### is_processing
 
 ---
+
 ```lua
 hotkey:is_processing()
 ```
 
-- **Returns:**
-	- `` *(boolean)*:
+检查是否正在处理热键。
+
+- **返回:**
+  - `processing` _(boolean)_: 是否正在处理
 
 ### set_repeat
 
 ---
+
 ```lua
-hotkey:set_repeat(is_enabled_repeated)
+hotkey:set_repeat(repeat_enabled)
 ```
 
-If true, the callback will be triggered on action.repeated
+设置重复。
 
-- **Parameters:**
-	- `is_enabled_repeated` *(boolean)*: The flag value
-
-- **Returns:**
-	- `self` *(druid.hotkey)*: Current instance
+- **参数:**
+  - `repeat_enabled` _(boolean)_: 是否启用重复
 
 ### bind_node
 
 ---
+
 ```lua
-hotkey:bind_node([node])
+hotkey:bind_node(node)
 ```
 
-If node is provided, the hotkey can be disabled, if the node is disabled
+绑定节点。
 
-- **Parameters:**
-	- `[node]` *(node|nil)*: The node to bind the hotkey to. Nil to unbind the node
+- **参数:**
+  - `node` _(node)_: 要绑定的节点
 
-- **Returns:**
-	- `self` *(druid.hotkey)*: Current instance
+## 事件字段
 
+### on_hotkey_pressed
 
-## Fields
-<a name="on_hotkey_pressed"></a>
-- **on_hotkey_pressed** (_event_): fun(self, context, callback_argument) The event triggered when a hotkey is pressed
+热键按下时的回调函数。
 
-<a name="on_hotkey_released"></a>
-- **on_hotkey_released** (_event_): fun(self, context, callback_argument) The event triggered when a hotkey is released
+### on_hotkey_released
 
-<a name="style"></a>
-- **style** (_druid.hotkey.style_): The style of the hotkey component
+热键释放时的回调函数。
 
-<a name="druid"></a>
-- **druid** (_druid.instance_): The Druid Factory used to create components
+### style
 
+热键组件样式配置。
+
+### druid
+
+关联的 Druid 实例。

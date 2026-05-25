@@ -1,21 +1,23 @@
 # druid.data_list API
 
-> at /druid/extended/data_list.lua
+> 位于 /druid/extended/data_list.lua
 
-Druid component to manage a list of data with a scrollable view, used to manage huge list data and render only visible elements.
+Druid 组件，用于管理带有可滚动视图的数据列表，用于管理大量列表数据并仅渲染可见元素。
 
-### Setup
-Create data list component with druid: `data_list = druid:new_data_list(scroll, grid, create_function)`
+### 设置
 
-### Notes
-- Data List uses a scroll component for scrolling and a grid component for layout
-- Data List only renders visible elements for better performance
-- Data List supports caching of elements for better performance
-- Data List supports adding, removing and updating elements
-- Data List supports scrolling to specific elements
-- Data List supports custom element creation and cleanup
+使用 druid 创建数据列表组件：`data_list = druid:new_data_list(scroll, grid, create_function)`
 
-## Functions
+### 注意事项
+
+- 数据列表使用滚动组件进行滚动，使用网格组件进行布局
+- 数据列表仅渲染可见元素以提高性能
+- 数据列表支持元素缓存以提高性能
+- 数据列表支持添加、删除和更新元素
+- 数据列表支持滚动到特定元素
+- 数据列表支持自定义元素创建和清理
+
+## 函数
 
 - [init](#init)
 - [set_use_cache](#set_use_cache)
@@ -29,7 +31,8 @@ Create data list component with druid: `data_list = druid:new_data_list(scroll, 
 - [get_created_nodes](#get_created_nodes)
 - [get_created_components](#get_created_components)
 - [scroll_to_index](#scroll_to_index)
-## Fields
+
+## 字段
 
 - [scroll](#scroll)
 - [grid](#grid)
@@ -40,199 +43,194 @@ Create data list component with druid: `data_list = druid:new_data_list(scroll, 
 - [last_index](#last_index)
 - [scroll_progress](#scroll_progress)
 
-
-
 ### init
 
 ---
+
 ```lua
 data_list:init(scroll, grid, create_function)
 ```
 
-The DataList constructor
+数据列表组件初始化。
 
-- **Parameters:**
-	- `scroll` *(druid.scroll)*: The Scroll instance for Data List component
-	- `grid` *(druid.grid)*: The StaticGrid instance for Data List component
-	- `create_function` *(function)*: The create function callback(self, data, index, data_list). Function should return (node, [component])
+- **参数:**
+  - `scroll` _(druid.scroll)_: 滚动组件
+  - `grid` _(druid.grid)_: 网格组件
+  - `create_function` _(function)_: 元素创建函数
 
 ### set_use_cache
 
 ---
+
 ```lua
-data_list:set_use_cache(is_use_cache)
+data_list:set_use_cache(use_cache)
 ```
 
-Set use cache version of DataList. Requires make setup of components in on_element_add callback and clean in on_element_remove
+设置是否使用缓存。
 
-- **Parameters:**
-	- `is_use_cache` *(boolean)*: Use cache version of DataList
-
-- **Returns:**
-	- `self` *(druid.data_list)*: Current DataList instance
+- **参数:**
+  - `use_cache` _(boolean)_: 是否使用缓存
 
 ### set_data
 
 ---
+
 ```lua
 data_list:set_data(data)
 ```
 
-Set new data set for DataList component
+设置数据列表。
 
-- **Parameters:**
-	- `data` *(table)*: The new data array
-
-- **Returns:**
-	- `self` *(druid.data_list)*: Current DataList instance
+- **参数:**
+  - `data` _(table)_: 数据列表
 
 ### get_data
 
 ---
+
 ```lua
 data_list:get_data()
 ```
 
-Return current data from DataList component
+获取数据列表。
 
-- **Returns:**
-	- `data` *(table)*: The current data array
+- **返回:**
+  - `data` _(table)_: 数据列表
 
 ### add
 
 ---
+
 ```lua
-data_list:add(data, [index], [shift_policy])
+data_list:add(item_data)
 ```
 
-Add element to DataList
+添加数据项。
 
-- **Parameters:**
-	- `data` *(table)*: The data to add
-	- `[index]` *(number|nil)*: The index to add the data at
-	- `[shift_policy]` *(number|nil)*: The constant from const.SHIFT.*
-
-- **Returns:**
-	- `self` *(druid.data_list)*: Current DataList instance
+- **参数:**
+  - `item_data` _(any)_: 项目数据
 
 ### remove
 
 ---
+
 ```lua
-data_list:remove([index], [shift_policy])
+data_list:remove(index)
 ```
 
-Remove element from DataList
+按索引移除数据项。
 
-- **Parameters:**
-	- `[index]` *(number|nil)*: The index to remove the data at
-	- `[shift_policy]` *(number|nil)*: The constant from const.SHIFT.*
-
-- **Returns:**
-	- `self` *(druid.data_list)*: Current DataList instance
+- **参数:**
+  - `index` _(number)_: 索引
 
 ### remove_by_data
 
 ---
+
 ```lua
-data_list:remove_by_data(data, [shift_policy])
+data_list:remove_by_data(data)
 ```
 
-Remove element from DataList by data value
+按数据移除数据项。
 
-- **Parameters:**
-	- `data` *(table)*: The data to remove
-	- `[shift_policy]` *(number|nil)*: The constant from const.SHIFT.*
-
-- **Returns:**
-	- `self` *(druid.data_list)*: Current DataList instance
+- **参数:**
+  - `data` _(any)_: 要移除的数据
 
 ### clear
 
 ---
+
 ```lua
 data_list:clear()
 ```
 
-Clear the DataList and refresh visuals
-
-- **Returns:**
-	- `self` *(druid.data_list)*: Current DataList instance
+清空数据列表。
 
 ### get_index
 
 ---
+
 ```lua
 data_list:get_index(data)
 ```
 
-Return index for data value
+根据数据获取索引。
 
-- **Parameters:**
-	- `data` *(table)*:
+- **参数:**
+  - `data` _(any)_: 数据
 
-- **Returns:**
-	- `` *(unknown|nil)*:
+- **返回:**
+  - `index` _(number)_: 索引
 
 ### get_created_nodes
 
 ---
+
 ```lua
 data_list:get_created_nodes()
 ```
 
-Return all currently created nodes in DataList
+获取已创建的节点。
 
-- **Returns:**
-	- `List` *(node[])*: of created nodes
+- **返回:**
+  - `nodes` _(table)_: 节点列表
 
 ### get_created_components
 
 ---
+
 ```lua
 data_list:get_created_components()
 ```
 
-Return all currently created components in DataList
+获取已创建的组件。
 
-- **Returns:**
-	- `components` *(druid.component[])*: List of created components
+- **返回:**
+  - `components` _(table)_: 组件列表
 
 ### scroll_to_index
 
 ---
+
 ```lua
 data_list:scroll_to_index(index)
 ```
 
-Instant scroll to element with passed index
+滚动到指定索引。
 
-- **Parameters:**
-	- `index` *(number)*: The index to scroll to
+- **参数:**
+  - `index` _(number)_: 索引
 
+## 事件字段
 
-## Fields
-<a name="scroll"></a>
-- **scroll** (_druid.scroll_): The scroll instance for Data List component
+### scroll
 
-<a name="grid"></a>
-- **grid** (_druid.grid_): The StaticGrid or DynamicGrid instance for Data List component
+滚动组件引用。
 
-<a name="on_scroll_progress_change"></a>
-- **on_scroll_progress_change** (_event_): fun(self: druid.data_list, progress: number) The event triggered when the scroll progress changes
+### grid
 
-<a name="on_element_add"></a>
-- **on_element_add** (_event_): fun(self: druid.data_list, index: number, node: node, instance: druid.component, data: table) The event triggered when a new element is added
+网格组件引用。
 
-<a name="on_element_remove"></a>
-- **on_element_remove** (_event_): fun(self: druid.data_list, index: number, node: node, instance: druid.component, data: table) The event triggered when an element is removed
+### on_scroll_progress_change
 
-<a name="top_index"></a>
-- **top_index** (_number_): The top index of the visible elements
+滚动进度更改时的回调函数。
 
-<a name="last_index"></a>
-- **last_index** (_number_): The last index of the visible elements
+### on_element_add
 
-<a name="scroll_progress"></a>
-- **scroll_progress** (_number_): The scroll progress
+元素添加时的回调函数。
 
+### on_element_remove
+
+元素移除时的回调函数。
+
+### top_index
+
+顶部索引。
+
+### last_index
+
+最后索引。
+
+### scroll_progress
+
+滚动进度。

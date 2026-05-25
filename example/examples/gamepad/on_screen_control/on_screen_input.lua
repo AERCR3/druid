@@ -8,7 +8,7 @@ local helper = require("druid.helper")
 ---@field stick_root node
 ---@field stick_position vector3
 ---@field on_action event @()
----@field on_movement event @(x: number, y: number, dt: number) X/Y values are in range -1..1
+---@field on_movement event @(x: number, y: number, dt: number) x/y 的取值范围为 -1..1
 ---@field on_movement_stop event @()
 ---@field is_multitouch boolean
 ---@field _is_stick_drag boolean|number
@@ -69,7 +69,7 @@ function M:process_touch(action)
 
 	local is_the_same_touch_id = not action.id or action.id == self._is_stick_drag
 	if self._is_stick_drag and is_the_same_touch_id then
-		-- action.dx and action.dy are broken inside touches for some reason, manual calculations seems fine
+		-- 某些情况下 touch 里的 action.dx / action.dy 不可靠，这里手动计算位移更稳定
 		local dx = action.x - (self._prev_x or action.x)
 		local dy = action.y - (self._prev_y or action.y)
 		self._prev_x = action.x
@@ -78,7 +78,7 @@ function M:process_touch(action)
 		self.stick_position.x = self.stick_position.x + dx
 		self.stick_position.y = self.stick_position.y + dy
 
-		-- Limit to STICK_DISTANCE
+		-- 将摇杆位移限制在 STICK_DISTANCE 半径内
 		local length = vmath.length(self.stick_position)
 		if length > STICK_DISTANCE then
 			self.stick_position.x = self.stick_position.x / length * STICK_DISTANCE

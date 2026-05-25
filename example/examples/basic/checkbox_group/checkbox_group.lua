@@ -1,6 +1,6 @@
 local event = require("event.event")
 
--- Require checkbox component from checkbox example
+-- 复用 checkbox 示例里的组件实现
 local checkbox = require("example.examples.basic.checkbox.checkbox")
 
 ---@class examples.checkbox_group: druid.widget

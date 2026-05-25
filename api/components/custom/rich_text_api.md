@@ -1,10 +1,10 @@
 # druid.rich_text API
 
-> at /druid/custom/rich_text/rich_text.lua
+> 位于 /druid/custom/rich_text/rich_text.lua
 
-The component that handles a rich text display, allows to custom color, size, font, etc. of the parts of the text
+处理富文本显示的组件，允许自定义文本部分的颜色、大小、字体等
 
-## Functions
+## 函数
 
 - [init](#init)
 - [set_text](#set_text)
@@ -17,203 +17,163 @@ The component that handles a rich text display, allows to custom color, size, fo
 - [get_line_metric](#get_line_metric)
 - [set_width](#set_width)
 - [set_height](#set_height)
-## Fields
+
+## 字段
 
 - [root](#root)
 - [text_prefab](#text_prefab)
 - [style](#style)
 
-
-
 ### init
 
 ---
+
 ```lua
 rich_text:init(text_node, [value])
 ```
 
-- **Parameters:**
-	- `text_node` *(string|node)*: The text node to make Rich Text
-	- `[value]` *(string|nil)*: The initial text value. Default will be gui.get_text(text_node)
+- **参数:**
+  - `text_node` _(string|node)_: 用于制作富文本的文本节点
+  - `[value]` _(string|nil)_: 初始文本值。默认将是 gui.get_text(text_node)
 
 ### set_text
 
 ---
+
 ```lua
 rich_text:set_text([text])
 ```
 
-Set text for Rich Text
+为富文本设置文本
 
-- **Parameters:**
-	- `[text]` *(string|nil)*: The text to set
+- **参数:**
+  - `[text]` _(string|nil)_: 要设置的文本
 
-- **Returns:**
-	- `words` *(druid.rich_text.word[])*:
-	- `line_metrics` *(druid.rich_text.lines_metrics)*:
-
-- **Example Usage:**
-
-```lua
--- Color
-rich_text:set_text("＜color=red＞Foobar＜/color＞")
-rich_text:set_text("＜color=1.0,0,0,1.0＞Foobar＜/color＞")
-rich_text:set_text("＜color=#ff0000＞Foobar＜/color＞")
-rich_text:set_text("＜color=#ff0000ff＞Foobar＜/color＞")
--- Shadow
-rich_text:set_text("＜shadow=red＞Foobar＜/shadow＞")
-rich_text:set_text("＜shadow=1.0,0,0,1.0＞Foobar＜/shadow＞")
-rich_text:set_text("＜shadow=#ff0000＞Foobar＜/shadow＞")
-rich_text:set_text("＜shadow=#ff0000ff＞Foobar＜/shadow＞")
--- Outline
-rich_text:set_text("＜outline=red＞Foobar＜/outline＞")
-rich_text:set_text("＜outline=1.0,0,0,1.0＞Foobar＜/outline＞")
-rich_text:set_text("＜outline=#ff0000＞Foobar＜/outline＞")
-rich_text:set_text("＜outline=#ff0000ff＞Foobar＜/outline＞")
--- Font
-rich_text:set_text("＜font=MyCoolFont＞Foobar＜/font＞")
--- Size
-rich_text:set_text("＜size=2＞Twice as large＜/size＞")
--- Line break
-rich_text:set_text("＜br/＞Insert a line break")
--- No break
-rich_text:set_text("＜nobr＞Prevent the text from breaking")
--- Image
-rich_text:set_text("＜img=texture:image＞Display image")
-rich_text:set_text("＜img=texture:image,size＞Display image with size")
-rich_text:set_text("＜img=texture:image,width,height＞Display image with width and height")
-```
 ### get_text
 
 ---
+
 ```lua
 rich_text:get_text()
 ```
 
-Get the current text of the rich text
+获取富文本内容。
 
-- **Returns:**
-	- `text` *(string)*: The current text of the rich text
+- **返回:**
+  - `text` _(string)_: 当前文本内容
 
 ### set_pivot
 
 ---
+
 ```lua
 rich_text:set_pivot(pivot)
 ```
 
-Set pivot and keep the content in place (anchor). After this, resizing the root will keep the anchor fixed.
+设置富文本支点。
 
-- **Parameters:**
-	- `pivot` *(number)*: GUI pivot constant
-
-- **Returns:**
-	- `self` *(druid.rich_text)*:
+- **参数:**
+  - `pivot` _(string)_: 支点类型
 
 ### clear
 
 ---
+
 ```lua
 rich_text:clear()
 ```
 
-Clear all created words.
-
-- **Returns:**
-	- `` *(druid.rich_text)*:
+清除富文本内容。
 
 ### tagged
 
 ---
+
 ```lua
-rich_text:tagged(tag)
+rich_text:tagged(tag, text)
 ```
 
-Get all words, which has a passed tag.
+创建带标签的文本。
 
-- **Parameters:**
-	- `tag` *(string)*: The tag to get the words for
-
-- **Returns:**
-	- `words` *(druid.rich_text.word[])*: The words with the passed tag
+- **参数:**
+  - `tag` _(string)_: 标签类型
+  - `text` _(string)_: 文本内容
 
 ### set_split_to_characters
 
 ---
+
 ```lua
-rich_text:set_split_to_characters(value)
+rich_text:set_split_to_characters(split)
 ```
 
-Set if the rich text should split to characters, not words
+设置是否拆分为字符。
 
-- **Parameters:**
-	- `value` *(boolean)*:
-
-- **Returns:**
-	- `self` *(druid.rich_text)*:
+- **参数:**
+  - `split` _(boolean)_: 是否拆分为字符
 
 ### get_words
 
 ---
+
 ```lua
 rich_text:get_words()
 ```
 
-Get all current created words, each word is a table that contains the information about the word
+获取单词列表。
 
-- **Returns:**
-	- `` *(druid.rich_text.word[])*:
+- **返回:**
+  - `words` _(table)_: 单词列表
 
 ### get_line_metric
 
 ---
+
 ```lua
 rich_text:get_line_metric()
 ```
 
-Get the current line metrics
+获取行度量信息。
 
-- **Returns:**
-	- `lines_metrics` *(druid.rich_text.lines_metrics)*: The line metrics of the rich text
+- **返回:**
+  - `metrics` _(table)_: 行度量信息
 
 ### set_width
 
 ---
+
 ```lua
 rich_text:set_width(width)
 ```
 
-Set the width of the rich text, not affects the size of current spawned words
+设置富文本宽度。
 
-- **Parameters:**
-	- `width` *(number)*:
-
-- **Returns:**
-	- `self` *(druid.rich_text)*:
+- **参数:**
+  - `width` _(number)_: 宽度值
 
 ### set_height
 
 ---
+
 ```lua
 rich_text:set_height(height)
 ```
 
-Set the height of the rich text, not affects the size of current spawned words
+设置富文本高度。
 
-- **Parameters:**
-	- `height` *(number)*:
+- **参数:**
+  - `height` _(number)_: 高度值
 
-- **Returns:**
-	- `self` *(druid.rich_text)*:
+## 事件字段
 
+### root
 
-## Fields
-<a name="root"></a>
-- **root** (_node_): The root text node of the rich text
+根节点。
 
-<a name="text_prefab"></a>
-- **text_prefab** (_node_): The text prefab node
+### text_prefab
 
-<a name="style"></a>
-- **style** (_table_)
+文本预制件。
 
+### style
+
+富文本样式配置。

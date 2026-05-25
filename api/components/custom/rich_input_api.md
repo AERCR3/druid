@@ -1,10 +1,10 @@
 # druid.rich_input API
 
-> at /druid/custom/rich_input/rich_input.lua
+> 位于 /druid/custom/rich_input/rich_input.lua
 
-The component that handles a rich text input field, it's a wrapper around the druid.input component
+处理富文本输入字段的组件，它是 druid.input 组件的包装器
 
-## Functions
+## 函数
 
 - [init](#init)
 - [set_placeholder](#set_placeholder)
@@ -14,7 +14,7 @@ The component that handles a rich text input field, it's a wrapper around the dr
 - [get_text](#get_text)
 - [set_allowed_characters](#set_allowed_characters)
 
-## Fields
+## 字段
 
 - [root](#root)
 - [input](#input)
@@ -29,140 +29,139 @@ The component that handles a rich text input field, it's a wrapper around the dr
 - [placeholder](#placeholder)
 - [text_position](#text_position)
 
-
-
 ### init
 
 ---
+
 ```lua
 rich_input:init(template, nodes)
 ```
 
-- **Parameters:**
-	- `template` *(string)*: The template string name
-	- `nodes` *(table)*: Nodes table from gui.clone_tree
+- **参数:**
+  - `template` _(string)_: 模板字符串名称
+  - `nodes` _(table)_: 来自 gui.clone_tree 的节点表
 
 ### set_placeholder
 
 ---
+
 ```lua
 rich_input:set_placeholder(placeholder_text)
 ```
 
-Set placeholder text
+设置占位符文本。
 
-- **Parameters:**
-	- `placeholder_text` *(string)*: The placeholder text
-
-- **Returns:**
-	- `self` *(druid.rich_input)*: Current instance
+- **参数:**
+  - `placeholder_text` _(string)_: 占位符文本
 
 ### select
 
 ---
+
 ```lua
 rich_input:select()
 ```
 
-Select input field
-
-- **Returns:**
-	- `self` *(druid.rich_input)*: Current instance
+选择输入字段。
 
 ### set_text
 
 ---
+
 ```lua
 rich_input:set_text(text)
 ```
 
-Set input field text
+设置输入文本。
 
-- **Parameters:**
-	- `text` *(string)*: The input text
-
-- **Returns:**
-	- `self` *(druid.rich_input)*: Current instance
+- **参数:**
+  - `text` _(string)_: 要设置的文本
 
 ### set_font
 
 ---
+
 ```lua
 rich_input:set_font(font)
 ```
 
-Set input field font
+设置字体。
 
-- **Parameters:**
-	- `font` *(hash)*: The font hash
-
-- **Returns:**
-	- `self` *(druid.rich_input)*: Current instance
+- **参数:**
+  - `font` _(string|resource)_: 字体资源
 
 ### get_text
 
 ---
+
 ```lua
 rich_input:get_text()
 ```
 
-Set input field text
+获取输入文本。
 
-- **Returns:**
-	- `` *(string)*:
+- **返回:**
+  - `text` _(string)_: 当前输入文本
 
 ### set_allowed_characters
 
 ---
+
 ```lua
-rich_input:set_allowed_characters(characters)
+rich_input:set_allowed_characters(allowed_chars)
 ```
 
-Set allowed charaters for input field.
- See: https://defold.com/ref/stable/string/
- ex: [%a%d] for alpha and numeric
+设置允许的字符。
 
-- **Parameters:**
-	- `characters` *(string)*: Regular expression for validate user input
+- **参数:**
+  - `allowed_chars` _(string)_: 允许的字符
 
-- **Returns:**
-	- `self` *(druid.rich_input)*: Current instance
+## 事件字段
 
+### root
 
-## Fields
-<a name="root"></a>
-- **root** (_node_): The root node of the rich input
+根节点。
 
-<a name="input"></a>
-- **input** (_druid.input_): The input component
+### input
 
-<a name="cursor"></a>
-- **cursor** (_node_): The cursor node
+输入组件实例。
 
-<a name="cursor_text"></a>
-- **cursor_text** (_node_): The cursor text node
+### cursor
 
-<a name="cursor_position"></a>
-- **cursor_position** (_vector3_): The position of the cursor
+光标节点。
 
-<a name="druid"></a>
-- **druid** (_druid.instance_): The Druid Factory used to create components
+### cursor_text
 
-<a name="is_lshift"></a>
-- **is_lshift** (_boolean_)
+光标文本。
 
-<a name="is_lctrl"></a>
-- **is_lctrl** (_boolean_)
+### cursor_position
 
-<a name="is_button_input_enabled"></a>
-- **is_button_input_enabled** (_unknown_)
+光标位置。
 
-<a name="drag"></a>
-- **drag** (_druid.drag_): A component that allows you to subscribe to drag events over a node
+### druid
 
-<a name="placeholder"></a>
-- **placeholder** (_druid.text_): Basic Druid text component. Text components by default have the text size adjusting.
+关联的 Druid 实例。
 
-<a name="text_position"></a>
-- **text_position** (_unknown_)
+### is_lshift
 
+是否按下左 Shift 键。
+
+### is_lctrl
+
+是否按下左 Ctrl 键。
+
+### is_button_input_enabled
+
+按钮输入是否启用。
+
+### drag
+
+拖动组件引用。
+
+### placeholder
+
+占位符文本。
+
+### text_position
+
+文本位置。

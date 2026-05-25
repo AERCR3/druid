@@ -28,7 +28,7 @@ function PanelInformation:init(template, nodes)
 	self.button_profiler:set_key_trigger("key_p")
 	self.button_view_code = self.druid:new_button("button_view_code/root")
 
-	-- Disable profiler button for HTML5
+	-- 网页平台下禁用性能分析器按钮
 	gui.set_enabled(self.button_profiler.node, not html5)
 end
 

@@ -77,13 +77,13 @@ function M:load_langs()
 		table.insert(self.created_nodes, prefab_nodes)
 	end
 
-	do -- Update window size to fit all languages
+	do -- 根据语言按钮数量调整窗口高度
 		local height = self.grid:get_size().y
 		gui.set(self:get_node("window"), "size.y", height + 110)
 		gui.set(self:get_node("panel_header"), "position.y", (height + 110)/2)
 	end
 
-	do -- Select current language button
+	do -- 高亮当前语言按钮
 		local current_lang_button = self.lang_buttons[self._current_lang_id]
 		gui.animate(current_lang_button.node, "color", SELECTED_LANGUAGE_COLOR, gui.EASING_OUTQUAD, 0.2)
 	end

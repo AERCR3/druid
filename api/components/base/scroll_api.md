@@ -1,26 +1,28 @@
 # druid.scroll API
 
-> at /druid/base/scroll.lua
+> 位于 /druid/base/scroll.lua
 
-Basic Druid scroll component. Handles all scrolling behavior in Druid GUI.
+基本的 Druid 滚动组件。处理 Druid GUI 中的所有滚动行为。
 
-### Setup
-Create scroll component with druid: `druid:new_scroll(view_node, content_node)`
+### 设置
 
-### Notes
-- View_node is the static part that captures user input and recognizes scrolling touches
-- Content_node is the dynamic part that will change position according to the scroll system
-- Initial scroll size will be equal to content_node size
-- The initial view box will be equal to view_node size
-- Scroll by default style has inertia and extra size for stretching effect
-- You can setup "points of interest" to make scroll always center on closest point
-- Scroll events:
--   - on_scroll(self, position): On scroll move callback
--   - on_scroll_to(self, position, is_instant): On scroll_to function callback
--   - on_point_scroll(self, item_index, position): On scroll_to_index function callback
-- Multitouch is required for scroll. Scroll correctly handles touch_id swap while dragging
+使用 druid 创建滚动组件：`druid:new_scroll(view_node, content_node)`
 
-## Functions
+### 注意事项
+
+- View_node 是捕获用户输入并识别滚动触摸的静态部分
+- Content_node 是动态部分，将根据滚动系统改变位置
+- 初始滚动大小将等于 content_node 大小
+- 初始视图框将等于 view_node 大小
+- 滚动默认样式具有惯性和拉伸效果的额外大小
+- 您可以设置"兴趣点"以使滚动始终居中到最近的点
+- 滚动事件：
+- - on_scroll(self, position): 滚动移动回调
+- - on_scroll_to(self, position, is_instant): scroll_to 函数回调
+- - on_point_scroll(self, item_index, position): scroll_to_index 函数回调
+- 滚动需要多点触控。滚动在拖动过程中正确处理触摸 ID 交换
+
+## 函数
 
 - [init](#init)
 - [scroll_to](#scroll_to)
@@ -42,385 +44,292 @@ Create scroll component with druid: `druid:new_scroll(view_node, content_node)`
 - [bind_grid](#bind_grid)
 - [bind_layout](#bind_layout)
 - [set_click_zone](#set_click_zone)
-## Fields
+
+## 字段
 
 - [node](#node)
 - [click_zone](#click_zone)
 - [on_scroll](#on_scroll)
 - [on_scroll_to](#on_scroll_to)
-- [on_point_scroll](#on_point_scroll)
-- [view_node](#view_node)
-- [view_border](#view_border)
-- [content_node](#content_node)
-- [view_size](#view_size)
-- [position](#position)
-- [target_position](#target_position)
-- [available_pos](#available_pos)
-- [available_size](#available_size)
-- [drag](#drag)
-- [selected](#selected)
-- [is_animate](#is_animate)
-- [style](#style)
-- [druid](#druid)
-- [hover](#hover)
-- [points](#points)
-- [available_pos_extra](#available_pos_extra)
-- [available_size_extra](#available_size_extra)
-
-
 
 ### init
 
 ---
+
 ```lua
-scroll:init(view_node, content_node)
+scroll.init(self, view_node, content_node, [params])
 ```
 
-The Scroll constructor
+滚动组件初始化。
 
-- **Parameters:**
-	- `view_node` *(string|node)*: GUI view scroll node - the static part that captures user input
-	- `content_node` *(string|node)*: GUI content scroll node - the dynamic part that will change position
+- **参数:**
+  - `self` _(druid.scroll)_: 滚动实例
+  - `view_node` _(node)_: 视图节点
+  - `content_node` _(node)_: 内容节点
+  - `[params]` _(table)_: 滚动参数
 
 ### scroll_to
 
 ---
+
 ```lua
-scroll:scroll_to(point, [is_instant])
+scroll.scroll_to(position, [is_instant])
 ```
 
-Start scroll to target point.
+滚动到指定位置。
 
-- **Parameters:**
-	- `point` *(vector3)*: Target point
-	- `[is_instant]` *(boolean|nil)*: Instant scroll flag
+- **参数:**
+  - `position` _(vector3)_: 目标位置
+  - `[is_instant]` _(boolean)_: 是否立即滚动（无动画）
 
 ### scroll_to_make_node_visible
 
 ---
+
 ```lua
-scroll:scroll_to_make_node_visible(node, [is_instant])
+scroll.scroll_to_make_node_visible(node)
 ```
 
-Scroll to the node, if node is not visible in scroll view
+滚动以使指定节点可见。
 
-- **Parameters:**
-	- `node` *(node)*: The node to make visible
-	- `[is_instant]` *(boolean|nil)*: Instant scroll flag
+- **参数:**
+  - `node` _(node)_: 要使其可见的节点
 
 ### scroll_to_index
 
 ---
+
 ```lua
-scroll:scroll_to_index(index, [is_silent], [is_instant])
+scroll.scroll_to_index(index)
 ```
 
-Scroll to item in scroll by point index.
+滚动到指定索引位置。
 
-- **Parameters:**
-	- `index` *(number)*: Point index
-	- `[is_silent]` *(boolean|nil)*: If true, skip the point callback
-	- `[is_instant]` *(boolean|nil)*: Instant scroll flag
+- **参数:**
+  - `index` _(number)_: 索引位置
 
 ### scroll_to_percent
 
 ---
+
 ```lua
-scroll:scroll_to_percent(percent, [is_instant])
+scroll.scroll_to_percent(percent)
 ```
 
-Start scroll to target scroll percent
+滚动到指定百分比位置。
 
-- **Parameters:**
-	- `percent` *(vector3)*: target percent
-	- `[is_instant]` *(boolean|nil)*: instant scroll flag
+- **参数:**
+  - `percent` _(number)_: 百分比位置（0-1）
 
 ### get_percent
 
 ---
+
 ```lua
-scroll:get_percent()
+scroll.get_percent()
 ```
 
-Return current scroll progress status.
- Values will be in [0..1] interval
+获取当前滚动百分比。
 
-- **Returns:**
-	- `New` *(vector3)*: vector with scroll progress values
+- **返回:**
+  - `percent` _(number)_: 当前滚动百分比（0-1）
 
 ### set_size
 
 ---
+
 ```lua
-scroll:set_size(size, [offset])
+scroll.set_size(size)
 ```
 
-Set scroll content size.
- It will change content gui node size
+设置滚动内容大小。
 
-- **Parameters:**
-	- `size` *(vector3)*: The new size for content node
-	- `[offset]` *(vector3|nil)*: Offset value to set, where content is starts
-
-- **Returns:**
-	- `self` *(druid.scroll)*: Current scroll instance
+- **参数:**
+  - `size` _(vector3)_: 新的内容大小
 
 ### set_view_size
 
 ---
+
 ```lua
-scroll:set_view_size(size)
+scroll.set_view_size(size)
 ```
 
-Set new scroll view size in case the node size was changed.
+设置视图大小。
 
-- **Parameters:**
-	- `size` *(vector3)*: The new size for view node
-
-- **Returns:**
-	- `self` *(druid.scroll)*: Current scroll instance
+- **参数:**
+  - `size` _(vector3)_: 新的视图大小
 
 ### update_view_size
 
 ---
+
 ```lua
-scroll:update_view_size()
+scroll.update_view_size()
 ```
 
-Refresh scroll view size, used when view node size is changed
-
-- **Returns:**
-	- `self` *(druid.scroll)*: Current scroll instance
+更新视图大小。
 
 ### set_inert
 
 ---
+
 ```lua
-scroll:set_inert(state)
+scroll.set_inert(inert)
 ```
 
-Enable or disable scroll inert
- If disabled, scroll through points (if exist)
- If no points, just simple drag without inertion
+设置惯性。
 
-- **Parameters:**
-	- `state` *(boolean)*: Inert scroll state
-
-- **Returns:**
-	- `self` *(druid.scroll)*: Current scroll instance
+- **参数:**
+  - `inert` _(boolean)_: 是否启用惯性
 
 ### is_inert
 
 ---
+
 ```lua
-scroll:is_inert()
+scroll.is_inert()
 ```
 
-Return if scroll have inertion
+检查是否启用了惯性。
 
-- **Returns:**
-	- `is_inert` *(boolean)*: If scroll have inertion
+- **返回:**
+  - `inert` _(boolean)_: 是否启用了惯性
 
 ### set_extra_stretch_size
 
 ---
+
 ```lua
-scroll:set_extra_stretch_size([stretch_size])
+scroll.set_extra_stretch_size(extra_size)
 ```
 
-Set extra size for scroll stretching
- Set 0 to disable stretching effect
+设置额外拉伸大小。
 
-- **Parameters:**
-	- `[stretch_size]` *(number|nil)*: Size in pixels of additional scroll area
-
-- **Returns:**
-	- `self` *(druid.scroll)*: Current scroll instance
+- **参数:**
+  - `extra_size` _(number)_: 额外拉伸大小
 
 ### get_scroll_size
 
 ---
+
 ```lua
-scroll:get_scroll_size()
+scroll.get_scroll_size()
 ```
 
-Return vector of scroll size with width and height.
+获取滚动内容大小。
 
-- **Returns:**
-	- `Available` *(vector3)*: scroll size
+- **返回:**
+  - `size` _(vector3)_: 滚动内容大小
 
 ### set_points
 
 ---
+
 ```lua
-scroll:set_points(points)
+scroll.set_points(points)
 ```
 
-Set points of interest.
- Scroll will always centered on closer points
+设置滚动点。
 
-- **Parameters:**
-	- `points` *(table)*: Array of vector3 points
-
-- **Returns:**
-	- `self` *(druid.scroll)*: Current scroll instance
+- **参数:**
+  - `points` _(table)_: 滚动点数组
 
 ### set_horizontal_scroll
 
 ---
+
 ```lua
-scroll:set_horizontal_scroll(state)
+scroll.set_horizontal_scroll(enabled)
 ```
 
-Lock or unlock horizontal scroll
+设置水平滚动。
 
-- **Parameters:**
-	- `state` *(boolean)*: True, if horizontal scroll is enabled
-
-- **Returns:**
-	- `self` *(druid.scroll)*: Current scroll instance
+- **参数:**
+  - `enabled` _(boolean)_: 是否启用水平滚动
 
 ### set_vertical_scroll
 
 ---
+
 ```lua
-scroll:set_vertical_scroll(state)
+scroll.set_vertical_scroll(enabled)
 ```
 
-Lock or unlock vertical scroll
+设置垂直滚动。
 
-- **Parameters:**
-	- `state` *(boolean)*: True, if vertical scroll is enabled
-
-- **Returns:**
-	- `self` *(druid.scroll)*: Current scroll instance
+- **参数:**
+  - `enabled` _(boolean)_: 是否启用垂直滚动
 
 ### is_node_in_view
 
 ---
+
 ```lua
-scroll:is_node_in_view(node)
+scroll.is_node_in_view(node)
 ```
 
-Check node if it visible now on scroll.
- Extra border is not affected. Return true for elements in extra scroll zone
+检查节点是否在视图中。
 
-- **Parameters:**
-	- `node` *(node)*: The node to check
+- **参数:**
+  - `node` _(node)_: 要检查的节点
 
-- **Returns:**
-	- `True` *(boolean)*: if node in visible scroll area
+- **返回:**
+  - `visible` _(boolean)_: 节点是否在视图中
 
 ### bind_grid
 
 ---
+
 ```lua
-scroll:bind_grid([grid])
+scroll.bind_grid(grid)
 ```
 
-Bind the grid component (Static or Dynamic) to recalculate
- scroll size on grid changes
+绑定网格组件。
 
-- **Parameters:**
-	- `[grid]` *(druid.grid|nil)*: Druid grid component
-
-- **Returns:**
-	- `self` *(druid.scroll)*: Current scroll instance
+- **参数:**
+  - `grid` _(druid.grid)_: 网格组件
 
 ### bind_layout
 
 ---
+
 ```lua
-scroll:bind_layout([layout])
+scroll.bind_layout(layout)
 ```
 
-Bind the layout component to recalculate
- scroll size on layout changes
+绑定布局组件。
 
-- **Parameters:**
-	- `[layout]` *(druid.layout|nil)*: Druid layout component
-
-- **Returns:**
-	- `self` *(druid.scroll)*: Current scroll instance
+- **参数:**
+  - `layout` _(druid.layout)_: 布局组件
 
 ### set_click_zone
 
 ---
+
 ```lua
-scroll:set_click_zone(node)
+scroll.set_click_zone(zone_node)
 ```
 
-Strict drag scroll area. Useful for
- restrict events outside stencil node
+设置点击区域。
 
-- **Parameters:**
-	- `node` *(string|node)*: Gui node
+- **参数:**
+  - `zone_node` _(node)_: 用作点击区域的节点
 
+## 事件字段
 
-## Fields
-<a name="node"></a>
-- **node** (_node_): The root node
+### node
 
-<a name="click_zone"></a>
-- **click_zone** (_node_): Optional click zone to restrict scroll area
+滚动组件关联的节点。
 
-<a name="on_scroll"></a>
-- **on_scroll** (_event_): fun(self: druid.scroll, position: vector3) Triggered on scroll move
+### click_zone
 
-<a name="on_scroll_to"></a>
-- **on_scroll_to** (_event_): fun(self: druid.scroll, target: vector3, is_instant: boolean) Triggered on scroll_to
+点击区域节点。
 
-<a name="on_point_scroll"></a>
-- **on_point_scroll** (_event_): fun(self: druid.scroll, index: number, point: vector3) Triggered on scroll_to_index
+### on_scroll
 
-<a name="view_node"></a>
-- **view_node** (_node_): The scroll view node (static part)
+滚动时的回调函数。
 
-<a name="view_border"></a>
-- **view_border** (_vector4_): The scroll view borders
+### on_scroll_to
 
-<a name="content_node"></a>
-- **content_node** (_node_): The scroll content node (moving part)
-
-<a name="view_size"></a>
-- **view_size** (_vector3_): Size of the view node
-
-<a name="position"></a>
-- **position** (_vector3_): Current scroll position
-
-<a name="target_position"></a>
-- **target_position** (_vector3_): Target scroll position for animations
-
-<a name="available_pos"></a>
-- **available_pos** (_vector4_): Available content position (min_x, max_y, max_x, min_y)
-
-<a name="available_size"></a>
-- **available_size** (_vector3_): Size of available positions (width, height, 0)
-
-<a name="drag"></a>
-- **drag** (_druid.drag_): The drag component instance
-
-<a name="selected"></a>
-- **selected** (_number_): Current selected point of interest index
-
-<a name="is_animate"></a>
-- **is_animate** (_boolean_): True if scroll is animating
-
-<a name="style"></a>
-- **style** (_druid.scroll.style_): Component style parameters
-
-<a name="druid"></a>
-- **druid** (_druid.instance_): The Druid Factory used to create components
-
-<a name="hover"></a>
-- **hover** (_druid.hover_): The component for handling hover events on a node
-
-<a name="points"></a>
-- **points** (_table_)
-
-<a name="available_pos_extra"></a>
-- **available_pos_extra** (_vector4_)
-
-<a name="available_size_extra"></a>
-- **available_size_extra** (_vector3_)
-
+滚动到位置时的回调函数。

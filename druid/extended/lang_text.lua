@@ -2,28 +2,31 @@ local event = require("event.event")
 local component = require("druid.component")
 local settings = require("druid.system.settings")
 
----The component used for displaying localized text, can automatically update text when locale is changed.
----It wraps the Text component to handle localization using druid's get_text_function to set text by its id.
+---用于显示本地化文本的组件，可以在语言环境更改时自动更新文本。
+---它包装了Text组件，使用druid的get_text_function通过ID设置文本以处理本地化。
 ---
----### Setup
----Create lang text component with druid: `text = druid:new_lang_text(node_name, locale_id)`
+---### 设置
+---使用druid创建语言文本组件: `text = druid:new_lang_text(node_name, locale_id)`
 ---
----### Notes
----- Component automatically updates text when locale is changed
----- Uses druid's get_text_function to get localized text by id
----- Supports string formatting with additional parameters
+---### 注意事项
+---- 组件在语言环境更改时自动更新文本
+---- 使用druid的get_text_function通过ID获取本地化文本
+---- 支持使用附加参数进行字符串格式化
+---语言文本组件是多语言支持的关键组件，实现了动态文本本地化
 ---@class druid.lang_text: druid.component
----@field text druid.text The text component
----@field node node The node of the text component
----@field on_change event fun(self: druid.lang_text) The event triggered when the text is changed
----@field private last_locale_args table The last locale arguments
----@field private last_locale string The last locale
+---@field text druid.text 文本组件
+---@field node node 文本组件的节点
+---@field on_change event fun(self: druid.lang_text) 文本更改时触发的事件
+---@field private last_locale_args table 最后一次语言环境参数
+---@field private last_locale string 最后一次语言环境
 local M = component.create("lang_text")
 
 
----@param node string|node The node_id or gui.get_node(node_id)
----@param locale_id string|nil Default locale id or text from node as default. If not provided, will use text from the node
----@param adjust_type string|nil Adjust type for text. By default is DOWNSCALE. Look const.TEXT_ADJUST for reference
+---语言文本组件构造函数
+---初始化语言文本组件，设置节点、本地化ID和调整类型
+---@param node string|node 节点ID或gui.get_node(node_id)
+---@param locale_id string|nil 默认语言环境ID或来自节点的文本作为默认值。如果未提供，将使用节点中的文本
+---@param adjust_type string|nil 文本的调整类型。默认为DOWNSCALE。参考const.TEXT_ADJUST
 function M:init(node, locale_id, adjust_type)
 	self.druid = self:get_druid()
 	self.text = self.druid:new_text(node, locale_id, adjust_type)
@@ -38,7 +41,6 @@ function M:init(node, locale_id, adjust_type)
 	return self
 end
 
-
 ---@private
 function M:on_language_change()
 	if self.last_locale then
@@ -46,10 +48,10 @@ function M:on_language_change()
 	end
 end
 
-
----Setup raw text to lang_text component. This will clear any locale settings.
----@param text string Text for text node
----@return druid.lang_text self Current instance
+---向语言文本组件设置原始文本。这将清除任何语言环境设置。
+---此函数用于直接设置文本内容，绕过本地化系统
+---@param text string 文本节点的文本
+---@return druid.lang_text self 当前实例
 function M:set_to(text)
 	self.last_locale = nil
 	self.text:set_text(text)
@@ -58,7 +60,6 @@ function M:set_to(text)
 	return self
 end
 
-
 ---Setup raw text to lang_text component. This will clear any locale settings.
 ---@param text string Text for text node
 ---@return druid.lang_text self Current instance
@@ -66,11 +67,11 @@ function M:set_text(text)
 	return self:set_to(text)
 end
 
-
----Translate the text by locale_id. The text will be automatically updated when locale changes.
----@param locale_id string Locale id to get text from
----@param ... string Optional params for string.format
----@return druid.lang_text self Current instance
+---通过语言环境ID翻译文本。当语言环境更改时，文本将自动更新。
+---此函数是实现动态文本本地化的核心方法，支持参数格式化
+---@param locale_id string 获取文本的语言环境ID
+---@param ... string string.format的可选参数
+---@return druid.lang_text self 当前实例
 function M:translate(locale_id, ...)
 	self.last_locale_args = { ... }
 	self.last_locale = locale_id or self.last_locale
@@ -79,16 +80,15 @@ function M:translate(locale_id, ...)
 	return self
 end
 
-
----Format string with new text params on localized text. Keeps the current locale but updates the format parameters.
----@param ... string Optional params for string.format
----@return druid.lang_text self Current instance
+---使用新文本参数格式化本地化文本。保持当前语言环境但更新格式参数。
+---此函数允许在不改变语言环境的情况下更新文本的格式化参数
+---@param ... string string.format的可选参数
+---@return druid.lang_text self 当前实例
 function M:format(...)
 	self.last_locale_args = { ... }
 	self.text:set_text(settings.get_text(self.last_locale, ...) or "")
 
 	return self
 end
-
 
 return M

@@ -7,9 +7,9 @@ local M = {}
 
 
 function M:init()
-	self.button = self.druid:new_button("root", self.on_checkbox_click) -- Button to handle checkbox
-	self.icon = self:get_node("icon") -- Checkbox icon to hide/show
-	self.selected = self:get_node("selected") -- Selected effect to show when checkbox is changed
+	self.button = self.druid:new_button("root", self.on_checkbox_click) -- 用于处理勾选点击的按钮
+	self.icon = self:get_node("icon") -- 复选框图标（显示/隐藏）
+	self.selected = self:get_node("selected") -- 勾选变化时的选中效果
 	gui.set_alpha(self.selected, 0)
 
 	self:set_state(false)

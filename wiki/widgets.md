@@ -1,12 +1,12 @@
-# Widgets
+# 小部件
 
-Widgets are reusable UI components that simplify the creation and management of user interfaces in your game.
+小部件是可重用的UI组件，可简化游戏中用户界面的创建和管理。
 
-## What is widget
+## 什么是小部件
 
-Before widgets, there were "custom components". Widgets replace custom components. Basically, they're the same thing, with the only difference being how they're initialized.
+在小部件之前，有"自定义组件"。小部件替换了自定义组件。基本上，它们是相同的东西，唯一的区别在于它们的初始化方式。
 
-Let's see a basic custom component template:
+让我们看看基本的自定义组件模板：
 
 ```lua
 local component = require("druid.component")
@@ -23,7 +23,7 @@ function M:init(template, nodes)
 end
 
 function M:on_click()
-    print("Current output string: " .. self.output_string)
+	print("当前输出字符串: " .. self.output_string)
 end
 
 function M:set_output_string(output_string)
@@ -31,17 +31,17 @@ function M:set_output_string(output_string)
 end
 ```
 
-Basic components are created with the `druid:new()` function:
+基本组件使用 `druid:new()` 函数创建：
 
 ```lua
-local template = "my_component" -- The template name on GUI scene, if nil will take nodes directly by gui.get_node()
-local nodes = gui.clone_tree(gui.get_node("my_component/root")) -- We can clone component nodes and init over cloned nodes
+local template = "my_component" -- GUI场景中的模板名称，如果是nil则直接通过gui.get_node()获取
+local nodes = gui.clone_tree(gui.get_node("my_component/root")) -- 我们可以克隆组件节点并在克隆的节点上初始化
 
 local my_component = druid:new("my_component", template, nodes)
 my_component:set_output_string("Hello world!")
 ```
 
-Now, let's see how to do it with widgets:
+现在，让我们看看如何使用小部件：
 
 ```lua
 ---@type my_widget: druid.widget
@@ -49,11 +49,11 @@ local M = {}
 
 function M:init()
     self.druid:new_button("button_node_name", self.on_click)
-    self.output_string = ""
+	self.output_string = ""
 end
 
 function M:on_click()
-    print("Current output string: " .. self.output_string)
+    print("当前输出字符串: " .. self.output_string)
 end
 
 function M:set_output_string(output_string)
@@ -63,9 +63,9 @@ end
 return M
 ```
 
-That's all! The same functionality but without any boilerplate code, just a Lua table. The Druid instance, templates and nodes are already created and available.
+就是这样！相同的功能，但没有任何样板代码，只是一个Lua表。Druid实例、模板和节点已经创建并可用。
 
-And you can create your own widgets like this:
+你可以像这样创建自己的小部件：
 
 ```lua
 local druid = require("druid.druid")
@@ -73,25 +73,25 @@ local my_widget = require("widgets.my_widget.my_widget")
 
 function init(self)
     self.druid = druid.new(self)
-    local template_id = "my_widget" -- If using a GUI template, set a template id, otherwise set nil
-    local nodes = nil -- If nodes are cloned with gui.clone_tree(), set a nodes table, otherwise set nil
+	local template_id = "my_widget" -- 如果使用GUI模板，设置模板ID，否则设置为nil
+	local nodes = nil -- 如果节点是通过gui.clone_tree()克隆的，设置节点表，否则设置为nil
     self.my_widget = self.druid:new_widget(my_widget, template_id, nodes)
     self.my_widget:set_output_string("Hello world!")
 end
 ```
 
-So now creating UI components with widgets is much easier and cleaner than using custom components.
+所以现在使用小部件创建UI组件比使用自定义组件更容易、更简洁。
 
-## Create a new widget
+## 创建新小部件
 
-Let's start from the beginning. Widgets usually consist of 2 parts:
+让我们从头开始。小部件通常由2部分组成：
 
-1. GUI scene
-2. Widget Lua module
+1. GUI场景
+2. 小部件Lua模块
 
-Make a GUI scene of your widget (user portrait avatar panel, shop window, game panel menu, etc). Design it as you wish, but it's recommended to add one `root` node with the id `root` and make all your other nodes children of this node. This makes working with the widget much easier. Also ofter this root will represent the widget size, so it's recommended to set it's size to the desired size of the widget.
+创建一个小部件的GUI场景（用户头像面板、商店窗口、游戏面板菜单等）。按照你的意愿设计它，但建议添加一个ID为`root`的`root`节点，并将所有其他节点作为此节点的子节点。这使得处理小部件更加容易。此外，这个根节点通常代表小部件的大小，因此建议将其大小设置为小部件的所需大小。
 
-Let's create a new widget by creating a new file next to our GUI scene file:
+让我们通过在GUI场景文件旁边创建一个新文件来创建一个小部件：
 
 ```lua
 -- my_widget.lua
@@ -103,72 +103,17 @@ function M:init()
 end
 
 function M:open_widget()
-    print("Open widget pressed")
+    print("打开小部件被按下")
 end
 
 return M
 ```
 
-That's the basic creation process. Now we have a widget where we access the root node and use the "button_open" node as a button.
+这就是基本的创建过程。现在我们有了一个小部件，在这里我们可以访问根节点并使用"button_open"节点作为按钮。
 
-Widget modules also support lifecycle callbacks:
+现在，让我们在游戏场景中创建一个小部件。
 
-```lua
--- Called before widget is removed by `druid:remove(widget)` call or on `druid:final()` call
-function M:on_remove() end
-
--- Called every frame update
-function M:update(dt) end
-
--- Called when input is dispatched to widget. Return true to consume input
-function M:on_input(action_id, action) return false end
-
--- Called on script message
-function M:on_message(message_id, message, sender) end
-
--- Called on `druid.on_language_change` call
-function M:on_language_change() end
-
--- Called when layout has changed
-function M:on_layout_change() end
-
--- Called when window is resized
-function M:on_window_resized() end
-
--- Called when input was already consumed by a higher-priority component
-function M:on_input_interrupt() end
-
--- Called when widget lost focus
-function M:on_focus_lost() end
-
--- Called when widget gained focus
-function M:on_focus_gained() end
-```
-
-You can define only callbacks you need. Druid will call them automatically when corresponding events happen.
-
-Additional `druid:new_widget(widget, template, nodes, ...)` arguments are forwarded to `M:init(...)`:
-
-```lua
-local M = {}
-
-function M:init(user_id, options)
-    self.user_id = user_id
-    self.options = options
-end
-
-return M
-```
-
-```lua
-self.profile_widget = self.druid:new_widget(profile_widget, "profile_widget", nil, "42", {
-    show_badges = true
-})
-```
-
-Now, let's create a widget inside your game scene.
-
-Place a widget (GUI template) on your main scene. Then import Druid and create a new widget instance using this GUI template placed on the scene:
+在主场景上放置一个小部件（GUI模板）。然后导入Druid并使用放置在场景上的GUI模板创建一个新的小部件实例：
 
 ```lua
 local druid = require("druid.druid")
@@ -178,20 +123,19 @@ function init(self)
     self.druid = druid.new(self)
     self.my_widget = self.druid:new_widget(my_widget, "my_widget")
 
-    -- In case we want to clone it and use several times we can pass the nodes table
+    -- 如果我们想要克隆它并多次使用，我们可以传递节点表
     local array_of_widgets = {}
     for index = 1, 10 do
-        -- Instead of manual gui.clone_tree() call, we can pass a node_id to clone from as the third argument
+        -- 对于小部件，现在我们可以直接使用my_widget内的根节点，而不是手动克隆节点
         local widget = self.druid:new_widget(my_widget, "my_widget", "root")
         table.insert(array_of_widgets, widget)
     end
 end
 ```
 
+## 不使用GUI模板使用小部件
 
-## Using Widgets without GUI templates
-
-It's a possible to use widgets without GUI templates. This widget can pick nodes from the parent instance.
+可以在不使用GUI模板的情况下使用小部件。此小部件可以从父实例中选择节点。
 
 ```lua
 -- my_widget.lua
@@ -201,7 +145,6 @@ local M = {}
 
 function M:init()
     self.on_close = event.create()
-    -- Since we have no template prefix to add in paths, it will pick nodes from the parent instance directly
     self.druid:new_hotkey("key_backspace", self.on_close)
 end
 
@@ -214,96 +157,25 @@ local druid = require("druid.druid")
 local my_widget = require("widgets.my_widget.my_widget")
 
 local function on_close()
-    print("Widget closed")
+	print("小部件已关闭")
 end
 
 function init(self)
     self.druid = druid.new(self)
     self.my_widget = self.druid:new_widget(my_widget)
-    self.my_widget.on_close:subscribe(on_close, self)
+	self.my_widget.on_close:subscribe(on_close, self)
 end
 ```
 
+## 创建Druid小部件编辑器脚本
 
-## Create Druid Widget Editor Script
+Druid提供了一个编辑器脚本来帮助您为GUI场景创建Lua文件。您可以在处理\*.gui场景时在菜单`Edit -> Create Druid Widget`下找到命令。
 
-Druid provides an editor script to assist you in creating Lua files for your GUI scenes. You can find the commands under the menu `Edit -> Create Druid Widget` when working with *.gui scenes.
+此脚本将创建一个具有相同名称和基本模板的新小部件lua文件。
 
-This script will create a new widget lua file with the same name and basic template for the widget.
+Druid提供两个模板：
 
-The Druid provides two templates:
+- `/druid/templates/widget.lua.template` - 小部件的基本模板。
+- `/druid/templates/widget_full.lua.template` - 小部件的完整模板。
 
-- `/druid/templates/widget.lua.template` - Minimal template for the widget.
-- `/druid/templates/widget_full.lua.template` - Full template for the widget.
-
-You can change the path to the template in the `[Druid] Settings` option in the `Edit` menu.
-
-
-## Creating GO widgets without *.gui_script
-
-You can create Druid widgets from a game object script. This allows you to use widgets without creating dedicated `gui_script` files for each one.
-
-For the GUI file you want to use as a widget, set its `gui_script` to `druid_widget.gui_script`.
-When you call `druid.get_widget(widget, gui_url)` in a game object script, Druid creates a widget proxy with bindings for all top-level widget functions.
-
-In some setups, you cannot create a widget immediately in `init(self)`, because the GUI component with `druid_widget.gui_script` may not be initialized yet.
-In this case, defer widget creation to a later step (for example, via `msg.post` and `on_message`):
-
-```lua
--- your_game_object.script
-local druid = require("druid.druid")
-local my_widget = require("widgets.my_widget.my_widget") -- Your widget module
-
-function init(self)
-    msg.post(".", "late_init")
-end
-
-local function on_event(self)
-    print("Widget event happened")
-end
-
-function on_message(self, message_id, message, sender)
-    if message_id == hash("late_init") then
-        local gui_url = msg.url(nil, nil, "go_widget")
-        self.go_widget = druid.get_widget(my_widget, gui_url)
-        self.go_widget:play_animation()
-        self.go_widget:set_position(go.get_position())
-        self.go_widget.on_event:subscribe(on_event, self)
-    end
-end
-```
-
-This feature is called `GO Widgets`, and it is more advanced. Important notes:
-
-- All top-level functions are wrapped with `event`, so they can be called from a GO script.
-- Nested widget functions are not exposed.
-- Top-level events are also available from a GO script.
-- You cannot directly use `gui.*` functions on widget nodes from the GO script. Use widget API functions instead.
-
-You can also pass params to a widget via `druid.get_widget(widget, gui_url, [params])`.
-
-```lua
-local my_widget = require("widgets.my_widget.my_widget")
-
-function init(self)
-    msg.post(".", "late_init")
-end
-
-function on_message(self, message_id, message, sender)
-    if message_id == hash("late_init") then
-        local gui_url = msg.url(nil, nil, "go_widget")
-        self.go_widget = druid.get_widget(my_widget, gui_url, {
-            show_badges = true
-        })
-    end
-end
-```
-
-```lua
--- my_widget.lua
-local M = {}
-
-function M:init(params)
-    self.show_badges = params.show_badges
-end
-```
+您可以在`Edit`菜单中的`[Druid] Settings`选项中更改模板路径。

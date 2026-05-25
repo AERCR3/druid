@@ -1,5 +1,10 @@
+--- 创建Druid集合资源的模块
+--- 此模块用于从GUI文件自动生成对应的Collection文件
 local M = {}
 
+--- 创建Druid集合
+--- 此函数根据GUI文件创建对应的Collection文件，便于在场景中使用
+---@param selection table - 选择的资源
 function M.create_druid_collection(selection)
 	local gui_filepath = editor.get(selection, "path")
 	print("Create Druid Collection for", gui_filepath)
@@ -22,7 +27,7 @@ function M.create_druid_collection(selection)
 	local template = [[name: "%s"
 scale_along_z: 0
 embedded_instances {
-  id: "root"
+  id: "go"
   data: "components {\n"
   "  id: \"%s\"\n"
   "  component: \"%s\"\n"
@@ -56,4 +61,3 @@ embedded_instances {
 end
 
 return M
-

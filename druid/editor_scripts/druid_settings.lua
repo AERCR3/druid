@@ -1,11 +1,14 @@
----For grid_row temporarily disable
+--- 临时禁用grid_row的相关诊断
 ---@diagnostic disable: undefined-field
 
 local editor_scripts_internal = require("druid.editor_scripts.editor_scripts_internal")
 
+--- Druid设置模块，用于管理编辑器偏好设置
 local M = {}
 
 
+--- 打开Druid设置
+--- 此函数打开设置对话框，允许用户配置Druid编辑器扩展的各种选项
 function M.open_settings()
 	print("Opening Druid settings")
 
@@ -20,7 +23,8 @@ function M.open_settings()
 			return exists
 		end, template_path)
 
-		local gui_script_template_path, set_gui_script_template_path = editor.ui.use_state(editor.prefs.get("druid.gui_script_template_path"))
+		local gui_script_template_path, set_gui_script_template_path = editor.ui.use_state(editor.prefs.get(
+		"druid.gui_script_template_path"))
 		local gui_script_template_path_valid = editor.ui.use_memo(function(path)
 			local exists = false
 			pcall(function()
@@ -30,10 +34,14 @@ function M.open_settings()
 			return exists
 		end, gui_script_template_path)
 
-		local editor_script_set_layers_enabled, set_editor_script_set_layers_enabled = editor.ui.use_state(editor.prefs.get("druid.command_assign_layers_enabled"))
-		local editor_script_create_widget_enabled, set_editor_script_create_widget_enabled = editor.ui.use_state(editor.prefs.get("druid.command_create_widget_enabled"))
-		local editor_script_create_gui_script_enabled, set_editor_script_create_gui_script_enabled = editor.ui.use_state(editor.prefs.get("druid.command_create_gui_script_enabled"))
-		local editor_script_create_collection_enabled, set_editor_script_create_collection_enabled = editor.ui.use_state(editor.prefs.get("druid.command_create_collection_enabled"))
+		local editor_script_set_layers_enabled, set_editor_script_set_layers_enabled = editor.ui.use_state(editor.prefs.get(
+		"druid.command_assign_layers_enabled"))
+		local editor_script_create_widget_enabled, set_editor_script_create_widget_enabled = editor.ui.use_state(editor
+		.prefs.get("druid.command_create_widget_enabled"))
+		local editor_script_create_gui_script_enabled, set_editor_script_create_gui_script_enabled = editor.ui.use_state(
+		editor.prefs.get("druid.command_create_gui_script_enabled"))
+		local editor_script_create_collection_enabled, set_editor_script_create_collection_enabled = editor.ui.use_state(
+		editor.prefs.get("druid.command_create_collection_enabled"))
 
 		return editor.ui.dialog({
 			title = "Druid Settings",
@@ -47,7 +55,7 @@ function M.open_settings()
 					editor.ui.resource_field({
 						value = template_path,
 						on_value_changed = set_template_path,
-						extensions = {"lua", "template"},
+						extensions = { "lua", "template" },
 						padding = editor.ui.PADDING.SMALL
 					}),
 					not path_valid and editor.ui.label({
@@ -61,7 +69,7 @@ function M.open_settings()
 					editor.ui.resource_field({
 						value = gui_script_template_path,
 						on_value_changed = set_gui_script_template_path,
-						extensions = {"lua", "template"},
+						extensions = { "lua", "template" },
 						padding = editor.ui.PADDING.SMALL
 					}),
 					not gui_script_template_path_valid and editor.ui.label({
@@ -75,7 +83,7 @@ function M.open_settings()
 					}),
 
 					editor.ui.grid({
-						columns = {{}, {grow = true}},
+						columns = { {}, { grow = true } },
 						children = {
 							editor.bundle.grid_row(
 								nil,
@@ -219,6 +227,5 @@ function M.open_settings()
 
 	return result
 end
-
 
 return M

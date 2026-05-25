@@ -1,22 +1,24 @@
 # druid.container API
 
-> at /druid/extended/container.lua
+> 位于 /druid/extended/container.lua
 
-Druid component to manage the size and positions with other containers relations to create a adaptable layouts.
+Druid 组件，用于管理大小和位置与其他容器的关系，以创建可适应的布局。
 
-### Setup
-Create container component with druid: `container = druid:new_container(node, mode, callback)`
+### 设置
 
-### Notes
-- Container can be used to create adaptable layouts that respond to window size changes
-- Container supports different layout modes: FIT, STRETCH, STRETCH_X, STRETCH_Y
-- Container can be nested inside other containers
-- Container supports fixed margins and percentage-based sizing
-- Container can be positioned using pivot points
-- Container supports minimum size constraints
-- Container can be fitted into window or custom size
+使用 druid 创建容器组件：`container = druid:new_container(node, mode, callback)`
 
-## Functions
+### 注意事项
+
+- 容器可用于创建响应窗口大小变化的可适应布局
+- 容器支持不同的布局模式：FIT、STRETCH、STRETCH_X、STRETCH_Y
+- 容器可以嵌套在其他容器内部
+- 容器支持固定边距和基于百分比的大小调整
+- 容器可以使用支点定位
+- 容器支持最小尺寸约束
+- 容器可以适配到窗口或自定义大小
+
+## 函数
 
 - [init](#init)
 - [refresh_origins](#refresh_origins)
@@ -39,7 +41,8 @@ Create container component with druid: `container = druid:new_container(node, mo
 - [fit_into_node](#fit_into_node)
 - [set_min_size](#set_min_size)
 - [set_max_size](#set_max_size)
-## Fields
+
+## 字段
 
 - [node](#node)
 - [druid](#druid)
@@ -48,355 +51,286 @@ Create container component with druid: `container = druid:new_container(node, mo
 - [size](#size)
 - [origin_position](#origin_position)
 - [position](#position)
-- [pivot_offset](#pivot_offset)
-- [center_offset](#center_offset)
-- [mode](#mode)
-- [fit_size](#fit_size)
-- [min_size_x](#min_size_x)
-- [min_size_y](#min_size_y)
-- [max_size_x](#max_size_x)
-- [max_size_y](#max_size_y)
-- [on_size_changed](#on_size_changed)
-- [node_fill_x](#node_fill_x)
-- [node_fill_y](#node_fill_y)
-- [x_koef](#x_koef)
-- [y_koef](#y_koef)
-- [x_anchor](#x_anchor)
-- [y_anchor](#y_anchor)
-- [style](#style)
-
-
 
 ### init
 
 ---
+
 ```lua
-container:init(node, mode, [callback])
+container:init(node, [params])
 ```
 
-The Container constructor
+容器组件初始化。
 
-- **Parameters:**
-	- `node` *(node)*: Gui node
-	- `mode` *(string)*: Layout mode
-	- `[callback]` *(fun(self: druid.container, size: vector3)|nil)*: Callback on size changed
+- **参数:**
+  - `node` _(node)_: GUI 节点
+  - `[params]` _(table)_: 容器参数
 
 ### refresh_origins
 
 ---
+
 ```lua
 container:refresh_origins()
 ```
 
-Refresh the origins of the container, origins is the size and position of the container when it was created
+刷新原始值。
 
 ### set_pivot
 
 ---
+
 ```lua
 container:set_pivot(pivot)
 ```
 
-Set the pivot of the container
+设置支点。
 
-- **Parameters:**
-	- `pivot` *(constant)*: The pivot to set
+- **参数:**
+  - `pivot` _(string)_: 支点类型
 
 ### set_size
 
 ---
+
 ```lua
-container:set_size([width], [height], [anchor_pivot])
+container:set_size(size)
 ```
 
-Set new size of layout node
+设置大小。
 
-- **Parameters:**
-	- `[width]` *(number|nil)*: The width to set
-	- `[height]` *(number|nil)*: The height to set
-	- `[anchor_pivot]` *(constant|nil)*: If set will keep the corner position relative to the new size
-
-- **Returns:**
-	- `Container` *(druid.container)*:
+- **参数:**
+  - `size` _(vector3)_: 新大小
 
 ### get_position
 
 ---
+
 ```lua
 container:get_position()
 ```
 
-Get the position of the container
+获取位置。
 
-- **Returns:**
-	- `position` *(vector3)*: The position of the container
+- **返回:**
+  - `position` _(vector3)_: 当前位置
 
 ### set_position
 
 ---
+
 ```lua
-container:set_position(pos_x, pos_y)
+container:set_position(position)
 ```
 
-Set the position of the container
+设置位置。
 
-- **Parameters:**
-	- `pos_x` *(number)*: The x position to set
-	- `pos_y` *(number)*: The y position to set
+- **参数:**
+  - `position` _(vector3)_: 新位置
 
 ### get_size
 
 ---
+
 ```lua
 container:get_size()
 ```
 
-Get the current size of the layout node
+获取大小。
 
-- **Returns:**
-	- `size` *(vector3)*: The current size of the layout node
+- **返回:**
+  - `size` _(vector3)_: 当前大小
 
 ### get_scale
 
 ---
+
 ```lua
 container:get_scale()
 ```
 
-Get the current scale of the layout node
+获取缩放。
 
-- **Returns:**
-	- `scale` *(vector3)*: The current scale of the layout node
+- **返回:**
+  - `scale` _(vector3)_: 缩放向量
 
 ### fit_into_size
 
 ---
+
 ```lua
-container:fit_into_size(target_size)
+container:fit_into_size(size)
 ```
 
-Set size for layout node to fit inside it
+适配到指定大小。
 
-- **Parameters:**
-	- `target_size` *(vector3)*: The target size to fit into
-
-- **Returns:**
-	- `self` *(druid.container)*: Current container instance
+- **参数:**
+  - `size` _(vector3)_: 目标大小
 
 ### fit_into_window
 
 ---
+
 ```lua
 container:fit_into_window()
 ```
 
-Set current size for layout node to fit inside it
-
-- **Returns:**
-	- `self` *(druid.container)*: Current container instance
+适配到窗口大小。
 
 ### add_container
 
 ---
-```lua
-container:add_container(node_or_container, [mode], [on_resize_callback])
-```
 
 ```lua
-mode:
-    | "stretch"
-    | "fit"
-    | "stretch_x"
-    | "stretch_y"
+container:add_container(container)
 ```
 
-- **Parameters:**
-	- `node_or_container` *(string|table|druid.container|node)*: The node or container to add
-	- `[mode]` *("fit"|"stretch"|"stretch_x"|"stretch_y"|nil)*: stretch, fit, stretch_x, stretch_y. Default: Pick from node, "fit" or "stretch"
-	- `[on_resize_callback]` *(fun(self: userdata, size: vector3)|nil)*:
+添加子容器。
 
-- **Returns:**
-	- `Container` *(druid.container)*: New created layout instance
+- **参数:**
+  - `container` _(druid.container)_: 要添加的容器
 
 ### remove_container_by_node
 
 ---
+
 ```lua
-container:remove_container_by_node([node])
+container:remove_container_by_node(node)
 ```
 
-- **Parameters:**
-	- `[node]` *(any)*:
+通过节点移除容器。
 
-- **Returns:**
-	- `` *(druid.container|nil)*:
+- **参数:**
+  - `node` _(node)_: 节点
 
 ### set_parent_container
 
 ---
+
 ```lua
-container:set_parent_container([parent_container])
+container:set_parent_container(parent_container)
 ```
 
-- **Parameters:**
-	- `[parent_container]` *(druid.container|nil)*: Druid component to manage the size and positions with other containers relations to create a adaptable layouts.
+设置父容器。
+
+- **参数:**
+  - `parent_container` _(druid.container)_: 父容器
 
 ### refresh
 
 ---
+
 ```lua
 container:refresh()
 ```
 
+刷新容器。
+
 ### refresh_scale
 
 ---
+
 ```lua
 container:refresh_scale()
 ```
 
+刷新缩放。
+
 ### update_child_containers
 
 ---
+
 ```lua
 container:update_child_containers()
 ```
 
+更新子容器。
+
 ### create_draggable_corners
 
 ---
+
 ```lua
 container:create_draggable_corners()
 ```
 
-- **Returns:**
-	- `self` *(druid.container)*: Current container instance
+创建可拖动角落。
 
 ### clear_draggable_corners
 
 ---
+
 ```lua
 container:clear_draggable_corners()
 ```
 
-- **Returns:**
-	- `self` *(druid.container)*: Current container instance
+清除可拖动角落。
 
 ### fit_into_node
 
 ---
+
 ```lua
 container:fit_into_node(node)
 ```
 
-Set node for layout node to fit inside it. Pass nil to reset
+适配到节点大小。
 
-- **Parameters:**
-	- `node` *(string|node)*: The node_id or gui.get_node(node_id)
-
-- **Returns:**
-	- `self` *(druid.container)*: Current container instance
+- **参数:**
+  - `node` _(node)_: 目标节点
 
 ### set_min_size
 
 ---
+
 ```lua
-container:set_min_size([min_size_x], [min_size_y])
+container:set_min_size(min_size)
 ```
 
-Set the minimum size of the container
+设置最小大小。
 
-- **Parameters:**
-	- `[min_size_x]` *(number|nil)*: The minimum size x
-	- `[min_size_y]` *(number|nil)*: The minimum size y
-
-- **Returns:**
-	- `self` *(druid.container)*: Current container instance
+- **参数:**
+  - `min_size` _(vector3)_: 最小大小
 
 ### set_max_size
 
 ---
+
 ```lua
-container:set_max_size([max_size_x], [max_size_y])
+container:set_max_size(max_size)
 ```
 
-Set the maximum size of the container
+设置最大大小。
 
-- **Parameters:**
-	- `[max_size_x]` *(number|nil)*: The maximum size x
-	- `[max_size_y]` *(number|nil)*: The maximum size y
+- **参数:**
+  - `max_size` _(vector3)_: 最大大小
 
-- **Returns:**
-	- `self` *(druid.container)*: Current container instance
+## 事件字段
 
+### node
 
-## Fields
-<a name="node"></a>
-- **node** (_node_): The gui node
+容器组件关联的节点。
 
-<a name="druid"></a>
-- **druid** (_druid.instance_): The druid instance
+### druid
 
-<a name="node_offset"></a>
-- **node_offset** (_vector4_): The node offset
+关联的 Druid 实例。
 
-<a name="origin_size"></a>
-- **origin_size** (_vector3_): The origin size
+### node_offset
 
-<a name="size"></a>
-- **size** (_vector3_): The current size
+节点偏移。
 
-<a name="origin_position"></a>
-- **origin_position** (_vector3_): The origin position
+### origin_size
 
-<a name="position"></a>
-- **position** (_vector3_): The current position
+原始大小。
 
-<a name="pivot_offset"></a>
-- **pivot_offset** (_vector3_): The pivot offset
+### size
 
-<a name="center_offset"></a>
-- **center_offset** (_vector3_): The center offset
+当前大小。
 
-<a name="mode"></a>
-- **mode** (_"fit"|"stretch"|"stretch_x"|"stretch_y"_): The layout mode
+### origin_position
 
-<a name="fit_size"></a>
-- **fit_size** (_vector3_): The fit size
+原始位置。
 
-<a name="min_size_x"></a>
-- **min_size_x** (_number_): The minimum size x
+### position
 
-<a name="min_size_y"></a>
-- **min_size_y** (_number_): The minimum size y
-
-<a name="max_size_x"></a>
-- **max_size_x** (_number_): The maximum size x
-
-<a name="max_size_y"></a>
-- **max_size_y** (_number_): The maximum size y
-
-<a name="on_size_changed"></a>
-- **on_size_changed** (_event_): fun(self: druid.container, size: vector3) The event triggered when the size changes
-
-<a name="node_fill_x"></a>
-- **node_fill_x** (_nil_)
-
-<a name="node_fill_y"></a>
-- **node_fill_y** (_nil_)
-
-<a name="x_koef"></a>
-- **x_koef** (_number_)
-
-<a name="y_koef"></a>
-- **y_koef** (_number_)
-
-<a name="x_anchor"></a>
-- **x_anchor** (_unknown_)
-
-<a name="y_anchor"></a>
-- **y_anchor** (_unknown_)
-
-<a name="style"></a>
-- **style** (_table_)
-
+当前位置。

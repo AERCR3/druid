@@ -7,7 +7,7 @@ local M = {}
 function M:init()
 	self.text = self.druid:new_text("text")
 
-	-- This code is for adjustable text area with mouse
+	-- 允许用鼠标拖拽调整文本区域大小（容器尺寸变化时同步更新文本布局）
 	self.container = self.druid:new_container("text_area", nil, function(_, size)
 		self.text:set_size(size)
 		self:refresh_text_position()
@@ -24,7 +24,7 @@ end
 
 
 function M:refresh_text_position()
-	-- Need to update text position with different pivot
+	-- 不同 pivot 下文本的锚点位置不同，需要重新计算文本节点的位置
 	local pivot = gui.get_pivot(self.text.node)
 	local pivot_offset = helper.get_pivot_offset(pivot)
 	gui.set_position(self.text.node, vmath.vector3(pivot_offset.x * self.text.start_size.x, pivot_offset.y * self.text.start_size.y, 0))
@@ -37,8 +37,8 @@ function M:properties_control(properties_panel)
 	local adjust_types = {
 		"downscale",
 		"downscale_limited",
-		--"scale_then_scroll", -- works bad with container for some reason
-		--"scroll", -- works bad with container for some reason
+		--"scale_then_scroll", -- 与 container 配合时效果不理想（示例暂不展示）
+		--"scroll", -- 与 container 配合时效果不理想（示例暂不展示）
 		"trim",
 	}
 	properties_panel:add_button("ui_adjust_next", function()
