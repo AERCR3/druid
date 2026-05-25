@@ -1,12 +1,15 @@
+--- 长按按钮 Panthera 动画数据：定义长按按钮的动画效果（按住旋转、缩放、填充进度，完成后颜色变化）
 return {
     data = {
+        --- 动画定义列表
         animations = {
+            --- 默认动画（空动画，用于重置状态）
             {
-                animation_id = "default",
                 animation_keys = {
                 },
                 duration = 1,
             },
+            --- 按住动画：按钮旋转、缩放、进度环填充
             {
                 animation_id = "hold",
                 animation_keys = {
@@ -111,6 +114,7 @@ return {
                 },
                 duration = 1,
             },
+            --- 完成动画：颜色变化、弹跳缩放效果
             {
                 animation_id = "complete",
                 animation_keys = {
@@ -246,6 +250,7 @@ return {
                 duration = 0.4,
             },
         },
+        --- 元数据：FPS、GUI路径、字体大小等配置信息
         metadata = {
             fps = 60,
             gizmo_steps = {
@@ -259,6 +264,7 @@ return {
             template_animation_paths = {
             },
         },
+        --- 节点数据（当前为空，节点由GUI场景定义）
         nodes = {
         },
     },

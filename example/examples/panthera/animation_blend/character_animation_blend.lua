@@ -1,3 +1,4 @@
+--- 角色动画混合 Panthera 动画数据：定义水平移动、垂直移动和待机动画
 return {
     data = {
         animations = {

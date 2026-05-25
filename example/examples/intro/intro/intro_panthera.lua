@@ -1,3 +1,4 @@
+--- Druid 介绍页面 Panthera 动画数据：idle 动画（图标浮动、爱心闪烁、赞助商高亮）
 return {
     version = 1,
     format = "json",

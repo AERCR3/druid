@@ -247,11 +247,11 @@ function M:on_input_interrupt(action_id, action)
 	end
 end
 
----Set button enabled state.
----The style.on_set_enabled will be triggered.
----Disabled button is not clickable.
----@param state boolean|nil Enabled state
----@return druid.button self The current button instance
+---设置按钮启用状态。
+---将触发style.on_set_enabled回调。
+---禁用的按钮不可点击。
+---@param state boolean|nil 启用状态
+---@return druid.button self 当前按钮实例
 function M:set_enabled(state)
 	self.disabled = not state
 	self.hover:set_enabled(state)
@@ -260,18 +260,18 @@ function M:set_enabled(state)
 	return self
 end
 
----Get button enabled state.
----By default all Buttons are enabled on creating.
----@return boolean is_enabled True, if button is enabled now, False otherwise
+---获取按钮启用状态。
+---默认情况下所有按钮在创建时都是启用的。
+---@return boolean is_enabled 如果按钮当前已启用则返回true，否则返回false
 function M:is_enabled()
 	return not self.disabled
 end
 
----Set additional button click area.
----Useful to restrict click outside of stencil node or scrollable content.
----If button node placed inside stencil node, it will be automatically set to this stencil node.
----@param zone node|string|nil Gui node
----@return druid.button self The current button instance
+---设置额外的按钮点击区域。
+---用于限制在遮罩节点或可滚动内容之外的点击。
+---如果按钮节点位于遮罩节点内，它将自动设置为该遮罩节点。
+---@param zone node|string|nil GUI节点
+---@return druid.button self 当前按钮实例
 function M:set_click_zone(zone)
 	self.click_zone = zone and self:get_node(zone) or nil
 	self.hover:set_click_zone(zone)
@@ -279,9 +279,9 @@ function M:set_click_zone(zone)
 	return self
 end
 
----Set key name to trigger this button by keyboard.
----@param key hash|string The action_id of the input key. Example: "key_space"
----@return druid.button self The current button instance
+---设置键盘触发此按钮的按键名称。
+---@param key hash|string 输入键的动作ID。示例："key_space"
+---@return druid.button self 当前按钮实例
 function M:set_key_trigger(key)
 	if type(key) == "string" then
 		self.key_trigger = hash(key)
@@ -292,16 +292,16 @@ function M:set_key_trigger(key)
 	return self
 end
 
----Get current key name to trigger this button.
----@return hash key_trigger The action_id of the input key
+---获取当前触发此按钮的按键名称。
+---@return hash key_trigger 输入键的动作ID
 function M:get_key_trigger()
 	return self.key_trigger
 end
 
----Set function for additional check for button click availability.
----@param check_function function|nil Should return true or false. If true - button can be pressed.
----@param failure_callback function|nil Function will be called on button click, if check function returns false
----@return druid.button self The current button instance
+---设置用于检查按钮点击可用性的附加函数。
+---@param check_function function|nil 应返回true或false。如果为true - 按钮可以按下。
+---@param failure_callback function|nil 如果检查函数返回false，将在按钮点击时调用此函数
+---@return druid.button self 当前按钮实例
 function M:set_check_function(check_function, failure_callback)
 	self._check_function = check_function
 	self._failure_callback = failure_callback
@@ -309,21 +309,21 @@ function M:set_check_function(check_function, failure_callback)
 	return self
 end
 
----Set Button mode to work inside user HTML5 interaction event.
+---设置按钮模式以在用户HTML5交互事件中工作。
 ---
----It's required to make protected things like copy & paste text, show mobile keyboard, etc
----The HTML5 button doesn't call any events except on_click event.
+---这是必需的，用于实现受保护的功能，如复制和粘贴文本、显示移动键盘等
+---HTML5按钮除了on_click事件外不会调用任何事件。
 ---
----If the game is not HTML, html mode will be not enabled
----@param is_web_mode boolean|nil If true - button will be called inside html5 callback
----@return druid.button self The current button instance
+---如果游戏不是HTML，HTML模式将不会被启用
+---@param is_web_mode boolean|nil 如果为true - 按钮将在html5回调中被调用
+---@return druid.button self 当前按钮实例
 function M:set_web_user_interaction(is_web_mode)
 	self._is_html5_mode = not not (is_web_mode and html5)
 	return self
 end
 
----@param action_id hash The action id
----@return boolean is_match True if the input matches the button
+---@param action_id hash 动作ID
+---@return boolean is_match 如果输入与按钮匹配则返回true
 function M:_is_input_match(action_id)
 	if action_id == const.ACTION_TOUCH or action_id == const.ACTION_MULTITOUCH then
 		return true
@@ -336,19 +336,19 @@ function M:_is_input_match(action_id)
 	return false
 end
 
----Call button style on_hover callback
----@param hover_state boolean True if the hover state is active
+---调用按钮样式的on_hover回调
+---@param hover_state boolean 如果悬停状态处于活动状态则为true
 function M:button_hover(hover_state)
 	self.style.on_hover(self, self.anim_node, hover_state)
 end
 
----Call button style on_hover callback
----@param hover_state boolean True if the hover state is active
+---调用按钮样式的on_hover回调
+---@param hover_state boolean 如果悬停状态处于活动状态则为true
 function M:button_mouse_hover(hover_state)
 	self.style.on_mouse_hover(self, self.anim_node, hover_state)
 end
 
----Call button click callback
+---调用按钮点击回调
 function M:button_click()
 	if self._is_html5_mode then
 		self._is_html5_listener_set = false
@@ -360,7 +360,7 @@ function M:button_click()
 	self.style.on_click(self, self.anim_node)
 end
 
----Call button repeated click callback
+---调用按钮重复点击回调
 function M:button_repeated_click()
 	if not self.is_repeated_started then
 		self.click_in_row = 0
@@ -372,7 +372,7 @@ function M:button_repeated_click()
 	self.style.on_click(self, self.anim_node)
 end
 
----Call button long click callback
+---调用按钮长按回调
 function M:button_long_click()
 	self.click_in_row = 1
 	local time = socket.gettime() - self.last_pressed_time
@@ -380,15 +380,15 @@ function M:button_long_click()
 	self.style.on_click(self, self.anim_node)
 end
 
----Call button double click callback
+---调用按钮双击回调
 function M:button_double_click()
 	self.click_in_row = self.click_in_row + 1
 	self.on_double_click:trigger(self:get_context(), self.params, self, self.click_in_row)
 	self.style.on_click(self, self.anim_node)
 end
 
----Call button hold callback
----@param press_time number Amount of time the button was held
+---调用按钮按住回调
+---@param press_time number 按钮被按住的时间
 function M:button_hold(press_time)
 	self.on_hold_callback:trigger(self:get_context(), self.params, self, press_time)
 end

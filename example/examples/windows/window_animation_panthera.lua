@@ -1,3 +1,4 @@
+--- 窗口动画 Panthera 动画数据：窗口打开和关闭的缩放旋转动画
 return {
     version = 1,
     format = "json",

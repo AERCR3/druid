@@ -1,3 +1,4 @@
+--- 游戏手柄测试器示例：展示所有游戏手柄按钮、摇杆和扳机的映射和测试
 ---@class examples.gamepad_tester: druid.widget
 ---@field root node
 ---@field button_left druid.button
@@ -20,6 +21,7 @@
 ---@field stick_right node
 local M = {}
 
+-- 摇杆最大移动距离（像素）
 local STICK_DISTANCE = 50
 
 
@@ -51,7 +53,6 @@ function M:init()
 	self.stick_left = self:get_node("stick_left/stick_root")
 	self.stick_right = self:get_node("stick_right/stick_root")
 end
-
 
 function M:on_input(action_id, action)
 	if action_id == hash("gamepad_ltrigger") then
@@ -90,52 +91,51 @@ function M:on_input(action_id, action)
 	end
 end
 
-
 ---@param output_list output_list
 function M:on_example_created(output_list)
+	-- 订阅所有游戏手柄按钮的点击事件并记录日志
 	self.button_left.on_click:subscribe(function()
-		output_list:add_log_text("Button Left Clicked")
+		output_list:add_log_text("左方向按钮已点击")
 	end)
 	self.button_right.on_click:subscribe(function()
-		output_list:add_log_text("Button Right Clicked")
+		output_list:add_log_text("右方向按钮已点击")
 	end)
 	self.button_up.on_click:subscribe(function()
-		output_list:add_log_text("Button Up Clicked")
+		output_list:add_log_text("上方向按钮已点击")
 	end)
 	self.button_down.on_click:subscribe(function()
-		output_list:add_log_text("Button Down Clicked")
+		output_list:add_log_text("下方向按钮已点击")
 	end)
 	self.button_a.on_click:subscribe(function()
-		output_list:add_log_text("Button A Clicked")
+		output_list:add_log_text("A按钮已点击")
 	end)
 	self.button_b.on_click:subscribe(function()
-		output_list:add_log_text("Button B Clicked")
+		output_list:add_log_text("B按钮已点击")
 	end)
 	self.button_x.on_click:subscribe(function()
-		output_list:add_log_text("Button X Clicked")
+		output_list:add_log_text("X按钮已点击")
 	end)
 	self.button_y.on_click:subscribe(function()
-		output_list:add_log_text("Button Y Clicked")
+		output_list:add_log_text("Y按钮已点击")
 	end)
 	self.button_back.on_click:subscribe(function()
-		output_list:add_log_text("Button Back Clicked")
+		output_list:add_log_text("Back按钮已点击")
 	end)
 	self.button_start.on_click:subscribe(function()
-		output_list:add_log_text("Button Start Clicked")
+		output_list:add_log_text("Start按钮已点击")
 	end)
 	self.button_l1.on_click:subscribe(function()
-		output_list:add_log_text("Button L1 Clicked")
+		output_list:add_log_text("L1按钮已点击")
 	end)
 	self.button_r1.on_click:subscribe(function()
-		output_list:add_log_text("Button R1 Clicked")
+		output_list:add_log_text("R1按钮已点击")
 	end)
 	self.button_stick_left.on_click:subscribe(function()
-		output_list:add_log_text("Button Stick Left Clicked")
+		output_list:add_log_text("左摇杆按钮已点击")
 	end)
 	self.button_stick_right.on_click:subscribe(function()
-		output_list:add_log_text("Button Stick Right Clicked")
+		output_list:add_log_text("右摇杆按钮已点击")
 	end)
 end
-
 
 return M

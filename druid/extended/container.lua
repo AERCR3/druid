@@ -33,19 +33,19 @@ local CORNER_PIVOTS = {
 
 ---@alias druid.container.mode "stretch" | "fit" | "stretch_x" | "stretch_y"
 
----Druid component to manage the size and positions with other containers relations to create a adaptable layouts.
+---Druid组件用于管理与其他容器关系的尺寸和位置，以创建可适应的布局。
 ---
----### Setup
----Create container component with druid: `container = druid:new_container(node, mode, callback)`
+---### 设置
+---使用druid创建容器组件：`container = druid:new_container(node, mode, callback)`
 ---
----### Notes
----- Container can be used to create adaptable layouts that respond to window size changes
----- Container supports different layout modes: FIT, STRETCH, STRETCH_X, STRETCH_Y
----- Container can be nested inside other containers
----- Container supports fixed margins and percentage-based sizing
----- Container can be positioned using pivot points
----- Container supports minimum size constraints
----- Container can be fitted into window or custom size
+---### 注意事项
+---- 容器可用于创建响应窗口大小变化的可适应布局
+---- 容器支持不同的布局模式：FIT、STRETCH、STRETCH_X、STRETCH_Y
+---- 容器可以嵌套在其他容器内
+---- 容器支持固定边距和基于百分比的大小设置
+---- 容器可以使用枢轴点定位
+---- 容器支持最小尺寸约束
+---- 容器可以适合窗口或自定义大小
 ---@class druid.container: druid.component
 ---@field node node GUI节点
 ---@field druid druid.instance Druid实例
@@ -129,15 +129,15 @@ function M:on_remove()
 	gui.set_adjust_mode(self.node, self._initial_adjust_mode)
 end
 
----Refresh the origins of the container, origins is the size and position of the container when it was created
+---刷新容器的原始数据，原始数据是容器创建时的大小和位置
 function M:refresh_origins()
 	self.origin_size = gui.get_size(self.node)
 	self.origin_position = gui.get_position(self.node)
 	self:set_pivot(gui.get_pivot(self.node))
 end
 
----Set the pivot of the container
----@param pivot constant The pivot to set
+---设置容器的枢轴点
+---@param pivot constant 要设置的枢轴点
 function M:set_pivot(pivot)
 	gui.set_pivot(self.node, pivot)
 	self.pivot_offset = helper.get_pivot_offset(pivot)
@@ -153,11 +153,11 @@ function M:on_style_change(style)
 	}
 end
 
----Set new size of layout node
----@param width number|nil The width to set
----@param height number|nil The height to set
----@param anchor_pivot constant|nil If set will keep the corner position relative to the new size
----@return druid.container Container
+---设置布局节点的新尺寸
+---@param width number|nil 要设置的宽度
+---@param height number|nil 要设置的高度
+---@param anchor_pivot constant|nil 如果设置，将保持角点相对于新尺寸的位置
+---@return druid.container 容器实例
 function M:set_size(width, height, anchor_pivot)
 	width = width or self.size.x
 	height = height or self.size.y
@@ -202,15 +202,15 @@ function M:set_size(width, height, anchor_pivot)
 	return self
 end
 
----Get the position of the container
----@return vector3 position The position of the container
+---获取容器的位置
+---@return vector3 position 容器的位置
 function M:get_position()
 	return self._position
 end
 
----Set the position of the container
----@param pos_x number The x position to set
----@param pos_y number The y position to set
+---设置容器的位置
+---@param pos_x number 要设置的X位置
+---@param pos_y number 要设置的Y位置
 function M:set_position(pos_x, pos_y)
 	if self._position.x == pos_x and self._position.y == pos_y then
 		return
@@ -221,21 +221,21 @@ function M:set_position(pos_x, pos_y)
 	gui.set_position(self.node, self._position)
 end
 
----Get the current size of the layout node
----@return vector3 size The current size of the layout node
+---获取布局节点的当前尺寸
+---@return vector3 size 布局节点的当前尺寸
 function M:get_size()
 	return vmath.vector3(self.size)
 end
 
----Get the current scale of the layout node
----@return vector3 scale The current scale of the layout node
+---获取布局节点的当前缩放
+---@return vector3 scale 布局节点的当前缩放
 function M:get_scale()
 	return helper.get_scene_scale(self.node, true) --[[@as vector3]]
 end
 
----Set size for layout node to fit inside it
----@param target_size vector3 The target size to fit into
----@return druid.container self Current container instance
+---设置布局节点以适合其内部
+---@param target_size vector3 要适合的目标尺寸
+---@return druid.container self 当前容器实例
 function M:fit_into_size(target_size)
 	self.fit_size = target_size
 	self:refresh()
@@ -243,8 +243,8 @@ function M:fit_into_size(target_size)
 	return self
 end
 
----Set current size for layout node to fit inside it
----@return druid.container self Current container instance
+---设置布局节点以适合窗口
+---@return druid.container self 当前容器实例
 function M:fit_into_window()
 	return self:fit_into_size(vmath.vector3(gui.get_width(), gui.get_height(), 0))
 end
@@ -365,8 +365,8 @@ function M:set_parent_container(parent_container)
 	self:refresh()
 end
 
--- Glossary
--- Center Offset - vector from node position to visual center of node
+---术语表
+-- 中心偏移 - 从节点位置到节点视觉中心的向量
 
 function M:refresh()
 	local x_koef, y_koef = self.x_koef, self.y_koef
@@ -544,19 +544,19 @@ function M:_on_corner_drag(x, y, corner_offset)
 	self:set_size(size.x + x, size.y + y)
 end
 
----Set node for layout node to fit inside it. Pass nil to reset
----@param node string|node The node_id or gui.get_node(node_id)
----@return druid.container self Current container instance
+---设置布局节点要适合其中的节点。传递nil来重置
+---@param node string|node 节点ID或gui.get_node(node_id)
+---@return druid.container self 当前容器实例
 function M:fit_into_node(node)
 	self._fit_node = self:get_node(node)
 	self:refresh_scale()
 	return self
 end
 
----Set the minimum size of the container
----@param min_size_x number|nil The minimum size x
----@param min_size_y number|nil The minimum size y
----@return druid.container self Current container instance
+---设置容器的最小尺寸
+---@param min_size_x number|nil 最小尺寸X
+---@param min_size_y number|nil 最小尺寸Y
+---@return druid.container self 当前容器实例
 function M:set_min_size(min_size_x, min_size_y)
 	self.min_size_x = min_size_x or self.min_size_x
 	self.min_size_y = min_size_y or self.min_size_y
@@ -565,10 +565,10 @@ function M:set_min_size(min_size_x, min_size_y)
 	return self
 end
 
----Set the maximum size of the container
----@param max_size_x number|nil The maximum size x
----@param max_size_y number|nil The maximum size y
----@return druid.container self Current container instance
+---设置容器的最大尺寸
+---@param max_size_x number|nil 最大尺寸X
+---@param max_size_y number|nil 最大尺寸Y
+---@return druid.container self 当前容器实例
 function M:set_max_size(max_size_x, max_size_y)
 	self.max_size_x = max_size_x or self.max_size_x
 	self.max_size_y = max_size_y or self.max_size_y

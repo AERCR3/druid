@@ -1,3 +1,4 @@
+--- GO 绑定 Panthera 动画数据：GameObject 弹跳移动动画
 return {
     data = {
         animations = {

@@ -164,12 +164,12 @@ function M.rgb2hsb(r, g, b, alpha)
 	return h, s, v, alpha
 end
 
----Convert HSB to RGB.
----@param h number
----@param s number
----@param v number
----@param alpha number|nil
----@return number, number, number, number|nil
+---将HSB转换为RGB。
+---@param h number 色相值
+---@param s number 饱和度
+---@param v number 亮度
+---@param alpha number|nil 透明度
+---@return number, number, number, number|nil 返回红、绿、蓝、透明度值
 function M.hsb2rgb(h, s, v, alpha)
 	local r, g, b
 	local i = math.floor(h * 6)
@@ -197,11 +197,11 @@ function M.hsb2rgb(h, s, v, alpha)
 	return r, g, b, alpha
 end
 
----Convert RGB to hex string (uppercase, without #).
----@param red number
----@param green number
----@param blue number
----@return string hex_string Example: "FF0000", without "#" prefix
+---将RGB转换为十六进制字符串（大写，不带#号）。
+---@param red number 红色分量
+---@param green number 绿色分量
+---@param blue number 蓝色分量
+---@return string hex_string 十六进制字符串，示例："FF0000"，不带"#"前缀
 function M.rgb2hex(red, green, blue)
 	local r = string.format("%x", math.floor(red * 255))
 	local g = string.format("%x", math.floor(green * 255))
@@ -209,7 +209,7 @@ function M.rgb2hex(red, green, blue)
 	return string.upper((#r == 1 and "0" or "") .. r .. (#g == 1 and "0" or "") .. g .. (#b == 1 and "0" or "") .. b)
 end
 
--- Auto-load palette from config if druid.palette_path is set in game.project
+-- 如果在game.project中设置了druid.palette_path，则自动从配置加载调色板
 local DEFAULT_PALETTE_PATH = sys.get_config_string("druid.palette_path")
 if DEFAULT_PALETTE_PATH then
 	local loaded_palette = sys.load_resource(DEFAULT_PALETTE_PATH)

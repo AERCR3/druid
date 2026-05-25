@@ -69,19 +69,19 @@ local VECTOR3_ONE = vmath.vector3(1)
 ---@field offset_y number|nil
 ---@field node_size vector3|nil
 
----The component that handles a rich text display, allows to custom color, size, font, etc. of the parts of the text
+---处理富文本显示的组件，允许自定义文本各部分的颜色、大小、字体等
 ---@class druid.rich_text: druid.component
----@field root node The root text node of the rich text
----@field text_prefab node The text prefab node
----@field private _last_value string The last value of the rich text
----@field private _settings table The settings of the rich text
----@field private _split_to_characters boolean The split to characters flag
----@field private _anchor vector3|nil Anchor position when pivot is set (keeps content in place on resize)
+---@field root node 富文本的根文本节点
+---@field text_prefab node 文本预制节点
+---@field private _last_value string 富文本的最后一个值
+---@field private _settings table 富文本的设置
+---@field private _split_to_characters boolean 分割为字符的标志
+---@field private _anchor vector3|nil 锚点位置（当设置枢轴时，在调整大小时保持内容位置）
 local M = component.create("rich_text")
 
 
----@param text_node node|string The text node to make Rich Text
----@param value string|nil The initial text value. Default will be gui.get_text(text_node)
+---@param text_node node|string 要制作富文本的文本节点
+---@param value string|nil 初始文本值。默认为gui.get_text(text_node)
 function M:init(text_node, value)
 	self.root = self:get_node(text_node)
 	self.text_prefab = self.root
@@ -108,7 +108,7 @@ function M:on_layout_change()
 end
 
 ---@private
----@param style druid.rich_text.style
+---@param style druid.rich_text.style 富文本样式
 function M:on_style_change(style)
 	self.style = {
 		ADJUST_STEPS = style.ADJUST_STEPS or 20,
@@ -116,7 +116,7 @@ function M:on_style_change(style)
 	}
 end
 
----Set text for Rich Text
+---为富文本设置文本
 ---		-- Color
 ---		rich_text:set_text("＜color=red＞Foobar＜/color＞")
 ---		rich_text:set_text("＜color=1.0,0,0,1.0＞Foobar＜/color＞")
@@ -177,14 +177,14 @@ function M:set_text(text)
 	return words, line_metrics
 end
 
----Get the current text of the rich text
----@return string text The current text of the rich text
+---获取富文本的当前文本
+---@return string text 富文本的当前文本
 function M:get_text()
 	return self._last_value
 end
 
----Set pivot and keep the content in place (anchor). After this, resizing the root will keep the anchor fixed.
----@param pivot number GUI pivot constant
+---设置枢轴并保持内容位置（锚点）。在此之后，调整根节点大小将保持锚点固定。
+---@param pivot number GUI枢轴常量
 ---@return druid.rich_text self
 function M:set_pivot(pivot)
 	local pos = gui.get_position(self.root)
@@ -207,13 +207,13 @@ function M:set_pivot(pivot)
 end
 
 ---@private
-function M:on_remove()
+---移除组件时的处理
 	gui.set_scale(self.root, self._default_scale)
 	gui.set_size(self.root, self._default_size)
 	self:clear()
 end
 
----Clear all created words.
+---清除所有创建的单词。
 function M:clear()
 	if self._words then
 		rich_text.remove(self._words)
@@ -222,9 +222,9 @@ function M:clear()
 	self._last_value = nil
 end
 
----Get all words, which has a passed tag.
----@param tag string The tag to get the words for
----@return druid.rich_text.word[] words The words with the passed tag
+---获取所有具有指定标签的单词。
+---@param tag string 要获取单词的标签
+---@return druid.rich_text.word[] words 具有指定标签的单词
 function M:tagged(tag)
 	if not self._words then
 		return {}
@@ -233,7 +233,7 @@ function M:tagged(tag)
 	return rich_text.tagged(self._words, tag)
 end
 
----Set if the rich text should split to characters, not words
+---设置富文本是否应分割为字符而非单词
 ---@param value boolean
 ---@return druid.rich_text self
 function M:set_split_to_characters(value)
@@ -241,20 +241,20 @@ function M:set_split_to_characters(value)
 	return self
 end
 
----Get all current created words, each word is a table that contains the information about the word
+---获取所有当前创建的单词，每个单词是一个包含单词信息的表格
 ---@return druid.rich_text.word[]
 function M:get_words()
 	return self._words
 end
 
----Get the current line metrics
----@return druid.rich_text.lines_metrics lines_metrics The line metrics of the rich text
+---获取当前行度量
+---@return druid.rich_text.lines_metrics lines_metrics 富文本的行度量
 function M:get_line_metric()
 	return self._line_metrics
 end
 
 ---@private
----@return table settings The settings of the rich text, they are created based on the root node on the GUI scene
+---@return table settings 富文本的设置，它们基于GUI场景中的根节点创建
 function M:_create_settings()
 	local root_size = gui.get_size(self.root)
 	local scale = gui.get_scale(self.root)
@@ -268,8 +268,8 @@ function M:_create_settings()
 	gui.set_scale(self.root, VECTOR3_ONE)
 
 	return {
-		-- General settings
-		-- Adjust scale using to fit the text to the root node area
+		-- 常规设置
+		-- 调整比例以使文本适合根节点区域
 		adjust_scale = 1,
 		parent = self.root,
 		scale = scale,
@@ -279,19 +279,19 @@ function M:_create_settings()
 		text_prefab = self.text_prefab,
 		pivot = gui.get_pivot(self.root),
 
-		-- Text Settings
+		-- 文本设置
 		shadow = gui.get_shadow(self.root),
 		outline = gui.get_outline(self.root),
 		text_leading = gui.get_leading(self.root),
 		is_multiline = gui.get_line_break(self.root),
 		split_to_characters = false,
 
-		-- Image settings
+		-- 图像设置
 		image_pixel_grid_snap = false, -- disabled now
 	}
 end
 
----Set the width of the rich text, not affects the size of current spawned words
+---设置富文本的宽度，不影响当前生成单词的大小
 ---@param width number
 ---@return druid.rich_text self
 function M:set_width(width)
@@ -300,7 +300,7 @@ function M:set_width(width)
 	return self
 end
 
----Set the height of the rich text, not affects the size of current spawned words
+---设置富文本的高度，不影响当前生成单词的大小
 ---@param height number
 ---@return druid.rich_text self
 function M:set_height(height)

@@ -6,6 +6,7 @@
 local M = {}
 
 
+--- 初始化函数：创建容器、图标、选中效果和按钮
 function M:init()
 	self.root = self.druid:new_container("root") --[[@as druid.container]]
 
@@ -20,8 +21,9 @@ function M:init()
 	self.button = self.druid:new_button("button", self.on_click)
 end
 
-
----@param value boolean
+--- 设置复选框值：更新勾选状态，可选择是否显示动画效果
+---@param value boolean 是否勾选
+---@param is_instant boolean 是否立即设置（无动画）
 function M:set_value(value, is_instant)
 	if self._value == value then
 		return
@@ -36,16 +38,15 @@ function M:set_value(value, is_instant)
 	end
 end
 
-
----@return boolean
+--- 获取当前勾选状态
+---@return boolean 当前是否勾选
 function M:get_value()
 	return self._value
 end
 
-
+--- 点击回调：切换勾选状态
 function M:on_click()
 	self:set_value(not self:get_value())
 end
-
 
 return M

@@ -1,8 +1,11 @@
+--- 网格布局示例：展示网格控件的增删改查和属性控制
 ---@class examples.grid: druid.widget
 ---@field grid druid.grid
 ---@field text druid.text
 local M = {}
 
+
+--- 初始化函数：创建网格布局并添加初始元素
 function M:init()
 	self.created_nodes = {}
 
@@ -16,12 +19,12 @@ function M:init()
 	end
 end
 
-
+--- 组件移除回调：清空所有网格元素
 function M:on_remove()
 	self:clear()
 end
 
-
+--- 添加元素：克隆预制件并添加到网格中
 function M:add_element()
 	local prefab_nodes = gui.clone_tree(self.prefab)
 	local root = prefab_nodes[self:get_template() .. "/prefab"]
@@ -33,7 +36,7 @@ function M:add_element()
 	self.grid:add(root)
 end
 
-
+--- 移除元素：删除最后一个网格元素
 function M:remove_element()
 	local last_node = table.remove(self.created_nodes)
 	if last_node == nil then
@@ -45,7 +48,7 @@ function M:remove_element()
 	self.grid:remove(grid_index)
 end
 
-
+--- 清空所有元素：删除所有节点并清空网格
 function M:clear()
 	for _, node in ipairs(self.created_nodes) do
 		gui.delete_node(node)
@@ -53,7 +56,6 @@ function M:clear()
 	self.created_nodes = {}
 	self.grid:clear()
 end
-
 
 ---@param properties_panel properties_panel
 function M:properties_control(properties_panel)
@@ -124,17 +126,16 @@ function M:properties_control(properties_panel)
 	slider_size:set_value(0.5)
 end
 
-
+--- 获取调试信息：返回网格项数量、大小和锚点信息
 ---@return string
 function M:get_debug_info()
 	local info = ""
 
-	info = info .. "Grid Items: " .. #self.grid.nodes .. "\n"
-	info = info .. "Grid Item Size: " .. self.grid.node_size.x .. " x " .. self.grid.node_size.y .. "\n"
-	info = info .. "Pivot: " .. tostring(self.grid.pivot)
+	info = info .. "网格项数量: " .. #self.grid.nodes .. "\n"
+	info = info .. "网格项大小: " .. self.grid.node_size.x .. " x " .. self.grid.node_size.y .. "\n"
+	info = info .. "锚点: " .. tostring(self.grid.pivot)
 
 	return info
 end
-
 
 return M

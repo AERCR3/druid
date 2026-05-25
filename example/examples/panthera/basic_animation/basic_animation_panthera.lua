@@ -1,3 +1,4 @@
+--- 基础动画 Panthera 动画数据：悬停、点击和重置动画
 return {
     version = 1,
     format = "json",

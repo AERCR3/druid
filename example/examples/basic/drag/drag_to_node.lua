@@ -1,6 +1,9 @@
+--- 拖拽到目标节点示例：展示将元素拖拽到指定区域并触发事件
 ---@class examples.drag_to_node: druid.widget
 local M = {}
 
+
+--- 初始化函数：创建拖拽控件、按钮和目标区域
 function M:init()
 	self.zone = self:get_node("zone")
 	self.counter = 0
@@ -21,7 +24,7 @@ function M:init()
 	self.start_position = gui.get_position(self.drag.node)
 end
 
-
+--- 拖拽回调：移动节点并检测是否进入目标区域
 function M:on_drag(dx, dy, x, y, touch)
 	local position_x = gui.get(self.drag.node, "position.x")
 	local position_y = gui.get(self.drag.node, "position.y")
@@ -32,7 +35,7 @@ function M:on_drag(dx, dy, x, y, touch)
 	self:on_hover_pick_zone(is_pick_zone)
 end
 
-
+--- 拖拽结束回调：回弹到初始位置，检测是否拖入目标区域
 function M:on_drag_end(x, y, touch)
 	gui.animate(self.drag.node, "position", self.start_position, gui.EASING_OUTBACK, 0.3)
 
@@ -45,17 +48,16 @@ function M:on_drag_end(x, y, touch)
 	self:on_hover_pick_zone(false)
 end
 
-
+--- 悬停目标区域回调：根据是否悬停在目标区域上更新透明度
 function M:on_hover_pick_zone(is_pick_zone)
 	local target_alpha = is_pick_zone and 1.5 or 1
 	gui.animate(self.zone, "color.w", target_alpha, gui.EASING_OUTSINE, 0.3)
 end
 
-
+--- 拖入目标区域回调：播放缩放动画效果
 function M:on_drop_to_zone()
 	gui.set_scale(self.zone, vmath.vector3(1.2))
 	gui.animate(self.zone, "scale", vmath.vector3(1), gui.EASING_OUTBACK, 0.3)
 end
-
 
 return M

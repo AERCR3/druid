@@ -1,3 +1,4 @@
+--- Druid 示例主入口：汇总所有分类示例列表
 local intro_examples = require("example.examples.intro.examples_list")
 local basic_examples = require("example.examples.basic.examples_list")
 local data_list_examples = require("example.examples.data_list.examples_list")
@@ -27,6 +28,10 @@ local M = {}
 ---@field information_text_id string|nil
 
 
+--- 将示例列表添加到总列表中
+---@param examples druid.examples[] 总示例列表
+---@param example_name_id string 分类名称ID
+---@param examples_list druid.example.data[] 该分类的示例列表
 local function add_examples(examples, example_name_id, examples_list)
 	table.insert(examples, {
 		example_name_id = example_name_id,
@@ -34,18 +39,28 @@ local function add_examples(examples, example_name_id, examples_list)
 	})
 end
 
+--- 获取所有示例的分类列表
 ---@return druid.examples[]
 function M.get_examples()
 	local examples = {}
 
+	-- 入门示例
 	add_examples(examples, "ui_examples_intro", intro_examples.get_examples())
+	-- 基础组件示例
 	add_examples(examples, "ui_examples_basic", basic_examples.get_examples())
+	-- 数据列表示例
 	add_examples(examples, "ui_examples_data_list", data_list_examples.get_examples())
+	-- 布局示例
 	add_examples(examples, "ui_examples_layout", layout_examples.get_examples())
+	-- 手柄示例
 	add_examples(examples, "ui_examples_gamepad", gamepad_examples.get_examples())
+	-- 窗口示例
 	add_examples(examples, "ui_examples_window", window_examples.get_examples())
+	-- Panthera 动画示例
 	add_examples(examples, "ui_examples_panthera", panthera_examples.get_examples())
+	-- 自定义组件示例
 	add_examples(examples, "ui_examples_widgets", widgets_examples.get_examples())
+	-- 容器示例
 	add_examples(examples, "ui_examples_container", container_examples.get_examples())
 	return examples
 end

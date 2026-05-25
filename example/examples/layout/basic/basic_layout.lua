@@ -1,6 +1,7 @@
 local helper = require("druid.helper")
 local layout = require("druid.extended.layout")
 
+--- 基础布局示例：展示Druid布局系统的水平换行布局功能
 ---@class examples.basic_layout: druid.widget
 ---@field root node
 ---@field layout druid.layout
@@ -8,6 +9,7 @@ local layout = require("druid.extended.layout")
 ---@field nodes table<number, node>
 local M = {}
 
+-- 支持的锚点列表，用于测试不同锚点效果
 local PIVOTS = {
 	gui.PIVOT_CENTER,
 	gui.PIVOT_N,
@@ -50,7 +52,6 @@ function M:init()
 	end
 end
 
-
 function M:set_pivot(pivot)
 	local offset = helper.get_pivot_offset(pivot)
 	local size = gui.get_size(self.root)
@@ -61,7 +62,6 @@ function M:set_pivot(pivot)
 	self.layout:refresh_layout()
 end
 
-
 function M:on_remove()
 	self.layout:clear_layout()
 	for _, node in ipairs(self.nodes) do
@@ -69,10 +69,8 @@ function M:on_remove()
 	end
 end
 
-
 ---@param properties_panel properties_panel
 function M:properties_control(properties_panel)
-
 	properties_panel:add_slider("ui_padding", 0, function(value)
 		local padding = math.floor((value * 64) * 100) / 100
 		self.layout:set_padding(padding, padding, padding, padding)
@@ -129,20 +127,20 @@ function M:properties_control(properties_panel)
 	end)
 end
 
-
 ---@return string
 function M:get_debug_info()
 	local layout = self.layout
 	local p = layout.padding
 	local info = ""
-	info = info .. "Layout: " .. layout.type .. "\n"
-	info = info .. "Padding: " .. math.floor(p.x) .. " " .. math.floor(p.y) .. " " .. math.floor(p.z) .. " " .. math.floor(p.w) .. "\n"
-	info = info .. "Margin: " .. layout.margin.x .. " " .. layout.margin.y .. "\n"
-	info = info .. "Justify: " .. tostring(layout.is_justify) .. "\n"
-	info = info .. "Pivot: " .. tostring(gui.get_pivot(layout.node)) .. "\n"
+	-- 构建布局的调试信息
+	info = info .. "布局类型: " .. layout.type .. "\n"
+	info = info ..
+			"内边距: " .. math.floor(p.x) .. " " .. math.floor(p.y) .. " " .. math.floor(p.z) .. " " .. math.floor(p.w) .. "\n"
+	info = info .. "外边距: " .. layout.margin.x .. " " .. layout.margin.y .. "\n"
+	info = info .. "对齐: " .. tostring(layout.is_justify) .. "\n"
+	info = info .. "锚点: " .. tostring(gui.get_pivot(layout.node)) .. "\n"
 
 	return info
 end
-
 
 return M

@@ -1,6 +1,9 @@
+--- 拖拽示例：展示拖拽控件的使用，支持拖拽移动和回弹动画
 ---@class examples.drag: druid.widget
 local M = {}
 
+
+--- 初始化函数：创建拖拽控件，设置拖拽移动和回弹
 function M:init()
 	-- 初始化拖拽：在拖拽回调中移动节点
 	self.drag = self.druid:new_drag("drag/root", function(_, dx, dy)

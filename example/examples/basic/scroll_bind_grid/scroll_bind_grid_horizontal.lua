@@ -1,9 +1,11 @@
+--- 水平滚动绑定网格示例：展示水平方向的滚动视图与网格布局绑定
 ---@class examples.scroll_bind_grid_horizontal: druid.widget
 ---@field scroll druid.scroll
 ---@field grid druid.grid
 ---@field text druid.text
 local M = {}
 
+--- 初始化函数：创建水平滚动视图和网格布局，绑定并添加初始元素
 function M:init()
 	self.created_nodes = {}
 
@@ -19,24 +21,26 @@ function M:init()
 	end
 end
 
-
+--- 组件移除回调：清空所有网格元素
 function M:on_remove()
 	self:clear()
 end
 
-
+--- 添加元素：克隆预制件并添加到网格中
 function M:add_element()
+	-- 克隆预制件并添加到网格中
 	local prefab_nodes = gui.clone_tree(self.prefab)
 	local root = prefab_nodes[self:get_template() .. "/prefab"]
 	local text = prefab_nodes[self:get_template() .. "/text"]
 	table.insert(self.created_nodes, root)
-	gui.set_text(text, "Grid Item " .. #self.created_nodes)
+	-- 设置文本为"网格项"加上当前节点数量
+	gui.set_text(text, "网格项 " .. #self.created_nodes)
 	gui.set_enabled(root, true)
 
 	self.grid:add(root)
 end
 
-
+--- 移除元素：删除最后一个网格元素
 function M:remove_element()
 	local last_node = table.remove(self.created_nodes)
 	if last_node == nil then
@@ -48,7 +52,7 @@ function M:remove_element()
 	self.grid:remove(grid_index)
 end
 
-
+--- 清空所有元素：删除所有节点并清空网格
 function M:clear()
 	for _, node in ipairs(self.created_nodes) do
 		gui.delete_node(node)
@@ -57,7 +61,7 @@ function M:clear()
 	self.grid:clear()
 end
 
-
+--- 属性面板控制：添加裁剪开关和增删元素按钮
 ---@param properties_panel properties_panel
 function M:properties_control(properties_panel)
 	local view_node = self.scroll.view_node
@@ -84,7 +88,7 @@ function M:properties_control(properties_panel)
 	end)
 end
 
-
+--- 获取调试信息：返回水平滚动视图和网格的状态信息
 ---@return string
 function M:get_debug_info()
 	local info = ""
@@ -94,17 +98,17 @@ function M:get_debug_info()
 	local scroll_position = -s.position
 	local scroll_bottom_position = vmath.vector3(scroll_position.x + view_node_size, scroll_position.y, scroll_position.z)
 
-	info = info .. "View Size X: " .. gui.get(s.view_node, "size.x") .. "\n"
-	info = info .. "Content Size X: " .. gui.get(s.content_node, "size.x") .. "\n"
-	info = info .. "Content position X: " .. math.ceil(s.position.x) .. "\n"
-	info = info .. "Content Range X: " .. s.available_pos.x .. " - " .. s.available_pos.z .. "\n"
-	info = info .. "Grid Items: " .. #self.grid.nodes .. "\n"
-	info = info .. "Grid Item Size: " .. self.grid.node_size.x .. " x " .. self.grid.node_size.y .. "\n"
-	info = info .. "Left Scroll Pos Grid Index: " .. self.grid:get_index(scroll_position) .. "\n"
-	info = info .. "Right Scroll Pos Grid Index: " .. self.grid:get_index(scroll_bottom_position) .. "\n"
+	-- 构建滚动视图和网格的调试信息
+	info = info .. "视图大小 X: " .. gui.get(s.view_node, "size.x") .. "\n"
+	info = info .. "内容大小 X: " .. gui.get(s.content_node, "size.x") .. "\n"
+	info = info .. "内容位置 X: " .. math.ceil(s.position.x) .. "\n"
+	info = info .. "内容范围 X: " .. s.available_pos.x .. " - " .. s.available_pos.z .. "\n"
+	info = info .. "网格项数量: " .. #self.grid.nodes .. "\n"
+	info = info .. "网格项大小: " .. self.grid.node_size.x .. " x " .. self.grid.node_size.y .. "\n"
+	info = info .. "左侧滚动位置网格索引: " .. self.grid:get_index(scroll_position) .. "\n"
+	info = info .. "右侧滚动位置网格索引: " .. self.grid:get_index(scroll_bottom_position) .. "\n"
 
 	return info
 end
-
 
 return M

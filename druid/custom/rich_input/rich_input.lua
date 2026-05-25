@@ -155,12 +155,12 @@ local function on_touch_start_callback(self, touch)
 end
 
 
----@param self druid.rich_input
----@param dx number The delta x position
----@param dy number The delta y position
----@param x number The x position
----@param y number The y position
----@param touch table The touch table
+---@param self druid.rich_input 富输入组件实例
+---@param dx number X位置增量
+---@param dy number Y位置增量
+---@param x number X位置
+---@param y number Y位置
+---@param touch table 触摸表
 local function on_drag_callback(self, dx, dy, x, y, touch)
 	if not self._last_touch_info.cursor_index then
 		return
@@ -175,8 +175,8 @@ local function on_drag_callback(self, dx, dy, x, y, touch)
 end
 
 
----@param template string The template string name
----@param nodes table Nodes table from gui.clone_tree
+---@param template string 模板字符串名称
+---@param nodes table 来自gui.clone_tree的节点表
 function M:init(template, nodes)
 	self.druid = self:get_druid(template, nodes)
 	self.root = self:get_node("root")
@@ -214,9 +214,9 @@ function M:init(template, nodes)
 end
 
 ---@private
----@param action_id hash Action id from on_input
----@param action table Action table from on_input
----@return boolean is_consumed True if input was consumed
+---@param action_id hash 来自on_input的动作ID
+---@param action table 来自on_input的动作表
+---@return boolean is_consumed 如果输入被消耗则返回true
 function M:on_input(action_id, action)
 	if action_id == const.ACTION_LSHIFT then
 		if action.pressed then
@@ -249,24 +249,24 @@ function M:on_input(action_id, action)
 	return false
 end
 
----Set placeholder text
----@param placeholder_text string The placeholder text
----@return druid.rich_input self Current instance
+---设置占位符文本
+---@param placeholder_text string 占位符文本
+---@return druid.rich_input self 当前实例
 function M:set_placeholder(placeholder_text)
 	self.placeholder:set_text(placeholder_text)
 	return self
 end
 
----Select input field
----@return druid.rich_input self Current instance
+---选择输入字段
+---@return druid.rich_input self 当前实例
 function M:select()
 	self.input:select()
 	return self
 end
 
----Set input field text
----@param text string The input text
----@return druid.rich_input self Current instance
+---设置输入字段文本
+---@param text string 输入文本
+---@return druid.rich_input self 当前实例
 function M:set_text(text)
 	self.input:set_text(text)
 	gui.set_enabled(self.placeholder.node, true and #self.input:get_text() == 0)
@@ -274,9 +274,9 @@ function M:set_text(text)
 	return self
 end
 
----Set input field font
----@param font hash The font hash
----@return druid.rich_input self Current instance
+---设置输入字段字体
+---@param font hash 字体哈希值
+---@return druid.rich_input self 当前实例
 function M:set_font(font)
 	gui.set_font(self.input.text.node, font)
 	gui.set_font(self.placeholder.node, font)
@@ -284,16 +284,16 @@ function M:set_font(font)
 	return self
 end
 
----Set input field text
+---获取输入字段文本
 function M:get_text()
 	return self.input:get_text()
 end
 
----Set allowed charaters for input field.
--- See: https://defold.com/ref/stable/string/
--- ex: [%a%d] for alpha and numeric
----@param characters string Regular expression for validate user input
----@return druid.rich_input self Current instance
+---设置输入字段允许的字符。
+-- 参考：https://defold.com/ref/stable/string/
+-- 示例：[%a%d] 用于字母和数字
+---@param characters string 用于验证用户输入的正则表达式
+---@return druid.rich_input self 当前实例
 function M:set_allowed_characters(characters)
 	self.input:set_allowed_characters(characters)
 
